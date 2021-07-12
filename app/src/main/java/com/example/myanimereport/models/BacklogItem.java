@@ -1,19 +1,36 @@
 package com.example.myanimereport.models;
 
+import com.parse.ParseClassName;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+
 /* BacklogItem (Parse model). */
-public class BacklogItem {
-    Integer mediaId; // The AniList mediaId of the anime in the backlog
+@ParseClassName("BacklogItem")
+public class BacklogItem extends ParseObject {
+    public static final String KEY_USER = "user";
+    public static final String KEY_MEDIA_ID = "mediaId";
 
     public BacklogItem() {
-        mediaId = 155;
+        setMediaId(155);
     }
 
-    /* Getters. */
-    public Anime getAnime() {
-        return new Anime(); // Change this to query the anime with mediaId
+    public ParseUser getUser() {
+        return getParseUser(KEY_USER);
+    }
+
+    public void setUser(ParseUser user) {
+        put(KEY_USER, user);
     }
 
     public Integer getMediaId() {
-        return mediaId;
+        return getInt(KEY_MEDIA_ID);
+    }
+
+    public void setMediaId(Integer mediaId) {
+        put(KEY_MEDIA_ID, mediaId);
+    }
+
+    public Anime getAnime() {
+        return new Anime();
     }
 }
