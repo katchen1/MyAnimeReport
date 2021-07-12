@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_report"
+        android:icon="@drawable/ic_baseline_dashboard_24"
+        android:title="@string/title_report" />
+
+    <item
+        android:id="@+id/navigation_match"
+        android:icon="@drawable/ic_baseline_local_fire_department_24"
+        android:title="@string/title_match" />
+
+    <item
+        android:id="@+id/navigation_backlog"
+        android:icon="@drawable/ic_baseline_list_24"
+        android:title="@string/title_backlog" />
+</menu>
