@@ -1,5 +1,6 @@
 package com.example.myanimereport.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
 import com.example.myanimereport.models.Entry;
+import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +44,17 @@ public class HomeFragment extends Fragment {
         // Add placeholder entries
         for (int i = 0; i < 11; i++) entries.add(new Entry());
         adapter.notifyDataSetChanged();
+        
+        // Logout button
+        binding.btnLogOut.setOnClickListener(this::logOutOnClick);
+    }
+
+    /* Logs out and returns to the login page. */
+    private void logOutOnClick(View view) {
+        ParseUser.logOut();
+        Intent i = new Intent(getContext(), LoginActivity.class);
+        startActivity(i);
+        if (getActivity() != null) getActivity().finish();
     }
 
     @Override
