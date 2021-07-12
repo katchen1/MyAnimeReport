@@ -44,36 +44,41 @@
         android:drawableEnd="@drawable/ic_baseline_visibility_off_24"
         android:drawableTint="@color/white" />
 
-    <TextView
-        android:id="@+id/tvForgotPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/etPassword"
-        android:layout_alignParentEnd="true"
-        android:text="@string/forgot_password"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/blue" />
-
-    <Button
-        android:id="@+id/btnLogin"
+    <EditText
+        android:id="@+id/etConfirmPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvForgotPassword"
+        android:layout_below="@id/etPassword"
+        android:background="@drawable/white_border_rounded_bg"
+        android:layout_marginVertical="10dp"
+        android:minHeight="50dp"
+        android:inputType="textPassword"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:hint="@string/password"
+        android:textColorHint="@color/white"
+        android:drawableEnd="@drawable/ic_baseline_visibility_off_24"
+        android:drawableTint="@color/white" />
+
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/etConfirmPassword"
         android:layout_marginVertical="10dp"
         android:minHeight="60dp"
         android:backgroundTint="@color/blue"
-        android:text="@string/log_in"
+        android:text="@string/sign_up"
         android:textSize="18sp"
         android:textColor="@color/white"
         android:textAllCaps="false"
-        android:onClick="logInOnClick" />
+        android:onClick="signUpOnClick" />
 
     <RelativeLayout
         android:id="@+id/rlOr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btnLogin">
+        android:layout_below="@id/btnSignUp">
 
         <TextView
             android:id="@+id/tvOr"
@@ -103,7 +108,7 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/llSignup"
+        android:id="@+id/llLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/rlOr"
@@ -114,7 +119,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/don_t_have_an_account"
+            android:text="@string/already_have_an_account"
             android:textSize="18sp"
             android:textColor="@color/white" />
 
@@ -122,10 +127,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:text="@string/sign_up"
+            android:text="@string/log_in_period"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/blue"
-            android:onClick="signUpOnClick" />
+            android:onClick="logInOnClick" />
     </LinearLayout>
 </RelativeLayout>
