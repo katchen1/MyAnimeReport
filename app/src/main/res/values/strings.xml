@@ -11,7 +11,10 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="log_in">Log In</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
-    <string name="sign_up">Sign up.</string>
+    <string name="sign_up_period">Sign up.</string>
     <string name="or">OR</string>
     <string name="log_out">Log Out</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="log_in_period">Log in.</string>
+    <string name="sign_up">Sign Up</string>
 </resources>
