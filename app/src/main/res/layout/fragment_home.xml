@@ -22,13 +22,41 @@
             android:background="@color/dark_gray"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_home"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white" />
+            <RelativeLayout
+                android:id="@+id/rlToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/title_home"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white" />
+
+                <!-- Using MaterialButton instead of Button to adjust inner padding -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogOut"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="15dp"
+                    android:minHeight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:background="@drawable/blue_rounded_bg"
+                    android:text="@string/log_out"
+                    android:letterSpacing="0"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@color/dark_gray"
+                    app:backgroundTint="@null"
+                    tools:ignore="RelativeOverlap" />
+            </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
