@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">My Anime Report</string>
+    <string name="app_name">MyAnimeReport</string>
+    <string name="title_home">Watched</string>
+    <string name="title_report">Report</string>
+    <string name="title_match">Match</string>
+    <string name="title_backlog">Backlog</string>
+    <string name="test">Test</string>
 </resources>
