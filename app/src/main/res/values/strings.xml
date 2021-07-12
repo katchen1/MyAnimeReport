@@ -5,4 +5,5 @@
     <string name="title_match">Match</string>
     <string name="title_backlog">Backlog</string>
     <string name="test">Test</string>
+    <string name="_10">/10</string>
 </resources>
