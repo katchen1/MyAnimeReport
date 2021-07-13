@@ -7,13 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
@@ -58,10 +56,6 @@ public class HomeFragment extends Fragment {
         // Add entries to the recycler view
         queryEntries(0);
 
-        // Add placeholder entries
-//        for (int i = 0; i < 11; i++) entries.add(new Entry());
-//        adapter.notifyDataSetChanged();
-
         // Endless scrolling
         binding.rvEntries.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
@@ -73,12 +67,12 @@ public class HomeFragment extends Fragment {
 
     /* Queries the entries 20 at a time. Skips the first skip items. */
     public void queryEntries(int skip) {
-        ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // specify type of data
-        query.setSkip(skip); // skip the first skip items
-        query.setLimit(20); // limit query to 20 items
-        query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // limit entries to current user's
-        query.addDescendingOrder("createdAt"); // order posts by creation date
-        query.findInBackground((entriesFound, e) -> { // start async query for entries
+        ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
+        query.setSkip(skip); // Skip the first skip items
+        query.setLimit(20); // Limit query to 20 items
+        query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
+        query.addDescendingOrder("createdAt"); // Order posts by creation date
+        query.findInBackground((entriesFound, e) -> { // Start async query for entries
             // Check for errors
             if (e != null) {
                 Log.e(TAG, "Error when getting entries.", e);
@@ -105,7 +99,7 @@ public class HomeFragment extends Fragment {
         startActivityForResult(i, NEW_ENTRY_REQUEST_CODE);
     }
 
-    /* After returning from a entry activity, update the entry at the position. */
+    /* After returning from a entry activity, update the entry at its position. */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {

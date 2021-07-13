@@ -1,20 +1,25 @@
 package com.example.myanimereport.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
-import com.example.myanimereport.activities.MainActivity;
+import com.example.MediaDetailsByIdQuery;
 import com.example.myanimereport.databinding.ItemEntryBinding;
-import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
+import com.example.myanimereport.models.ParseApplication;
 import java.util.List;
 import java.util.Locale;
 
 public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHolder> {
 
+    private final String TAG = "EntriesAdapter";
     private final Context context;
     private final List<Entry> entries;
 
@@ -57,12 +62,28 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's data to the view's components. */
         public void bind(Entry entry) {
-            entry.fillItemEntry( context, binding);
+            // Query the anime's information by its mediaId
+            Integer mediaId = entry.getMediaId();
+            ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(mediaId)).enqueue(
+                new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
+                    @Override
+                    public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
+                        // View editing needs to happen in the main thread, not the background thread
+                        ParseApplication.currentActivity.runOnUiThread(() -> {
+                            MediaDetailsByIdQuery.Media media = response.getData().Media();
+                            Glide.with(context).load(media.bannerImage()).into(binding.ivImage);
+                            binding.tvTitle.setText(media.title().english());
+                            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
+                            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+                        });
+                    }
 
-//            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
-//            binding.tvTitle.setText(anime.getTitleEnglish());
-//            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
-//            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+                    @Override
+                    public void onFailure(@NonNull ApolloException e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+            );
         }
     }
 }

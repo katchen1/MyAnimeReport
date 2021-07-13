@@ -26,7 +26,7 @@ public class Entry extends ParseObject {
     /* Default constructor required by Parse. */
     public Entry() { }
 
-    /* Constructor. */
+    /* Alternative constructor. */
     public Entry(Integer mediaId, Integer monthWatched, Integer yearWatched, Double rating, String note) {
         setUser(ParseUser.getCurrentUser());
         setMediaId(mediaId);
@@ -34,30 +34,6 @@ public class Entry extends ParseObject {
         setYearWatched(yearWatched);
         setRating(rating);
         setNote(note);
-    }
-
-    /* Gets the anime with the entry's mediaId. */
-    public void fillItemEntry(Context context, ItemEntryBinding binding) {
-        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
-            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
-                @Override
-                public void onResponse(@NotNull Response<MediaDetailsByIdQuery.Data> response) {
-                    ParseApplication.currentActivity.runOnUiThread(() -> {
-                        MediaDetailsByIdQuery.Media media = response.getData().Media();
-                        Glide.with(context).load(media.bannerImage()).into(binding.ivImage);
-                        binding.tvTitle.setText(media.title().english());
-                        binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", getYearWatched()));
-                        binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", getRating()));
-                    });
-
-                }
-
-                @Override
-                public void onFailure(@NotNull ApolloException e) {
-                    System.out.println("ERROR");
-                }
-            }
-        );
     }
 
     /* Getters and setters. */
