@@ -1,0 +1,21 @@
+query MediaDetailsById($id:Int!) {
+    Media(type: ANIME, id: $id) {
+        id
+        countryOfOrigin
+        title {
+            romaji
+            english
+            native
+        }
+        description
+        averageScore
+        seasonYear
+        coverImage {
+            medium
+            color
+        }
+        bannerImage
+        genres
+        episodes
+    }
+}
