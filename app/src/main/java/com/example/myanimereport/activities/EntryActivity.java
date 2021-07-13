@@ -1,5 +1,6 @@
 package com.example.myanimereport.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.app.Activity;
@@ -18,16 +19,15 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
-import org.jetbrains.annotations.NotNull;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 
 public class EntryActivity extends AppCompatActivity {
 
-    private final String[] months = new DateFormatSymbols().getMonths();
     private ActivityEntryBinding binding;
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
+    private final String[] months = new DateFormatSymbols().getMonths(); // To convert month string and int
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class EntryActivity extends AppCompatActivity {
         binding = ActivityEntryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Creating a new entry, so haven't found the anime's mediaId yet
+        // Creating a new entry, mediaId has not been found
         mediaId = -1;
 
         // Add text changed listener to the title search bar
@@ -52,9 +52,11 @@ public class EntryActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) { }
         });
 
-        // Set up click and focus change listeners
-        binding.tvTitle.setOnClickListener(this::tvTitleOnClick);
+        // Set up focus change and click listeners
         binding.etTitle.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.etNote.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.etRating.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.tvTitle.setOnClickListener(this::tvTitleOnClick);
 
         // Set up number pickers for month and year
         setUpNumberPickers();
@@ -67,7 +69,7 @@ public class EntryActivity extends AppCompatActivity {
         hideFocus(binding.etTitle);
     }
 
-    /* When user clicks outside of the edit text, hide the soft keyboard. */
+    /* When user clicks outside of the edit texts, hide the soft keyboard. */
     private void etOnChangeFocus(View view, boolean hasFocus) {
         if (!hasFocus) hideFocus(view);
     }
@@ -81,29 +83,34 @@ public class EntryActivity extends AppCompatActivity {
 
     /* When user types in the title search bar, check if they've found a valid anime. */
     public void handleTextChange() {
-        String et = binding.etTitle.getText().toString();
-        String tv = binding.tvTitle.getText().toString();
-
         // If the typed title matches the suggested title, remember the anime
-        if (et.equals(tv)) {
+        String search = binding.etTitle.getText().toString();
+        String suggested = binding.tvTitle.getText().toString();
+        if (search.equals(suggested)) {
             binding.etTitle.setTextColor(ContextCompat.getColor(this, R.color.white));
             mediaId = searchMediaId;
             return;
         }
 
-        // If haven't found a match, continue to search for a match via the AniList API
+        // If haven't found a match, continue to search for a match
         binding.etTitle.setTextColor(ContextCompat.getColor(this, R.color.red));
         mediaId = -1;
-        ParseApplication.apolloClient.query(new MediaDetailsByTitleQuery(et)).enqueue(
+        queryTitle(search);
+    }
+
+    /* Searches for an anime by title via AniList GraphQL. */
+    public void queryTitle(String search) {
+        ParseApplication.apolloClient.query(new MediaDetailsByTitleQuery(search)).enqueue(
             new ApolloCall.Callback<MediaDetailsByTitleQuery.Data>() {
                 @Override
-                public void onResponse(@NotNull Response<MediaDetailsByTitleQuery.Data> response) {
+                public void onResponse(@NonNull Response<MediaDetailsByTitleQuery.Data> response) {
+                    // View editing needs to happen on the main thread, not the background thread
                     runOnUiThread(() -> {
                         // Try to find the English or Romaji title
                         String title = response.getData().Media().title().english();
                         if (title == null) title = response.getData().Media().title().romaji();
 
-                        // If cannot find either, exit early
+                        // Exit early if can't find either
                         if (title == null){
                             hideTitleSuggestion();
                             return;
@@ -117,7 +124,7 @@ public class EntryActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(@NotNull ApolloException e) {
+                public void onFailure(@NonNull ApolloException e) {
                     runOnUiThread(() -> hideTitleSuggestion());
                 }
             }
@@ -150,6 +157,7 @@ public class EntryActivity extends AppCompatActivity {
 
     /* Saves the entry. */
     public void saveOnClick(View v) {
+        // Get the user's inputs
         Integer month = binding.npMonthWatched.getValue();
         Integer year = binding.npYearWatched.getValue();
         String rating = binding.etRating.getText().toString();
@@ -169,7 +177,7 @@ public class EntryActivity extends AppCompatActivity {
             return;
         }
 
-        // Create a new entry and save it
+        // Create a new entry, save it, and return to the main activity
         Entry entry = new Entry(mediaId, month, year, Double.parseDouble(rating), note);
         entry.saveInBackground(e -> {
             if (e == null) {
@@ -183,5 +191,4 @@ public class EntryActivity extends AppCompatActivity {
             }
         });
     }
-
 }

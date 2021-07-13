@@ -5,7 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-/* This class is simply copied from https://gist.github.com/nesquena/d09dc68ff07e845cc622. */
+/* Listener for recycler view endless scrolling. This class is simply copied from
+ * https://gist.github.com/nesquena/d09dc68ff07e845cc622
+ * and unmodified. */
 
 public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
     // The minimum amount of items to have below your current scroll position
