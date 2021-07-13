@@ -8,36 +8,10 @@
     android:background="@color/dark_gray"
     tools:context=".activities.EntryDetailsActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:elevation="0dp">
-
-        <!-- Toolbar is the actual app bar with text and the action items -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/dark_gray"
-            app:layout_scrollFlags="scroll|enterAlways">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_match"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white" />
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvAnime"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/appBar"
         android:layout_above="@id/llButtons"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="30dp"
@@ -186,9 +160,9 @@
             android:layout_height="30dp"
             android:layout_weight="1"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/blue_rounded_bg"
+            android:background="@drawable/gray_rounded_bg"
             android:src="@drawable/ic_baseline_info_24"
-            app:tint="@color/dark_gray" />
+            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/btnEdit"
@@ -197,9 +171,9 @@
             android:layout_weight="1"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/blue_rounded_bg"
+            android:background="@drawable/gray_rounded_bg"
             android:src="@drawable/ic_baseline_edit_24"
-            app:tint="@color/dark_gray" />
+            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/btnDelete"
@@ -207,8 +181,8 @@
             android:layout_height="30dp"
             android:layout_weight="1"
             android:layout_marginStart="10dp"
-            android:background="@drawable/blue_rounded_bg"
+            android:background="@drawable/gray_rounded_bg"
             android:src="@drawable/ic_baseline_delete_24"
-            app:tint="@color/dark_gray" />
+            app:tint="@color/white" />
     </LinearLayout>
 </RelativeLayout>

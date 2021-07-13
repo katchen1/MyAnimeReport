@@ -2,6 +2,8 @@ package com.example.myanimereport.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import com.apollographql.apollo.ApolloCall;
@@ -49,7 +51,15 @@ public class EntryDetailsActivity extends AppCompatActivity {
                     ParseApplication.currentActivity.runOnUiThread(() -> {
                         MediaDetailsByIdQuery.Media media = response.getData().Media();
                         Glide.with(EntryDetailsActivity.this).load(media.coverImage().extraLarge()).into(binding.ivImage);
-                        binding.tvTitle.setText(media.title().english());
+                        String title = media.title().english() != null? media.title().english(): media.title().romaji();
+                        binding.tvTitle.setText(title);
+                        System.out.println(media.title());
+
+                        // Set the background color to be the cover image's primary color
+                        String color = media.coverImage().color(); // Hex code
+                        if (color != null) {
+                            binding.getRoot().setBackgroundColor(Color.parseColor(color));
+                        }
                     });
                 }
 
