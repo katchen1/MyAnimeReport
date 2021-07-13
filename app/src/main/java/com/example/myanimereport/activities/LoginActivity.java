@@ -41,7 +41,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signUpOnClick(View view) {
-        Toast.makeText(this, "Not implemented.", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(LoginActivity.this, SignupActivity.class);
+        startActivity(i);
+        finish();
     }
 
     /* Navigates to the main activity. */
