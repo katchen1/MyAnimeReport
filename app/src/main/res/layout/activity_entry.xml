@@ -33,171 +33,179 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <RelativeLayout
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appBar"
-        android:paddingHorizontal="30dp"
-        android:paddingVertical="30dp"
-        android:clickable="true"
-        android:focusableInTouchMode="true">
+        android:overScrollMode="never">
 
         <RelativeLayout
-            android:id="@+id/rlTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp">
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="10dp"
+            android:clickable="true"
+            android:focusableInTouchMode="true">
 
-            <EditText
-                android:id="@+id/etTitle"
+            <RelativeLayout
+                android:id="@+id/rlTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/white_border_rounded_bg"
-                android:minHeight="50dp"
-                android:textSize="18sp"
-                android:textColor="@color/white"
-                android:hint="@string/title"
-                android:textColorHint="@color/light_gray"
-                android:textCursorDrawable="@null"
-                android:drawableEnd="@drawable/ic_baseline_search_24"
-                android:drawableTint="@color/white" />
+                android:layout_marginVertical="10dp">
 
-                <TextView
-                    android:id="@+id/tvTitle"
+                <EditText
+                    android:id="@+id/etTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/etTitle"
-                    android:paddingHorizontal="10dp"
-                    android:background="@drawable/gray_rounded_bg"
-                    android:visibility="gone"
-                    android:text="@string/no_results_found"
+                    android:background="@drawable/white_border_rounded_bg"
+                    android:minHeight="50dp"
+                    android:textSize="18sp"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:hint="@string/title"
+                    android:textColorHint="@color/light_gray"
+                    android:textCursorDrawable="@null"
+                    android:drawableEnd="@drawable/ic_baseline_search_24"
+                    android:drawableTint="@color/white" />
 
-        </RelativeLayout>
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/etTitle"
+                        android:paddingHorizontal="10dp"
+                        android:background="@drawable/gray_rounded_bg"
+                        android:visibility="gone"
+                        android:text="@string/no_results_found"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
 
-        <RelativeLayout
-            android:id="@+id/rlWatched"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/rlTitle"
-            android:layout_marginVertical="10dp">
+            </RelativeLayout>
 
-            <TextView
-                android:id="@+id/tvWatched"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/rlWatched"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/watched"
-                android:textSize="18sp"
-                android:textColor="@color/white" />
+                android:layout_below="@id/rlTitle"
+                android:layout_marginVertical="10dp">
 
-            <ImageView
-                android:id="@+id/ivWatchedIcon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_toEndOf="@id/tvWatched"
-                android:layout_marginStart="5dp"
-                android:layout_centerVertical="true"
-                android:background="@drawable/ic_baseline_watch_later_24"
-                android:backgroundTint="@color/blue" />
+                <TextView
+                    android:id="@+id/tvWatched"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/watched"
+                    android:textSize="18sp"
+                    android:textColor="@color/white" />
 
-            <NumberPicker
-                android:id="@+id/npMonthWatched"
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/ivWatchedIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_toEndOf="@id/tvWatched"
+                    android:layout_marginStart="5dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_baseline_watch_later_24"
+                    android:backgroundTint="@color/blue" />
+
+                <NumberPicker
+                    android:id="@+id/npMonthWatched"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/npYearWatched"
+                    android:layout_marginEnd="10dp" />
+
+                <NumberPicker
+                    android:id="@+id/npYearWatched"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/rlRating"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/npYearWatched"
-                android:layout_marginEnd="10dp" />
+                android:layout_marginVertical="10dp"
+                android:layout_below="@id/rlWatched">
 
-            <NumberPicker
-                android:id="@+id/npYearWatched"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true" />
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/tvRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/rating"
+                    android:textSize="18sp"
+                    android:textColor="@color/white" />
 
+                <ImageView
+                    android:id="@+id/ivRatingIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_toEndOf="@id/tvRating"
+                    android:layout_marginStart="5dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_baseline_star_24"
+                    android:backgroundTint="@color/blue" />
 
-        <RelativeLayout
-            android:id="@+id/rlRating"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:layout_below="@id/rlWatched">
+                <EditText
+                    android:id="@+id/etRating"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@id/tvRatingOutOf"
+                    android:layout_marginEnd="5dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/white_border_rounded_bg"
+                    android:minHeight="50dp"
+                    android:inputType="numberDecimal"
+                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:hint="@string/rating"
+                    android:textColorHint="@color/light_gray"
+                    android:textCursorDrawable="@null" />
 
-            <TextView
-                android:id="@+id/tvRating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/rating"
-                android:textSize="18sp"
-                android:textColor="@color/white" />
-
-            <ImageView
-                android:id="@+id/ivRatingIcon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_toEndOf="@id/tvRating"
-                android:layout_marginStart="5dp"
-                android:layout_centerVertical="true"
-                android:background="@drawable/ic_baseline_star_24"
-                android:backgroundTint="@color/blue" />
+                <TextView
+                    android:id="@+id/tvRatingOutOf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/_10"
+                    android:textSize="18sp"
+                    android:textColor="@color/white"/>
+            </RelativeLayout>
 
             <EditText
-                android:id="@+id/etRating"
-                android:layout_width="100dp"
+                android:id="@+id/etNote"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/tvRatingOutOf"
-                android:layout_marginEnd="5dp"
-                android:layout_centerVertical="true"
+                android:layout_below="@id/rlRating"
+                android:layout_marginVertical="10dp"
                 android:background="@drawable/white_border_rounded_bg"
-                android:minHeight="50dp"
+                android:minHeight="150dp"
                 android:textSize="18sp"
                 android:textColor="@color/white"
-                android:hint="@string/rating"
+                android:gravity="top|start"
+                android:hint="@string/note"
                 android:textColorHint="@color/light_gray"
                 android:textCursorDrawable="@null" />
 
-            <TextView
-                android:id="@+id/tvRatingOutOf"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:text="@string/_10"
+                android:layout_below="@id/etNote"
+                android:layout_marginVertical="10dp"
+                android:background="@drawable/blue_rounded_bg"
+                android:text="@string/save"
                 android:textSize="18sp"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:letterSpacing="0"
+                android:onClick="saveOnClick"
+                app:backgroundTint="@null" />
         </RelativeLayout>
-
-        <EditText
-            android:id="@+id/etNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/rlRating"
-            android:layout_marginVertical="10dp"
-            android:background="@drawable/white_border_rounded_bg"
-            android:minHeight="150dp"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:gravity="top|start"
-            android:hint="@string/note"
-            android:textColorHint="@color/light_gray"
-            android:textCursorDrawable="@null" />
-
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/etNote"
-            android:layout_marginVertical="10dp"
-            android:background="@drawable/blue_rounded_bg"
-            android:text="@string/save"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            android:letterSpacing="0"
-            android:onClick="saveOnClick"
-            app:backgroundTint="@null" />
-    </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>
