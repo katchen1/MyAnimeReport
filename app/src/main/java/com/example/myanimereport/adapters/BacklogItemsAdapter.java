@@ -56,7 +56,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         /* Binds the item's data to the view's components. */
         public void bind(BacklogItem item) {
             Anime anime = item.getAnime();
-            binding.tvTitle.setText(anime.getTitle());
+            binding.tvTitle.setText(anime.getTitleEnglish());
             binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
         }
     }

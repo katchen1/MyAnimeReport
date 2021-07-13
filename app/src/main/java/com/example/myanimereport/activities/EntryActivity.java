@@ -1,10 +1,10 @@
-package com.example.myanimereport;
+package com.example.myanimereport.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+import com.example.myanimereport.R;
 
 public class EntryActivity extends AppCompatActivity {
 
@@ -16,5 +16,6 @@ public class EntryActivity extends AppCompatActivity {
 
     public void saveOnClick(View v) {
         Toast.makeText(this, "Not implemented.", Toast.LENGTH_SHORT).show();
+
     }
 }
