@@ -17,6 +17,7 @@ import com.example.MediaDetailsByIdQuery;
 import com.example.myanimereport.activities.EntryDetailsActivity;
 import com.example.myanimereport.databinding.ItemEntryBinding;
 import com.example.myanimereport.fragments.HomeFragment;
+import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import java.util.List;
@@ -78,9 +79,9 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
                     public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
                         // View editing needs to happen in the main thread, not the background thread
                         ParseApplication.currentActivity.runOnUiThread(() -> {
-                            MediaDetailsByIdQuery.Media media = response.getData().Media();
-                            Glide.with(context).load(media.bannerImage()).into(binding.ivImage);
-                            binding.tvTitle.setText(media.title().english());
+                            Anime anime = new Anime(response);
+                            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
+                            binding.tvTitle.setText(anime.getTitleEnglish());
                             binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
                             binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
                         });
