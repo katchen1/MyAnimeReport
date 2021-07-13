@@ -102,35 +102,20 @@
                 android:background="@drawable/ic_baseline_watch_later_24"
                 android:backgroundTint="@color/blue" />
 
-            <EditText
-                android:id="@+id/etMonthWatched"
-                android:layout_width="130dp"
+            <NumberPicker
+                android:id="@+id/npMonthWatched"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/etYearWatched"
-                android:layout_marginEnd="5dp"
-                android:layout_centerVertical="true"
-                android:background="@drawable/white_border_rounded_bg"
-                android:minHeight="50dp"
-                android:textSize="18sp"
-                android:textColor="@color/white"
-                android:hint="@string/month"
-                android:textColorHint="@color/light_gray"
-                android:textCursorDrawable="@null" />
+                android:layout_toStartOf="@id/npYearWatched"
+                android:layout_marginEnd="10dp" />
 
-            <EditText
-                android:id="@+id/etYearWatched"
-                android:layout_width="80dp"
+            <NumberPicker
+                android:id="@+id/npYearWatched"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/white_border_rounded_bg"
-                android:minHeight="50dp"
-                android:textSize="18sp"
-                android:textColor="@color/white"
-                android:hint="@string/year"
-                android:textColorHint="@color/light_gray"
-                android:textCursorDrawable="@null" />
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/rlRating"

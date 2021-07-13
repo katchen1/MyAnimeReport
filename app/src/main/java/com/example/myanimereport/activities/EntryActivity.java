@@ -17,6 +17,10 @@ import com.example.myanimereport.databinding.ActivityEntryBinding;
 import com.example.myanimereport.models.ParseApplication;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
+import java.util.Date;
+
 public class EntryActivity extends AppCompatActivity {
 
     private ActivityEntryBinding binding;
@@ -49,6 +53,9 @@ public class EntryActivity extends AppCompatActivity {
         // Set up click and focus change listeners
         binding.tvTitle.setOnClickListener(this::tvTitleOnClick);
         binding.etTitle.setOnFocusChangeListener(this::etOnChangeFocus);
+
+        // Set up number pickers for month and year
+        setUpNumberPickers();
     }
 
     /* When user clicks the suggested title, set the title to the suggested title. */
@@ -123,6 +130,16 @@ public class EntryActivity extends AppCompatActivity {
     /* Hides the title suggestion below the search bar. */
     public void hideTitleSuggestion() {
         binding.tvTitle.setVisibility(View.GONE);
+    }
+
+    /* Sets up the number pickers for month and year. */
+    public void setUpNumberPickers() {
+        binding.npMonthWatched.setMaxValue(11);
+        binding.npMonthWatched.setMinValue(0);
+        binding.npMonthWatched.setDisplayedValues(new DateFormatSymbols().getMonths());
+        binding.npYearWatched.setMaxValue(Calendar.getInstance().get(Calendar.YEAR));
+        binding.npYearWatched.setMinValue(1900);
+        binding.npYearWatched.setValue(Calendar.getInstance().get(Calendar.YEAR));
     }
 
     /* Saves the entry. */
