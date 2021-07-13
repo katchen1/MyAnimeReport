@@ -10,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
-
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
@@ -19,15 +18,9 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
-import com.parse.ParseException;
-import com.parse.SaveCallback;
-
 import org.jetbrains.annotations.NotNull;
-
 import java.text.DateFormatSymbols;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 
 public class EntryActivity extends AppCompatActivity {
 
