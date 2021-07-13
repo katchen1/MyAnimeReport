@@ -30,6 +30,7 @@ public class HomeFragment extends Fragment {
     private List<Entry> entries;
     private EntriesAdapter adapter;
     public static final int NEW_ENTRY_REQUEST_CODE = 1;
+    public static final int VIEW_ENTRY_REQUEST_CODE = 2;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,7 +46,7 @@ public class HomeFragment extends Fragment {
         // Set up adapter and layout of recycler view
         entries = new ArrayList<>();
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-        adapter = new EntriesAdapter(getContext(), entries);
+        adapter = new EntriesAdapter(this, entries);
         binding.rvEntries.setLayoutManager(layoutManager);
         binding.rvEntries.setAdapter(adapter);
 
