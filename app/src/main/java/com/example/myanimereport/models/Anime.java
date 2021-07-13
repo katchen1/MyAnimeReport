@@ -14,8 +14,8 @@ public class Anime {
     private Integer seasonYear; // The season year the media was initially released in
     private String coverImage; // URL of the cover image of the media
     private String bannerImage; // URL of the banner image of the media
-    private String trailerId; // Id of the media's Youtube trailer
     private List<String> genres; // List of genres of the media
+    private String color; // Primary color of the cover image
 
     /* Default constructor. */
     public Anime() {
@@ -30,10 +30,27 @@ public class Anime {
         seasonYear = 1994;
         coverImage = "https://i.pinimg.com/originals/ad/b5/cd/adb5cdc9cd0c353f23cb04ca58d7a17d.png";
         bannerImage = "https://i.pinimg.com/originals/7d/4a/f2/7d4af24e4a4578f9783dcd61f080fdda.jpg";
-        trailerId = "https://www.youtube.com/watch?v=HSow7Ep6l_4";
         genres = new ArrayList<>();
         genres.add("drama");
         genres.add("science fiction");
+        color = "#000000";
+    }
+
+    /* Alternative constructor. */
+    public Anime(Integer mediaId, String titleEnglish, String titleRomaji, String titleNative,
+                 String description, Double averageScore, Integer seasonYear, String coverImage,
+                 String bannerImage, List<String> genres, String color) {
+        this.mediaId = mediaId;
+        this.titleEnglish = titleEnglish;
+        this.titleRomaji = titleRomaji;
+        this.titleNative = titleNative;
+        this.description = description;
+        this.averageScore = averageScore;
+        this.seasonYear = seasonYear;
+        this.coverImage = coverImage;
+        this.bannerImage = bannerImage;
+        this.genres = genres;
+        this.color = color;
     }
 
     /* Getters. */
@@ -67,10 +84,6 @@ public class Anime {
 
     public String getBannerImage() {
         return bannerImage;
-    }
-
-    public String getTrailerId() {
-        return trailerId;
     }
 
     public List<String> getGenres() {
