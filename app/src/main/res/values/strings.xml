@@ -25,4 +25,5 @@
     <string name="rating">Rating</string>
     <string name="note">Note</string>
     <string name="save">Save</string>
+    <string name="no_results_found">No results found.</string>
 </resources>
