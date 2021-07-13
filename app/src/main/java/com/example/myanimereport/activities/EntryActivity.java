@@ -8,21 +8,29 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
+
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaDetailsByTitleQuery;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
+import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import com.parse.ParseException;
+import com.parse.SaveCallback;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DateFormatSymbols;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 public class EntryActivity extends AppCompatActivity {
 
+    private final String[] months = new DateFormatSymbols().getMonths();
     private ActivityEntryBinding binding;
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
@@ -134,9 +142,13 @@ public class EntryActivity extends AppCompatActivity {
 
     /* Sets up the number pickers for month and year. */
     public void setUpNumberPickers() {
-        binding.npMonthWatched.setMaxValue(11);
-        binding.npMonthWatched.setMinValue(0);
-        binding.npMonthWatched.setDisplayedValues(new DateFormatSymbols().getMonths());
+        // Month
+        binding.npMonthWatched.setMaxValue(12);
+        binding.npMonthWatched.setMinValue(1);
+        binding.npMonthWatched.setDisplayedValues(months);
+        binding.npMonthWatched.setValue(Calendar.getInstance().get(Calendar.MONTH) + 1);
+
+        // Year
         binding.npYearWatched.setMaxValue(Calendar.getInstance().get(Calendar.YEAR));
         binding.npYearWatched.setMinValue(1900);
         binding.npYearWatched.setValue(Calendar.getInstance().get(Calendar.YEAR));
@@ -144,6 +156,34 @@ public class EntryActivity extends AppCompatActivity {
 
     /* Saves the entry. */
     public void saveOnClick(View v) {
-        // Save the entry with mediaId
+        Integer month = binding.npMonthWatched.getValue();
+        Integer year = binding.npYearWatched.getValue();
+        String rating = binding.etRating.getText().toString();
+        String note = binding.etNote.getText().toString();
+
+        // Check if media id is valid
+        if (mediaId == -1) {
+            binding.etTitle.setText("");
+            Toast.makeText(EntryActivity.this, "Invalid title.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check if rating is valid
+        if (rating.isEmpty() || Double.parseDouble(rating) > 10 || Double.parseDouble(rating) < 0) {
+            binding.etRating.setText("");
+            Toast.makeText(EntryActivity.this, "Invalid rating.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create a new entry and save it
+        Entry entry = new Entry(mediaId, month, year, Double.parseDouble(rating), note);
+        entry.saveInBackground(e -> {
+            if (e == null) {
+                Toast.makeText(EntryActivity.this, "Entry saved.", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -23,6 +23,15 @@ public class Entry extends ParseObject {
         setNote("My favorite anime!"); // An optional reflective note on the anime
     }
 
+    public Entry(Integer mediaId, Integer monthWatched, Integer yearWatched, Double rating, String note) {
+        setUser(ParseUser.getCurrentUser());
+        setMediaId(mediaId);
+        setMonthWatched(monthWatched);
+        setYearWatched(yearWatched);
+        setRating(rating);
+        setNote(note);
+    }
+
     /* Getters and setters. */
     public ParseUser getUser() {
         return getParseUser(KEY_USER);
