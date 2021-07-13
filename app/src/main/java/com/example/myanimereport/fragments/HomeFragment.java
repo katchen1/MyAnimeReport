@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.example.myanimereport.EntryActivity;
 import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
@@ -62,7 +64,8 @@ public class HomeFragment extends Fragment {
 
     /* Creates an entry and adds it to the beginning of the list. */
     private void createOnClick(View view) {
-        Toast.makeText(getContext(), "Not implemented.", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(getContext(), EntryActivity.class);
+        startActivity(i);
     }
 
     @Override

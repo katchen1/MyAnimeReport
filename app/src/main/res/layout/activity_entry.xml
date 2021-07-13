@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_gray"
+    tools:context=".EntryActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:elevation="0dp">
+
+        <!-- Toolbar is the actual app bar with text and the action items -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/dark_gray"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/entry"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/white" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appBar"
+        android:paddingHorizontal="30dp"
+        android:paddingVertical="30dp">
+
+        <EditText
+            android:id="@+id/etTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_border_rounded_bg"
+            android:layout_marginVertical="10dp"
+            android:minHeight="50dp"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:hint="@string/title"
+            android:textColorHint="@color/light_gray"
+            android:textCursorDrawable="@null"
+            android:drawableEnd="@drawable/ic_baseline_search_24"
+            android:drawableTint="@color/white" />
+
+        <RelativeLayout
+            android:id="@+id/rlWatched"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/etTitle"
+            android:layout_marginVertical="10dp">
+
+            <TextView
+                android:id="@+id/tvWatched"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/watched"
+                android:textSize="18sp"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/ivWatchedIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_toEndOf="@id/tvWatched"
+                android:layout_marginStart="5dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_baseline_watch_later_24"
+                android:backgroundTint="@color/blue" />
+
+            <EditText
+                android:id="@+id/etMonthWatched"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/etYearWatched"
+                android:layout_marginEnd="5dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/white_border_rounded_bg"
+                android:minHeight="50dp"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:hint="@string/month"
+                android:textColorHint="@color/light_gray"
+                android:textCursorDrawable="@null" />
+
+            <EditText
+                android:id="@+id/etYearWatched"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/white_border_rounded_bg"
+                android:minHeight="50dp"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:hint="@string/year"
+                android:textColorHint="@color/light_gray"
+                android:textCursorDrawable="@null" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlRating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_below="@id/rlWatched">
+
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/rating"
+                android:textSize="18sp"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/ivRatingIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_toEndOf="@id/tvRating"
+                android:layout_marginStart="5dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_baseline_star_24"
+                android:backgroundTint="@color/blue" />
+
+            <EditText
+                android:id="@+id/etRating"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/tvRatingOutOf"
+                android:layout_marginEnd="5dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/white_border_rounded_bg"
+                android:minHeight="50dp"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:hint="@string/rating"
+                android:textColorHint="@color/light_gray"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/tvRatingOutOf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="@string/_10"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/etNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlRating"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/white_border_rounded_bg"
+            android:minHeight="150dp"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:gravity="top|start"
+            android:hint="@string/note"
+            android:textColorHint="@color/light_gray"
+            android:textCursorDrawable="@null" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/etNote"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/blue_rounded_bg"
+            android:text="@string/save"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:letterSpacing="0"
+            android:onClick="saveOnClick"
+            app:backgroundTint="@null" />
+    </RelativeLayout>
+</RelativeLayout>
