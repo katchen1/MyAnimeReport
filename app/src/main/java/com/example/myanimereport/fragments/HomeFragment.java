@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -45,8 +47,9 @@ public class HomeFragment extends Fragment {
         for (int i = 0; i < 11; i++) entries.add(new Entry());
         adapter.notifyDataSetChanged();
         
-        // Logout button
+        // Button listeners
         binding.btnLogOut.setOnClickListener(this::logOutOnClick);
+        binding.btnCreate.setOnClickListener(this::createOnClick);
     }
 
     /* Logs out and returns to the login page. */
@@ -55,6 +58,11 @@ public class HomeFragment extends Fragment {
         Intent i = new Intent(getContext(), LoginActivity.class);
         startActivity(i);
         if (getActivity() != null) getActivity().finish();
+    }
+
+    /* Creates an entry and adds it to the beginning of the list. */
+    private void createOnClick(View view) {
+        Toast.makeText(getContext(), "Not implemented.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
