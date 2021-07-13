@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.databinding.ItemEntryBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
@@ -56,11 +57,12 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's data to the view's components. */
         public void bind(Entry entry) {
-            Anime anime = entry.getAnime();
-            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
-            binding.tvTitle.setText(anime.getTitleEnglish());
-            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
-            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+            entry.fillItemEntry( context, binding);
+
+//            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
+//            binding.tvTitle.setText(anime.getTitleEnglish());
+//            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
+//            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
         }
     }
 }

@@ -3,6 +3,7 @@ package com.example.myanimereport.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -180,10 +181,14 @@ public class EntryActivity extends AppCompatActivity {
         entry.saveInBackground(e -> {
             if (e == null) {
                 Toast.makeText(EntryActivity.this, "Entry saved.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra("entry", entry);
+                setResult(RESULT_OK, intent);
                 finish();
             } else {
                 Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 }
