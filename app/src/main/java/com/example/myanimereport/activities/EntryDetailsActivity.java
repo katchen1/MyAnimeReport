@@ -12,6 +12,7 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.example.MediaDetailsByIdQuery;
 import com.example.myanimereport.databinding.ActivityEntryDetailsBinding;
+import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import java.text.DateFormatSymbols;
@@ -49,17 +50,23 @@ public class EntryDetailsActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
                     // View editing needs to happen in the main thread, not the background thread
                     ParseApplication.currentActivity.runOnUiThread(() -> {
-                        MediaDetailsByIdQuery.Media media = response.getData().Media();
-                        Glide.with(EntryDetailsActivity.this).load(media.coverImage().extraLarge()).into(binding.ivImage);
-                        String title = media.title().english() != null? media.title().english(): media.title().romaji();
-                        binding.tvTitle.setText(title);
-                        System.out.println(media.title());
+                        Anime anime = new Anime(response);
+                        Glide.with(EntryDetailsActivity.this).load(anime.getCoverImage()).into(binding.ivImage);
+                        binding.tvTitle.setText(anime.getTitleEnglish());
 
-                        // Set the background color to be the cover image's primary color
-                        String color = media.coverImage().color(); // Hex code
-                        if (color != null) {
-                            binding.getRoot().setBackgroundColor(Color.parseColor(color));
-                        }
+                        binding.getRoot().setBackgroundColor(anime.getColor());
+
+//                        MediaDetailsByIdQuery.Media media = response.getData().Media();
+//                        Glide.with(EntryDetailsActivity.this).load(media.coverImage().extraLarge()).into(binding.ivImage);
+//                        String title = media.title().english() != null? media.title().english(): media.title().romaji();
+//                        binding.tvTitle.setText(title);
+//                        System.out.println(media.title());
+//
+//                        // Set the background color to be the cover image's primary color
+//                        String color = media.coverImage().color(); // Hex code
+//                        if (color != null) {
+//                            binding.getRoot().setBackgroundColor(Color.parseColor(color));
+//                        }
                     });
                 }
 

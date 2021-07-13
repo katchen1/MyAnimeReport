@@ -1,5 +1,11 @@
 package com.example.myanimereport.models;
 
+import android.graphics.Color;
+
+import com.apollographql.apollo.api.Response;
+import com.example.MediaDetailsByIdQuery;
+import com.example.myanimereport.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,13 +59,29 @@ public class Anime {
         this.color = color;
     }
 
+    /* Alternative constructor (from GraphQL response object). */
+    public Anime(Response<MediaDetailsByIdQuery.Data> response) {
+        MediaDetailsByIdQuery.Media media = response.getData().Media();
+        mediaId = media.id();
+        this.titleEnglish = media.title().english();
+        this.titleRomaji = media.title().romaji();
+        this.titleNative = media.title().native_();
+        this.description = media.description();
+        this.averageScore = media.averageScore() / 10.0;
+        this.seasonYear = media.seasonYear();
+        this.coverImage = media.coverImage().extraLarge();
+        this.bannerImage = media.bannerImage();
+        this.genres = media.genres();
+        this.color = media.coverImage().color();
+    }
+
     /* Getters. */
     public Integer getMediaId() {
         return mediaId;
     }
 
     public String getTitleEnglish() {
-        return titleEnglish;
+        return titleEnglish != null? titleEnglish: titleRomaji;
     }
 
     public String getTitleRomaji() { return titleRomaji; }
@@ -79,14 +101,18 @@ public class Anime {
     }
 
     public String getCoverImage() {
-        return coverImage;
+        return coverImage != null? coverImage: bannerImage;
     }
 
     public String getBannerImage() {
-        return bannerImage;
+        return bannerImage != null? bannerImage: coverImage;
     }
 
     public List<String> getGenres() {
         return genres;
+    }
+
+    public Integer getColor() {
+        return color != null? Color.parseColor(color): Color.parseColor("#222222");
     }
 }
