@@ -17,4 +17,12 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="log_in_period">Log in.</string>
     <string name="sign_up">Sign Up</string>
+    <string name="entry">Entry</string>
+    <string name="title">Title</string>
+    <string name="watched">Watched</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="rating">Rating</string>
+    <string name="note">Note</string>
+    <string name="save">Save</string>
 </resources>
