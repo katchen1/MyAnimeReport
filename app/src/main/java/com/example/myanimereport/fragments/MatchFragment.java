@@ -48,7 +48,7 @@ public class MatchFragment extends Fragment {
     public void generateMatch() {
         Anime anime = new Anime();
         Glide.with(this).load(anime.getBannerImage()).into(binding.ivImage);
-        binding.tvTitle.setText(anime.getTitle());
+        binding.tvTitle.setText(anime.getTitleEnglish());
         binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
         binding.tvDescription.setText(anime.getDescription());
 

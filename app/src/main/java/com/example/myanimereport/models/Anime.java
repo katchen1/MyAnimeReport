@@ -6,7 +6,9 @@ import java.util.List;
 /* A media object from the AniList API. */
 public class Anime {
     private Integer mediaId; // Unique id for the anime in the AniList database
-    private String title; // The official English title of the anime
+    private String titleEnglish; // The official English title
+    private String titleRomaji; // Romanization of the native language title
+    private String titleNative; // Official title in its native language
     private String description; // Short description of the media’s story and characters
     private Double averageScore; // A weighted average score of all the user’s scores of the media
     private Integer seasonYear; // The season year the media was initially released in
@@ -18,7 +20,9 @@ public class Anime {
     /* Default constructor. */
     public Anime() {
         mediaId = 155;
-        title = "Detective Conan";
+        titleEnglish = "Case Closed";
+        titleRomaji = "Meitantei Conan";
+        titleNative = "名探偵コナン";
         description = "The story follows the high school detective Shinichi Kudo who was transformed" +
                 " into a child while investigating a mysterious organization and solves a multitude " +
                 "of cases while impersonating his childhood best friend's father and other characters.";
@@ -37,9 +41,13 @@ public class Anime {
         return mediaId;
     }
 
-    public String getTitle() {
-        return title;
+    public String getTitleEnglish() {
+        return titleEnglish;
     }
+
+    public String getTitleRomaji() { return titleRomaji; }
+
+    public String getTitleNative() { return titleNative; }
 
     public String getDescription() {
         return description;

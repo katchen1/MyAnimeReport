@@ -58,7 +58,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         public void bind(Entry entry) {
             Anime anime = entry.getAnime();
             Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
-            binding.tvTitle.setText(anime.getTitle());
+            binding.tvTitle.setText(anime.getTitleEnglish());
             binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
             binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
         }
