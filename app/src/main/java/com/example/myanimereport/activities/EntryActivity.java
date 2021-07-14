@@ -35,6 +35,9 @@ public class EntryActivity extends AppCompatActivity {
         binding = ActivityEntryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Hide action bar
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
+
         // Creating a new entry, mediaId has not been found
         mediaId = -1;
 

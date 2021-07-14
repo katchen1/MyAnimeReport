@@ -31,6 +31,9 @@ public class EntryDetailsActivity extends AppCompatActivity {
         binding = ActivityEntryDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Hide action bar
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
+
         // Get the passed in data
         entry = getIntent().getParcelableExtra("entry");
         position = getIntent().getIntExtra("position", -1);
@@ -53,20 +56,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
                         Anime anime = new Anime(response);
                         Glide.with(EntryDetailsActivity.this).load(anime.getCoverImage()).into(binding.ivImage);
                         binding.tvTitle.setText(anime.getTitleEnglish());
-
-                        binding.getRoot().setBackgroundColor(anime.getColor());
-
-//                        MediaDetailsByIdQuery.Media media = response.getData().Media();
-//                        Glide.with(EntryDetailsActivity.this).load(media.coverImage().extraLarge()).into(binding.ivImage);
-//                        String title = media.title().english() != null? media.title().english(): media.title().romaji();
-//                        binding.tvTitle.setText(title);
-//                        System.out.println(media.title());
-//
-//                        // Set the background color to be the cover image's primary color
-//                        String color = media.coverImage().color(); // Hex code
-//                        if (color != null) {
-//                            binding.getRoot().setBackgroundColor(Color.parseColor(color));
-//                        }
+                        binding.cvAnime.setStrokeColor(anime.getColor());
                     });
                 }
 
