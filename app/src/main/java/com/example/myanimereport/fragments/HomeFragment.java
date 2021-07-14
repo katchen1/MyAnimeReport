@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
@@ -49,6 +50,10 @@ public class HomeFragment extends Fragment {
         adapter = new EntriesAdapter(this, entries);
         binding.rvEntries.setLayoutManager(layoutManager);
         binding.rvEntries.setAdapter(adapter);
+
+        // Remove the default on-change animations of the recycler view
+        SimpleItemAnimator animator = (SimpleItemAnimator) binding.rvEntries.getItemAnimator();
+        if (animator != null) animator.setSupportsChangeAnimations(false);
 
         // Button listeners
         binding.btnLogOut.setOnClickListener(this::logOutOnClick);
@@ -109,6 +114,13 @@ public class HomeFragment extends Fragment {
         if (requestCode == NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             entries.add(0, data.getParcelableExtra("entry"));
             adapter.notifyItemInserted(0);
+            binding.rvEntries.smoothScrollToPosition(0); // Scroll to the top to see the new entry
+        }
+
+        if (requestCode == VIEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            int position = data.getIntExtra("position", -1);
+            entries.set(position, data.getParcelableExtra("entry"));
+            adapter.notifyItemChanged(position);
         }
     }
 
