@@ -26,12 +26,13 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    public static final int NEW_ENTRY_REQUEST_CODE = 1;
+    public static final int VIEW_ENTRY_REQUEST_CODE = 2;
+
     private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
     private List<Entry> entries;
     private EntriesAdapter adapter;
-    public static final int NEW_ENTRY_REQUEST_CODE = 1;
-    public static final int VIEW_ENTRY_REQUEST_CODE = 2;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -112,12 +113,14 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // A new entry was created, add it to the front of the list
             entries.add(0, data.getParcelableExtra("entry"));
             adapter.notifyItemInserted(0);
             binding.rvEntries.smoothScrollToPosition(0); // Scroll to the top to see the new entry
         }
 
         if (requestCode == VIEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // Returning from an entry details activity
             int position = data.getIntExtra("position", -1);
             if (data.hasExtra("entry")) {
                 // Entry updated

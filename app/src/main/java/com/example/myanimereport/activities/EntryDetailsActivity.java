@@ -1,19 +1,13 @@
 package com.example.myanimereport.activities;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
@@ -25,17 +19,17 @@ import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import java.text.DateFormatSymbols;
 import java.util.Locale;
-import com.example.myanimereport.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class EntryDetailsActivity extends AppCompatActivity {
+
+    public static final int EDIT_ENTRY_REQUEST_CODE = 3;
 
     private final String TAG = "EntryDetailsActivity";
     private ActivityEntryDetailsBinding binding;
     private Entry entry; // The entry whose information is being shown
     private Integer position; // The position of the entry in the adapter
     private Anime anime; // The anime of the entry
-    public static final int EDIT_ENTRY_REQUEST_CODE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,23 +60,23 @@ public class EntryDetailsActivity extends AppCompatActivity {
         // Make a query for the anime's cover image and title
         Integer mediaId = entry.getMediaId();
         ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(mediaId)).enqueue(
-                new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
-                    @Override
-                    public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
-                        // View editing needs to happen in the main thread, not the background thread
-                        ParseApplication.currentActivity.runOnUiThread(() -> {
-                            anime = new Anime(response);
-                            Glide.with(EntryDetailsActivity.this).load(anime.getCoverImage()).into(binding.ivImage);
-                            binding.tvTitle.setText(anime.getTitleEnglish());
-                            binding.cvAnime.setStrokeColor(anime.getColor());
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull ApolloException e) {
-                        Log.e(TAG, e.getMessage());
-                    }
+            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
+                @Override
+                public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
+                    // View editing needs to happen in the main thread, not the background thread
+                    ParseApplication.currentActivity.runOnUiThread(() -> {
+                        anime = new Anime(response);
+                        Glide.with(EntryDetailsActivity.this).load(anime.getCoverImage()).into(binding.ivImage);
+                        binding.tvTitle.setText(anime.getTitleEnglish());
+                        binding.cvAnime.setStrokeColor(anime.getColor());
+                    });
                 }
+
+                @Override
+                public void onFailure(@NonNull ApolloException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }
         );
     }
 
@@ -101,29 +95,23 @@ public class EntryDetailsActivity extends AppCompatActivity {
 
     /* Prompts a confirm dialog and deletes the entry. */
     public void btnDeleteOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
         new MaterialAlertDialogBuilder(this)
             .setTitle("Delete Entry")
             .setMessage("Are you sure?")
-            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    entry.saveInBackground(e -> {
-                        if (e == null) {
-                            Toast.makeText(EntryDetailsActivity.this, "Entry deleted.", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent();
-                            intent.putExtra("position", position);
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        } else {
-                            Toast.makeText(EntryDetailsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            .setPositiveButton("Delete", (dialog, which) -> entry.saveInBackground(e -> {
+                if (e == null) {
+                    // Return to the home list and pass back the position so it can be deleted in the RV
+                    Toast.makeText(EntryDetailsActivity.this, "Entry deleted.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("position", position);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                } else {
+                    Toast.makeText(EntryDetailsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            })
-            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            })
+            }))
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .show();
     }
 
@@ -137,6 +125,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /* Returns to the home list and passes back the updated entry so it can be redrawn. */
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
