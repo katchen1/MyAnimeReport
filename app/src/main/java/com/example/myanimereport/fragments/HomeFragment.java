@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
             } else {
                 // Entry deleted
                 entries.remove(position);
-                adapter.notifyItemRemoved(0);
+                adapter.notifyItemRemoved(position);
             }
         }
     }

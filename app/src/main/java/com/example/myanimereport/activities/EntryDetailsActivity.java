@@ -99,7 +99,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
         new MaterialAlertDialogBuilder(this)
             .setTitle("Delete Entry")
             .setMessage("Are you sure?")
-            .setPositiveButton("Delete", (dialog, which) -> entry.saveInBackground(e -> {
+            .setPositiveButton("Delete", (dialog, which) -> entry.deleteInBackground(e -> {
                 if (e == null) {
                     // Return to the home list and pass back the position so it can be deleted in the RV
                     Toast.makeText(EntryDetailsActivity.this, "Entry deleted.", Toast.LENGTH_SHORT).show();
