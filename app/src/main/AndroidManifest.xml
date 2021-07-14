@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyAnimeReport">
-        <activity android:name=".activities.EntryDetailsActivity"></activity>
+        <activity android:name=".activities.EntryDetailsActivity" />
         <activity android:name=".activities.EntryActivity" />
         <activity android:name=".activities.SignupActivity" />
         <activity android:name=".activities.MainActivity" />

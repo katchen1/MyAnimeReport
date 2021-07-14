@@ -1,21 +1,5 @@
 query MediaDetailsByTitle($search:String!) {
     Media(type: ANIME, search: $search) {
-        id
-        countryOfOrigin
-        title {
-            romaji
-            english
-            native
-        }
-        description
-        averageScore
-        seasonYear
-        coverImage {
-            extraLarge
-            color
-        }
-        bannerImage
-        genres
-        episodes
+        ...mediaFragment
     }
 }

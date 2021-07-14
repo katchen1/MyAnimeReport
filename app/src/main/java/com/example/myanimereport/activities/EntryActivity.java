@@ -15,6 +15,7 @@ import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaDetailsByTitleQuery;
+import com.example.fragment.MediaFragment;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
 import com.example.myanimereport.models.Entry;
@@ -110,8 +111,9 @@ public class EntryActivity extends AppCompatActivity {
                     // View editing needs to happen on the main thread, not the background thread
                     runOnUiThread(() -> {
                         // Try to find the English or Romaji title
-                        String title = response.getData().Media().title().english();
-                        if (title == null) title = response.getData().Media().title().romaji();
+                        MediaFragment media = response.getData().Media().fragments().mediaFragment();
+                        String title = media.title().english();
+                        if (title == null) title = media.title().romaji();
 
                         // Exit early if can't find either
                         if (title == null){
@@ -121,7 +123,7 @@ public class EntryActivity extends AppCompatActivity {
 
                         // Show the suggestion and remember the Anime's id
                         binding.tvTitle.setText(title);
-                        searchMediaId = response.getData().Media().id();
+                        searchMediaId = media.id();
                         showTitleSuggestion();
                     });
                 }
