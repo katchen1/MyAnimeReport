@@ -27,4 +27,6 @@
     <string name="save">Save</string>
     <string name="no_results_found">No results found.</string>
     <string name="entry_details">Entry Details</string>
+    <string name="add_entry">Add Entry</string>
+    <string name="edit_entry">Edit Entry</string>
 </resources>
