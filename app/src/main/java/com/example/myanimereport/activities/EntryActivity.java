@@ -26,11 +26,11 @@ import java.util.Locale;
 
 public class EntryActivity extends AppCompatActivity {
 
+    private final String[] months = new DateFormatSymbols().getMonths(); // To convert month string and int
     private ActivityEntryBinding binding;
+    private Integer mode; // 0 for creating a new entry; 1 for editing an existing entry
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
-    private final String[] months = new DateFormatSymbols().getMonths(); // To convert month string and in
-    private int mode; // 0 for creating a new entry; 1 for editing an existing entry
     private Entry entry; // The entry being edited
 
     @Override
@@ -207,11 +207,12 @@ public class EntryActivity extends AppCompatActivity {
         else updateExistingEntry(month, year, Double.parseDouble(rating), note);
     }
 
-    /* Creates a new entry, saves it, and return to the main activity. */
+    /* Creates a new entry, saves it, and return to the home list. */
     public void createNewEntry(Integer month, Integer year, Double rating, String note) {
         entry = new Entry(mediaId, month, year, rating, note);
         entry.saveInBackground(e -> {
             if (e == null) {
+                // Pass back the entry so it can be inserted in the recycler view
                 Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("entry", entry);
@@ -232,6 +233,7 @@ public class EntryActivity extends AppCompatActivity {
         entry.setNote(note);
         entry.saveInBackground(e -> {
             if (e == null) {
+                // Pass back the entry so it can be redrawn in the entry details activity
                 Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("entry", entry);
