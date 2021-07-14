@@ -1,9 +1,12 @@
 package com.example.myanimereport.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,6 +25,8 @@ import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import java.text.DateFormatSymbols;
 import java.util.Locale;
+import com.example.myanimereport.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class EntryDetailsActivity extends AppCompatActivity {
 
@@ -81,10 +86,12 @@ public class EntryDetailsActivity extends AppCompatActivity {
         );
     }
 
+    /* Shows the anime's details. */
     public void btnInfoOnClick(View view) {
         Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
     }
 
+    /* Navigates to the Entry Activity to edit it. */
     public void btnEditOnClick(View view) {
         Intent intent = new Intent(EntryDetailsActivity.this, EntryActivity.class);
         intent.putExtra("entry", entry); // Pass in the entry to edit
@@ -92,8 +99,32 @@ public class EntryDetailsActivity extends AppCompatActivity {
         startActivityForResult(intent, EDIT_ENTRY_REQUEST_CODE);
     }
 
+    /* Prompts a confirm dialog and deletes the entry. */
     public void btnDeleteOnClick(View view) {
-        Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
+        new MaterialAlertDialogBuilder(this)
+            .setTitle("Delete Entry")
+            .setMessage("Are you sure?")
+            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    entry.saveInBackground(e -> {
+                        if (e == null) {
+                            Toast.makeText(EntryDetailsActivity.this, "Entry deleted.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent();
+                            intent.putExtra("position", position);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        } else {
+                            Toast.makeText(EntryDetailsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            })
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            })
+            .show();
     }
 
     /* After returning from a entry edit activity, update the entry. */
