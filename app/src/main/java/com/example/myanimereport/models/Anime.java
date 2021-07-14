@@ -113,6 +113,6 @@ public class Anime {
     }
 
     public Integer getColor() {
-        return color != null? Color.parseColor(color): Color.parseColor("#222222");
+        return color != null? Color.parseColor(color): Color.parseColor("#EEEEEE");
     }
 }
