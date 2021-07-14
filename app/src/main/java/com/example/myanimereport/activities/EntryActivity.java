@@ -69,6 +69,7 @@ public class EntryActivity extends AppCompatActivity {
             binding.npMonthWatched.setValue(entry.getMonthWatched());
             binding.npYearWatched.setValue(entry.getYearWatched());
             binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+            binding.etNote.setText(entry.getNote());
         }
 
 
