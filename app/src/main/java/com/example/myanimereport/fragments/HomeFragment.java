@@ -17,10 +17,12 @@ import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
+import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.utils.EndlessRecyclerViewScrollListener;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,7 +126,10 @@ public class HomeFragment extends Fragment {
             int position = data.getIntExtra("position", -1);
             if (data.hasExtra("entry")) {
                 // Entry updated
-                entries.set(position, data.getParcelableExtra("entry"));
+                Entry entry = data.getParcelableExtra("entry");
+                Anime anime = Parcels.unwrap(data.getParcelableExtra("anime"));
+                entry.setAnime(anime);
+                entries.set(position, entry);
                 adapter.notifyItemChanged(position);
             } else {
                 // Entry deleted

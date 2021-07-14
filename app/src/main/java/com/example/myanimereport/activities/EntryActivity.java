@@ -18,8 +18,10 @@ import com.example.MediaDetailsByTitleQuery;
 import com.example.fragment.MediaFragment;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
+import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import org.parceler.Parcels;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Locale;
@@ -32,6 +34,7 @@ public class EntryActivity extends AppCompatActivity {
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
     private Entry entry; // The entry being edited
+    private Anime anime; // The anime of the entry
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +68,8 @@ public class EntryActivity extends AppCompatActivity {
             mediaId = entry.getMediaId();
 
             // Populate the views
-            binding.etTitle.setText(getIntent().getStringExtra("title"));
+            anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
+            binding.etTitle.setText(anime.getTitleEnglish());
             binding.npMonthWatched.setValue(entry.getMonthWatched());
             binding.npYearWatched.setValue(entry.getYearWatched());
             binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
@@ -228,6 +232,7 @@ public class EntryActivity extends AppCompatActivity {
     /* Updates an existing entry with the newly filled information. */
     private void updateExistingEntry(Integer month, Integer year, Double rating, String note) {
         entry.setMediaId(mediaId);
+        entry.setAnime();
         entry.setMonthWatched(month);
         entry.setYearWatched(year);
         entry.setRating(rating);
@@ -238,6 +243,7 @@ public class EntryActivity extends AppCompatActivity {
                 Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("entry", entry);
+                intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
                 setResult(RESULT_OK, intent);
                 finish();
             } else {
