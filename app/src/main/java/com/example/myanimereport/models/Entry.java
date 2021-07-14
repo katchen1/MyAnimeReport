@@ -1,6 +1,10 @@
 package com.example.myanimereport.models;
 
 import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
@@ -23,6 +27,8 @@ public class Entry extends ParseObject {
     public static final String KEY_RATING = "rating";
     public static final String KEY_NOTE = "note";
 
+    private Anime anime;
+
     /* Default constructor required by Parse. */
     public Entry() { }
 
@@ -37,6 +43,26 @@ public class Entry extends ParseObject {
     }
 
     /* Getters and setters. */
+    public Anime getAnime() {
+        return anime;
+    }
+
+    public void setAnime() {
+        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
+            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
+                @Override
+                public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
+                    anime = new Anime(response);
+                }
+
+                @Override
+                public void onFailure(@NonNull ApolloException e) {
+                    Log.e("Apollo", e.getMessage());
+                }
+            }
+        );
+    }
+
     public ParseUser getUser() {
         return getParseUser(KEY_USER);
     }

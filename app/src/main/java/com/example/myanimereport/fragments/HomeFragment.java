@@ -81,7 +81,10 @@ public class HomeFragment extends Fragment {
             }
 
             // Add entries to the recycler view and notify its adapter of new data
-            entries.addAll(entriesFound);
+            for (Entry entry: entriesFound) {
+                entry.setAnime();
+                entries.add(entry);
+            }
             adapter.notifyDataSetChanged();
         });
     }
