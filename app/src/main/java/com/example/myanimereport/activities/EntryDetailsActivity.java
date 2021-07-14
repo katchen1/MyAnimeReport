@@ -105,4 +105,13 @@ public class EntryDetailsActivity extends AppCompatActivity {
             populateEntryView();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("entry", entry);
+        intent.putExtra("position", position);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }
