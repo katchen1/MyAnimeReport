@@ -34,6 +34,7 @@ public class Entry extends ParseObject {
 
     /* Alternative constructor. */
     public Entry(Integer mediaId, Integer monthWatched, Integer yearWatched, Double rating, String note) {
+        setAnime();
         setUser(ParseUser.getCurrentUser());
         setMediaId(mediaId);
         setMonthWatched(monthWatched);
@@ -61,6 +62,10 @@ public class Entry extends ParseObject {
                 }
             }
         );
+    }
+
+    public void setAnime(Anime anime) {
+        this.anime = anime;
     }
 
     public ParseUser getUser() {
