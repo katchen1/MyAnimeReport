@@ -21,6 +21,8 @@ import java.text.DateFormatSymbols;
 import java.util.Locale;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.parceler.Parcels;
+
 public class EntryDetailsActivity extends AppCompatActivity {
 
     public static final int EDIT_ENTRY_REQUEST_CODE = 3;
@@ -43,6 +45,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
         // Get the passed in data
         entry = getIntent().getParcelableExtra("entry");
         position = getIntent().getIntExtra("position", -1);
+        anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
 
         // Show the entry's information
         populateEntryView();
@@ -56,28 +59,9 @@ public class EntryDetailsActivity extends AppCompatActivity {
         binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
         binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
         binding.tvNote.setText(entry.getNote());
-
-        // Make a query for the anime's cover image and title
-        Integer mediaId = entry.getMediaId();
-        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(mediaId)).enqueue(
-            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
-                @Override
-                public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
-                    // View editing needs to happen in the main thread, not the background thread
-                    ParseApplication.currentActivity.runOnUiThread(() -> {
-                        anime = new Anime(response);
-                        Glide.with(EntryDetailsActivity.this).load(anime.getCoverImage()).into(binding.ivImage);
-                        binding.tvTitle.setText(anime.getTitleEnglish());
-                        binding.cvAnime.setStrokeColor(anime.getColor());
-                    });
-                }
-
-                @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }
-        );
+        Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
+        binding.tvTitle.setText(anime.getTitleEnglish());
+        binding.cvEntry.setStrokeColor(anime.getColor());
     }
 
     /* Shows the anime's details. */

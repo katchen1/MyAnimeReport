@@ -76,13 +76,14 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cvAnime"
+        android:id="@+id/cvEntry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appBar"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
+        android:transitionName="card"
         app:cardCornerRadius="10dp"
         app:strokeColor="@color/white"
         app:strokeWidth="1dp">
@@ -102,6 +103,7 @@
                     android:id="@+id/flImage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <ImageView
                         android:id="@+id/ivImage"
                         android:layout_width="match_parent"
