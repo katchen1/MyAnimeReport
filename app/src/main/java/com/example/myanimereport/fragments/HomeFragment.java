@@ -119,8 +119,15 @@ public class HomeFragment extends Fragment {
 
         if (requestCode == VIEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int position = data.getIntExtra("position", -1);
-            entries.set(position, data.getParcelableExtra("entry"));
-            adapter.notifyItemChanged(position);
+            if (data.hasExtra("entry")) {
+                // Entry updated
+                entries.set(position, data.getParcelableExtra("entry"));
+                adapter.notifyItemChanged(position);
+            } else {
+                // Entry deleted
+                entries.remove(position);
+                adapter.notifyItemRemoved(0);
+            }
         }
     }
 

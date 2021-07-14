@@ -29,4 +29,7 @@
     <string name="entry_details">Entry Details</string>
     <string name="add_entry">Add Entry</string>
     <string name="edit_entry">Edit Entry</string>
+    <string name="delete_question">Delete?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>
