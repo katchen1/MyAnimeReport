@@ -156,7 +156,7 @@
             android:layout_height="30dp"
             android:layout_weight="1"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/blue_rounded_bg"
+            android:background="@drawable/theme_rounded_bg"
             android:src="@drawable/ic_baseline_close_24"
             app:tint="@color/dark_gray" />
 
@@ -166,7 +166,7 @@
             android:layout_height="30dp"
             android:layout_weight="1"
             android:layout_marginStart="10dp"
-            android:background="@drawable/blue_rounded_bg"
+            android:background="@drawable/theme_rounded_bg"
             android:src="@drawable/ic_baseline_favorite_24"
             app:tint="@color/dark_gray" />
     </LinearLayout>

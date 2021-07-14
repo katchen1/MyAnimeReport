@@ -23,8 +23,9 @@
             <ImageView
                 android:id="@+id/ivImage"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="80dp"
                 android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
                 tools:src="@tools:sample/backgrounds/scenic" />
 
             <TextView
@@ -52,7 +53,7 @@
                     android:layout_height="20dp"
                     android:layout_centerVertical="true"
                     android:background="@drawable/ic_baseline_watch_later_24"
-                    android:backgroundTint="@color/blue" />
+                    android:backgroundTint="@color/theme" />
 
                 <TextView
                     android:id="@+id/tvYearWatched"
@@ -73,7 +74,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_centerVertical="true"
                     android:background="@drawable/ic_baseline_star_24"
-                    android:backgroundTint="@color/blue" />
+                    android:backgroundTint="@color/theme" />
 
                 <TextView
                     android:id="@+id/tvRating"
