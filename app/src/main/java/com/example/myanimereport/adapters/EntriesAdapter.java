@@ -71,6 +71,16 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's data to the view's components. */
         public void bind(Entry entry) {
+            // Set data unrelated to the anime
+            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
+            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+
+            // Use pre-queried anime to prevent excessive network requests
+            if (entry.getAnime() != null) {
+                loadAnimeData(entry.getAnime());
+                return;
+            }
+
             // Query the anime's information by its mediaId
             Integer mediaId = entry.getMediaId();
             ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(mediaId)).enqueue(
@@ -80,10 +90,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
                         // View editing needs to happen in the main thread, not the background thread
                         ParseApplication.currentActivity.runOnUiThread(() -> {
                             Anime anime = new Anime(response);
-                            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
-                            binding.tvTitle.setText(anime.getTitleEnglish());
-                            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
-                            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+                            loadAnimeData(anime);
                         });
                     }
 
@@ -95,10 +102,15 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
             );
         }
 
+        /* Binds the entry's anime-relevant data to the view's components. */
+        public void loadAnimeData(Anime anime) {
+            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
+            binding.tvTitle.setText(anime.getTitleEnglish());
+        }
+
         /* When the entry card is clicked, expand it to show its full information. */
         @Override
         public void onClick(View v) {
-            System.out.println("clicked");
             Intent intent = new Intent(context, EntryDetailsActivity.class);
             intent.putExtra("entry", entries.get(getAdapterPosition())); // Pass in the entry
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
