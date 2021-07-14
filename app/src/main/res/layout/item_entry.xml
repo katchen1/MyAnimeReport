@@ -8,9 +8,11 @@
     android:layout_width="match_parent">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvEntry"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
+        android:transitionName="card"
         card_view:cardCornerRadius="10dp"
         card_view:strokeColor="@color/white"
         card_view:strokeWidth="1dp">

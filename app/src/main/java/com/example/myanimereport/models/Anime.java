@@ -7,10 +7,13 @@ import com.example.MediaDetailsByIdQuery;
 import com.example.fragment.MediaFragment;
 import com.example.myanimereport.R;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /* A media object from the AniList API. */
+@Parcel
 public class Anime {
     private Integer mediaId; // Unique id for the anime in the AniList database
     private String titleEnglish; // The official English title

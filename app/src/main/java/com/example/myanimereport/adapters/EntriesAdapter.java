@@ -1,5 +1,6 @@
 package com.example.myanimereport.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -7,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import com.apollographql.apollo.ApolloCall;
@@ -20,6 +23,9 @@ import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+
+import org.parceler.Parcels;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -112,9 +118,16 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(context, EntryDetailsActivity.class);
-            intent.putExtra("entry", entries.get(getAdapterPosition())); // Pass in the entry
+            Entry entry = entries.get(getAdapterPosition());
+            intent.putExtra("entry", entry); // Pass in the entry
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
-            fragment.startActivityForResult(intent, HomeFragment.VIEW_ENTRY_REQUEST_CODE);
+            intent.putExtra("anime", Parcels.wrap(entry.getAnime())); // Pass in the entry's anime
+
+            // Animate the transition
+            Activity activity = ParseApplication.currentActivity;
+            ActivityOptionsCompat options = ActivityOptionsCompat
+                    .makeSceneTransitionAnimation(activity, binding.cvEntry, "card");
+            fragment.startActivityForResult(intent, HomeFragment.VIEW_ENTRY_REQUEST_CODE, options.toBundle());
         }
     }
 }
