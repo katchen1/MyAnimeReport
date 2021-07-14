@@ -1,6 +1,8 @@
 package com.example.myanimereport.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import java.text.DateFormatSymbols;
 import java.util.Locale;
+
+import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.parceler.Parcels;
 
@@ -59,7 +63,14 @@ public class EntryDetailsActivity extends AppCompatActivity {
 
     /* Shows the anime's details. */
     public void btnInfoOnClick(View view) {
-        Toast.makeText(this, "Not implemented", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(EntryDetailsActivity.this, AnimeDetailsActivity.class);
+        intent.putExtra("anime", Parcels.wrap(anime));
+
+        // Animate the transition
+        Activity activity = ParseApplication.currentActivity;
+        ActivityOptionsCompat options = ActivityOptionsCompat
+                .makeSceneTransitionAnimation(activity, binding.cvEntry, "card");
+        startActivity(intent, options.toBundle());
     }
 
     /* Navigates to the Entry Activity to edit it. */
