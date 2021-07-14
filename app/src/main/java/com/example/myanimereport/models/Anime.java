@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.apollographql.apollo.api.Response;
 import com.example.MediaDetailsByIdQuery;
+import com.example.fragment.MediaFragment;
 import com.example.myanimereport.R;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class Anime {
 
     /* Alternative constructor (from GraphQL response object). */
     public Anime(Response<MediaDetailsByIdQuery.Data> response) {
-        MediaDetailsByIdQuery.Media media = response.getData().Media();
+        MediaFragment media = response.getData().Media().fragments().mediaFragment();
         mediaId = media.id();
         this.titleEnglish = media.title().english();
         this.titleRomaji = media.title().romaji();
