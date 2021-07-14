@@ -1,8 +1,21 @@
 package com.example.myanimereport.models;
 
+import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+import com.bumptech.glide.Glide;
+import com.example.MediaDetailsByIdQuery;
+import com.example.myanimereport.databinding.ItemEntryBinding;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import org.jetbrains.annotations.NotNull;
+import java.util.Locale;
 
 /* Entry (Parse model). */
 @ParseClassName("Entry")
@@ -14,16 +27,42 @@ public class Entry extends ParseObject {
     public static final String KEY_RATING = "rating";
     public static final String KEY_NOTE = "note";
 
-    public Entry() {
+    private Anime anime;
+
+    /* Default constructor required by Parse. */
+    public Entry() { }
+
+    /* Alternative constructor. */
+    public Entry(Integer mediaId, Integer monthWatched, Integer yearWatched, Double rating, String note) {
         setUser(ParseUser.getCurrentUser());
-        setMediaId(155); // The AniList mediaId of the anime watched
-        setMonthWatched(1); // The month when the user watched the anime
-        setYearWatched(2012); // The year when the user watched the anime
-        setRating(10.0); // The user’s rating of the anime (out of 10)
-        setNote("My favorite anime!"); // An optional reflective note on the anime
+        setMediaId(mediaId);
+        setMonthWatched(monthWatched);
+        setYearWatched(yearWatched);
+        setRating(rating);
+        setNote(note);
     }
 
     /* Getters and setters. */
+    public Anime getAnime() {
+        return anime;
+    }
+
+    public void setAnime() {
+        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
+            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
+                @Override
+                public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
+                    anime = new Anime(response);
+                }
+
+                @Override
+                public void onFailure(@NonNull ApolloException e) {
+                    Log.e("Apollo", e.getMessage());
+                }
+            }
+        );
+    }
+
     public ParseUser getUser() {
         return getParseUser(KEY_USER);
     }
@@ -70,9 +109,5 @@ public class Entry extends ParseObject {
 
     public void setNote(String note) {
         put(KEY_NOTE, note);
-    }
-
-    public Anime getAnime() {
-        return new Anime();
     }
 }

@@ -1,0 +1,5 @@
+query MediaDetailsByTitle($search:String!) {
+    Media(type: ANIME, search: $search) {
+        ...mediaFragment
+    }
+}

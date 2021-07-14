@@ -55,7 +55,7 @@
         android:text="@string/forgot_password"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="@color/blue" />
+        android:textColor="@color/theme" />
 
     <Button
         android:id="@+id/btnLogin"
@@ -64,7 +64,7 @@
         android:layout_below="@id/tvForgotPassword"
         android:layout_marginVertical="10dp"
         android:minHeight="0dp"
-        android:background="@drawable/blue_rounded_bg"
+        android:background="@drawable/theme_rounded_bg"
         android:text="@string/log_in"
         android:textSize="18sp"
         android:textColor="@color/white"
@@ -130,7 +130,7 @@
             android:text="@string/sign_up_period"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/blue"
+            android:textColor="@color/theme"
             android:onClick="signUpOnClick" />
     </LinearLayout>
 </RelativeLayout>
