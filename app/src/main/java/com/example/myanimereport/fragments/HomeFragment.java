@@ -74,7 +74,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    /* Queries the entries 20 at a time. Skips the first skip items. */
+    /* Queries the entries 10 at a time. Skips the first skip items. */
     public void queryEntries(int skip) {
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
