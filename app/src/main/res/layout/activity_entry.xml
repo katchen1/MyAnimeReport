@@ -24,6 +24,7 @@
             app:layout_scrollFlags="scroll|enterAlways">
 
             <TextView
+                android:id="@+id/tvToolbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/entry"
