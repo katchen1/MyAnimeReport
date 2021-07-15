@@ -34,4 +34,11 @@
     <string name="cancel">Cancel</string>
     <string name="anime_details">Anime Details</string>
     <string name="no_data_on_episodes">No data on episodes</string>
+    <string name="total_animes_watched">Total Animes Watched</string>
+    <string name="animes_watched">Animes Watched</string>
+    <string name="average_rating">Average Rating</string>
+    <string name="animes_watched_this_year">Animes Watched This Year</string>
+    <string name="average_rating_this_year">Average Rating This Year</string>
+    <string name="overview">Overview</string>
+    <string name="activity">Activity</string>
 </resources>
