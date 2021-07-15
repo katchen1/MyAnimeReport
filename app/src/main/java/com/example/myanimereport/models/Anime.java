@@ -74,7 +74,9 @@ public class Anime {
         this.titleRomaji = media.title().romaji();
         this.titleNative = media.title().native_();
         this.description = media.description();
-        this.averageScore = media.averageScore() / 10.0;
+        if (media.averageScore() != null) {
+            this.averageScore = media.averageScore() / 10.0;
+        }
         this.seasonYear = media.seasonYear();
         this.coverImage = media.coverImage().extraLarge();
         this.bannerImage = media.bannerImage();
