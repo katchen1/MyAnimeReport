@@ -50,8 +50,6 @@ public class AnimeDetailsActivity extends AppCompatActivity {
             binding.nestedScrollView.smoothScrollTo(0, targetPosition);
         });
 
-        //binding.nestedScrollView.scrollTo(0, binding.tvDescription.getBottom());
-
         // Fill in genres chip group
         ChipGroup cgGenres = binding.cgGenres;
         cgGenres.removeAllViews();
