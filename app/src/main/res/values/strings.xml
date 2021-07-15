@@ -33,4 +33,5 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="anime_details">Anime Details</string>
+    <string name="no_data_on_episodes">No data on episodes</string>
 </resources>

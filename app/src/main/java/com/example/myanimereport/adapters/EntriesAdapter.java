@@ -93,6 +93,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
                         // View editing needs to happen in the main thread, not the background thread
                         ParseApplication.currentActivity.runOnUiThread(() -> {
                             Anime anime = new Anime(response);
+                            entry.setAnime(anime);
                             loadAnimeData(anime);
                         });
                     }
@@ -114,8 +115,15 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         /* When the entry card is clicked, expand it to show its full information. */
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(context, EntryDetailsActivity.class);
+            // Check if anime data has been set
             Entry entry = entries.get(getAdapterPosition());
+            if (entry.getAnime() == null) {
+                entry.setAnime();
+                return;
+            }
+
+            // Navigate to the entry details activity
+            Intent intent = new Intent(context, EntryDetailsActivity.class);
             intent.putExtra("entry", entry); // Pass in the entry
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
             intent.putExtra("anime", Parcels.wrap(entry.getAnime())); // Pass in the entry's anime

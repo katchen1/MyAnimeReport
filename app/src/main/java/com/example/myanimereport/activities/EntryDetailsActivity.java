@@ -1,5 +1,6 @@
 package com.example.myanimereport.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 
@@ -7,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.databinding.ActivityEntryDetailsBinding;
@@ -17,6 +19,8 @@ import java.util.Locale;
 
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialDialogs;
+
 import org.parceler.Parcels;
 
 public class EntryDetailsActivity extends AppCompatActivity {
@@ -87,7 +91,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
     /* Prompts a confirm dialog and deletes the entry. */
     public void btnDeleteOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
             .setTitle("Delete Entry")
             .setMessage("Are you sure?")
             .setPositiveButton("Delete", (dialog, which) -> entry.deleteInBackground(e -> {
@@ -103,7 +107,11 @@ public class EntryDetailsActivity extends AppCompatActivity {
                 }
             }))
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .show();
+            .create();
+
+        // Hide status bar of the alert dialog's window
+        alertDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        alertDialog.show();
     }
 
     /* After returning from a entry edit activity, update the entry. */

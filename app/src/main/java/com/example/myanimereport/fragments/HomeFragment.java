@@ -78,7 +78,7 @@ public class HomeFragment extends Fragment {
     public void queryEntries(int skip) {
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
-        query.setLimit(10); // Limit query to 20 items
+        query.setLimit(10); // Limit query to 10 items
         query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
         query.addDescendingOrder("createdAt"); // Order posts by creation date
         query.findInBackground((entriesFound, e) -> { // Start async query for entries
@@ -89,10 +89,7 @@ public class HomeFragment extends Fragment {
             }
 
             // Add entries to the recycler view and notify its adapter of new data
-            for (Entry entry: entriesFound) {
-                entry.setAnime();
-                entries.add(entry);
-            }
+            entries.addAll(entriesFound);
             adapter.notifyDataSetChanged();
         });
     }
@@ -116,7 +113,10 @@ public class HomeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // A new entry was created, add it to the front of the list
-            entries.add(0, data.getParcelableExtra("entry"));
+            Entry entry = data.getParcelableExtra("entry");
+            Anime anime = Parcels.unwrap(data.getParcelableExtra("anime"));
+            entry.setAnime(anime);
+            entries.add(0, entry);
             adapter.notifyItemInserted(0);
             binding.rvEntries.smoothScrollToPosition(0); // Scroll to the top to see the new entry
         }
@@ -127,10 +127,9 @@ public class HomeFragment extends Fragment {
             if (data.hasExtra("entry")) {
                 // Entry updated
                 Entry entry = data.getParcelableExtra("entry");
-                Anime anime = Parcels.unwrap(data.getParcelableExtra("anime"));
-                entry.setAnime(anime);
                 entries.set(position, entry);
                 adapter.notifyItemChanged(position);
+                entry.setAnime();
             } else {
                 // Entry deleted
                 entries.remove(position);
