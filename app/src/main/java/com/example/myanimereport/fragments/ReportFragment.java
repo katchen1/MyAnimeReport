@@ -1,6 +1,7 @@
 package com.example.myanimereport.fragments;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,9 @@ import androidx.fragment.app.Fragment;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -24,8 +28,11 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ReportFragment extends Fragment {
@@ -33,6 +40,9 @@ public class ReportFragment extends Fragment {
     private final String TAG = "ReportFragment";
     private FragmentReportBinding binding;
     List<Entry> entries;
+
+    Map<Integer, List<Entry>> yearToList;
+    Map<String, List<Entry>> genreToList;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,6 +55,8 @@ public class ReportFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         entries = new ArrayList<>();
+        yearToList = new HashMap<>();
+        genreToList = new HashMap<>();
         queryEntries(0);
     }
 
@@ -55,74 +67,136 @@ public class ReportFragment extends Fragment {
         query.setLimit(10); // Limit query to 10 items
         query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
         query.addDescendingOrder("createdAt"); // Order posts by creation date
-        query.findInBackground(this::queryEntriesCallback);
+        query.findInBackground((entriesFound, e) -> {
+            // Check for errors
+            if (e != null) {
+                Log.e(TAG, "Error when getting entries.", e);
+                return;
+            }
+            entries.addAll(entriesFound);
+            setCharts();
+        });
     }
 
-    private void queryEntriesCallback(List<Entry> entriesFound, ParseException e) {
-        // Check for errors
-        if (e != null) {
-            Log.e(TAG, "Error when getting entries.", e);
-            return;
-        }
-        entries.addAll(entriesFound);
-
-        /* Charts I want to include:
-         * 1. Overview [Score Cards]
-         *   1A. Total watched - count
-         *   1B. Average rating - averageRating
-         *   1C. Watched this year (compared to last year) - yearToList.get(this year).size()
-         *   1D. Avg rating this year (compared to last year) - for loop over yearToList.get(thisYear);
-         * 2. Activity [Line Chart] - year vs. entry count
-         * 3. Genres breakdown by year [Stacked Bar] - year vs. num anime in each genre
-         * 4. Demographics [Pie]
-         * 5. Genres [Pie]
-         * 6. Genre Preference [Bar] - genre vs. average rating
-         */
-
-        // Collect data
-        int count = 0;
-        Double sumRating = 0.0;
-        Map<Integer, List<Entry>> yearToList = new HashMap<>();
-        Map<String, Integer> genreToCount = new HashMap<>();
+    /* Charts I want to include:
+     * 1. Overview [Score Cards]
+     *   1A. Total watched
+     *   1B. Average rating
+     *   1C. Watched this year (compared to last year)
+     *   1D. Avg rating this year (compared to last year)
+     * 2. Top 5
+     * 3. Activity [Line Chart] - year vs. entry count
+     * 4. Genres breakdown by year [Stacked Bar] - year vs. num anime in each genre
+     * 5. Demographics [Pie]
+     * 6. Genres [Pie]
+     * 7. Genre Preference [Bar] - genre vs. average rating
+     */
+    private void setCharts() {
+        // Set up maps
         for (Entry entry: entries) {
-            //entry.setAnime();
-            count++;
-            sumRating += entry.getRating();
-            if (!yearToList.containsKey(entry.getYearWatched())) {
-                yearToList.put(entry.getYearWatched(), new ArrayList<>());
+            Integer year = entry.getYearWatched();
+            if (!yearToList.containsKey(year)) {
+                yearToList.put(year, new ArrayList<>());
             }
-            yearToList.get(entry.getYearWatched()).add(entry);
+            yearToList.get(year).add(entry);
         }
-        double averageRating = sumRating / count;
 
+        setOverview();
+        setChartActivity();
+    }
 
-        // 2. Activity (Line Chart) - year vs. entry count
+    /* 1. Overview [Score Cards]
+     *   1A. Total watched
+     *   1B. Average rating
+     *   1C. Watched this year (compared to last year)
+     *   1D. Avg rating this year (compared to last year)
+     */
+    public void setOverview() {
+        // Total animes watched
+        int count = entries.size();
+        binding.tvCount.setText(String.format(Locale.getDefault(), "%d", count));
+
+        // Average rating
+        double sumRating = 0;
+        for (Entry entry: entries) sumRating += entry.getRating();
+        double rating = sumRating / count;
+        binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", rating));
+
+        // Animes watched this year and average rating this year
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        String recentCountText = "";
+        String recentRatingText = "";
+        if (yearToList.containsKey(currentYear)) {
+            List<Entry> recentEntries = yearToList.get(currentYear);
+            double sumRecentRating = 0;
+            for (Entry entry: recentEntries) sumRecentRating += entry.getRating();
+            recentCountText = recentEntries.size() + "";
+            recentRatingText = sumRecentRating / recentEntries.size() + "";
+        } else {
+            recentCountText = "0";
+            recentRatingText = "n/a";
+        }
+        binding.tvRecentCount.setText(recentCountText);
+        binding.tvRecentRating.setText(recentRatingText);
+    }
+
+    /* 2. Activity (Line Chart) - year vs. entry count */
+    public void setChartActivity() {
+        // Create data points
         List<com.github.mikephil.charting.data.Entry> chartEntries = new ArrayList<>();
-        for (Integer year: yearToList.keySet()) {
-            int entryCount = yearToList.get(year).size();
-            System.out.println("test: " + year + " " + entryCount);
+        List<Integer> years = new ArrayList<>(yearToList.keySet());
+        Collections.sort(years);
+        List<Integer> yValues = new ArrayList<>();
+        for (Integer year = years.get(0); year <= years.get(years.size() - 1); year++) {
+            int entryCount = yearToList.containsKey(year)? yearToList.get(year).size(): 0;
             chartEntries.add(new com.github.mikephil.charting.data.Entry(year, entryCount));
+            yValues.add(entryCount);
         }
 
-        chartEntries.sort((e1, e2) -> (Double.compare(e1.getX(), e2.getX())));
-        System.out.println("total count: " + count);
-        System.out.println("avg rating: " + averageRating);
+        // Turn the points into a data set
+        chartEntries.sort((e1, e2) -> (Double.compare(e1.getX(), e2.getX()))); // Sort chronologically
+        LineDataSet dataSet = new LineDataSet(chartEntries, "Animes Watched");
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.theme));
+        dataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.theme));
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.theme));
+        dataSet.setDrawCircleHole(false);
+        dataSet.setValueTextSize(12f);
+        dataSet.setLineWidth(3f);
+        dataSet.setCircleRadius(5f);
+        dataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
 
-        LineDataSet dataSet = new LineDataSet(chartEntries, "Num Watched"); // add entries to dataset
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.white));
-        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.white));
-        dataSet.setValueTextSize(16);
-
-
+        // Create a line chart
         LineData lineData = new LineData(dataSet);
-        binding.chart.setData(lineData);
-        binding.chart.getLegend().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-        binding.chart.getXAxis().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
-        binding.chart.getXAxis().setTextSize(16);
-        binding.chart.getXAxis().setLabelCount(10, true);
-        binding.chart.getXAxis().setAxisMaximum(2021);
-        binding.chart.getXAxis().setAxisMinimum(2012);
-        binding.chart.invalidate(); // refresh
+        binding.chartActivity.setData(lineData);
+
+        // Customize x-axis
+        XAxis xAxis = binding.chartActivity.getXAxis();
+        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAxisMinimum(chartEntries.get(0).getX());
+        xAxis.setGridLineWidth(2f);
+        xAxis.setGranularity(1f);
+
+        // Customize y-axis
+        binding.chartActivity.getAxisRight().setDrawLabels(false);
+        binding.chartActivity.getAxisRight().setDrawGridLines(false);
+        YAxis yAxis = binding.chartActivity.getAxisLeft();
+        yAxis.setGridLineWidth(2f);
+        yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        yAxis.setAxisMinimum(0);
+        yAxis.setAxisMaximum(Collections.max(yValues) + 1);
+
+        // Customize overall
+        binding.chartActivity.getDescription().setEnabled(false);
+        binding.chartActivity.getLegend().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+        // Interaction
+        binding.chartActivity.setTouchEnabled(true);
+        binding.chartActivity.setDragEnabled(true);
+        binding.chartActivity.setScaleEnabled(false);
+        binding.chartActivity.setPinchZoom(true);
+        binding.chartActivity.setDoubleTapToZoomEnabled(true);
+        binding.chartActivity.invalidate(); // refresh
     }
 
     @Override
