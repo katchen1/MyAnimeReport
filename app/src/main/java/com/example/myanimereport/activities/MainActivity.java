@@ -1,6 +1,8 @@
 package com.example.myanimereport.activities;
 
 import android.os.Bundle;
+import android.view.View;
+
 import com.example.myanimereport.R;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -18,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Hide status bar
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();

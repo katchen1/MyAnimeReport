@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.R;
@@ -27,8 +28,15 @@ public class AnimeDetailsActivity extends AppCompatActivity {
         binding = ActivityAnimeDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Hide status bar
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+        // Hide action bar
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
+
         // Fill in anime's info
         Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
+        Glide.with(this).load(anime.getBannerImage()).into(binding.ivBanner);
         Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
         binding.tvTitle.setText(anime.getTitleEnglish());
         binding.tvYear.setText(String.format(Locale.getDefault(), "%d", anime.getSeasonYear()));
@@ -36,6 +44,13 @@ public class AnimeDetailsActivity extends AppCompatActivity {
         binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
         binding.tvDescription.setText(anime.getDescription());
         binding.cvAnime.setStrokeColor(anime.getColor());
+
+        binding.nestedScrollView.post(() -> {
+            int targetPosition = binding.ivBanner.getHeight() - binding.appBar.getHeight();
+            binding.nestedScrollView.smoothScrollTo(0, targetPosition);
+        });
+
+        //binding.nestedScrollView.scrollTo(0, binding.tvDescription.getBottom());
 
         // Fill in genres chip group
         ChipGroup cgGenres = binding.cgGenres;
