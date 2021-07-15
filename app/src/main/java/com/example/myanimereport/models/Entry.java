@@ -1,21 +1,14 @@
 package com.example.myanimereport.models;
 
-import android.content.Context;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
-import com.bumptech.glide.Glide;
 import com.example.MediaDetailsByIdQuery;
-import com.example.myanimereport.databinding.ItemEntryBinding;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import org.jetbrains.annotations.NotNull;
-import java.util.Locale;
 
 /* Entry (Parse model). */
 @ParseClassName("Entry")
@@ -36,7 +29,6 @@ public class Entry extends ParseObject {
     public Entry(Integer mediaId, Integer monthWatched, Integer yearWatched, Double rating, String note) {
         setUser(ParseUser.getCurrentUser());
         setMediaId(mediaId);
-        //setAnime();
         setMonthWatched(monthWatched);
         setYearWatched(yearWatched);
         setRating(rating);
@@ -49,6 +41,7 @@ public class Entry extends ParseObject {
     }
 
     public void setAnime() {
+        System.out.println("SET ANIME");
         ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
                 @Override

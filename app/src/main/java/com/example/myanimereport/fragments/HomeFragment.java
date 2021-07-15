@@ -114,8 +114,6 @@ public class HomeFragment extends Fragment {
         if (requestCode == NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // A new entry was created, add it to the front of the list
             Entry entry = data.getParcelableExtra("entry");
-            Anime anime = Parcels.unwrap(data.getParcelableExtra("anime"));
-            entry.setAnime(anime);
             entries.add(0, entry);
             adapter.notifyItemInserted(0);
             binding.rvEntries.smoothScrollToPosition(0); // Scroll to the top to see the new entry
@@ -129,7 +127,6 @@ public class HomeFragment extends Fragment {
                 Entry entry = data.getParcelableExtra("entry");
                 entries.set(position, entry);
                 adapter.notifyItemChanged(position);
-                entry.setAnime();
             } else {
                 // Entry deleted
                 entries.remove(position);
