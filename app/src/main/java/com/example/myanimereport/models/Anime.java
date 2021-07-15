@@ -7,10 +7,13 @@ import com.example.MediaDetailsByIdQuery;
 import com.example.fragment.MediaFragment;
 import com.example.myanimereport.R;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /* A media object from the AniList API. */
+@Parcel
 public class Anime {
     private Integer mediaId; // Unique id for the anime in the AniList database
     private String titleEnglish; // The official English title
@@ -23,6 +26,7 @@ public class Anime {
     private String bannerImage; // URL of the banner image of the media
     private List<String> genres; // List of genres of the media
     private String color; // Primary color of the cover image
+    private Integer episodes; // Number of episodes
 
     /* Default constructor. */
     public Anime() {
@@ -41,12 +45,13 @@ public class Anime {
         genres.add("drama");
         genres.add("science fiction");
         color = "#000000";
+        episodes = 1000;
     }
 
     /* Alternative constructor. */
     public Anime(Integer mediaId, String titleEnglish, String titleRomaji, String titleNative,
                  String description, Double averageScore, Integer seasonYear, String coverImage,
-                 String bannerImage, List<String> genres, String color) {
+                 String bannerImage, List<String> genres, String color, Integer episodes) {
         this.mediaId = mediaId;
         this.titleEnglish = titleEnglish;
         this.titleRomaji = titleRomaji;
@@ -58,6 +63,7 @@ public class Anime {
         this.bannerImage = bannerImage;
         this.genres = genres;
         this.color = color;
+        this.episodes = episodes;
     }
 
     /* Alternative constructor (from GraphQL response object). */
@@ -68,12 +74,15 @@ public class Anime {
         this.titleRomaji = media.title().romaji();
         this.titleNative = media.title().native_();
         this.description = media.description();
-        this.averageScore = media.averageScore() / 10.0;
+        if (media.averageScore() != null) {
+            this.averageScore = media.averageScore() / 10.0;
+        }
         this.seasonYear = media.seasonYear();
         this.coverImage = media.coverImage().extraLarge();
         this.bannerImage = media.bannerImage();
         this.genres = media.genres();
         this.color = media.coverImage().color();
+        this.episodes = media.episodes();
     }
 
     /* Getters. */
@@ -115,5 +124,9 @@ public class Anime {
 
     public Integer getColor() {
         return color != null? Color.parseColor(color): Color.parseColor("#EEEEEE");
+    }
+
+    public Integer getEpisodes() {
+        return episodes;
     }
 }

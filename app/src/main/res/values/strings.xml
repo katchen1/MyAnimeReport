@@ -27,4 +27,11 @@
     <string name="save">Save</string>
     <string name="no_results_found">No results found.</string>
     <string name="entry_details">Entry Details</string>
+    <string name="add_entry">Add Entry</string>
+    <string name="edit_entry">Edit Entry</string>
+    <string name="delete_question">Delete?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="anime_details">Anime Details</string>
+    <string name="no_data_on_episodes">No data on episodes</string>
 </resources>

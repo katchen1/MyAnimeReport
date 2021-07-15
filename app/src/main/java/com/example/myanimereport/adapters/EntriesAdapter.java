@@ -1,5 +1,6 @@
 package com.example.myanimereport.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import com.apollographql.apollo.ApolloCall;
@@ -20,6 +22,7 @@ import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
 
@@ -90,6 +93,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
                         // View editing needs to happen in the main thread, not the background thread
                         ParseApplication.currentActivity.runOnUiThread(() -> {
                             Anime anime = new Anime(response);
+                            entry.setAnime(anime);
                             loadAnimeData(anime);
                         });
                     }
@@ -111,10 +115,24 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         /* When the entry card is clicked, expand it to show its full information. */
         @Override
         public void onClick(View v) {
+            // Check if anime data has been set
+            Entry entry = entries.get(getAdapterPosition());
+            if (entry.getAnime() == null) {
+                entry.setAnime();
+                return;
+            }
+
+            // Navigate to the entry details activity
             Intent intent = new Intent(context, EntryDetailsActivity.class);
-            intent.putExtra("entry", entries.get(getAdapterPosition())); // Pass in the entry
+            intent.putExtra("entry", entry); // Pass in the entry
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
-            fragment.startActivityForResult(intent, HomeFragment.VIEW_ENTRY_REQUEST_CODE);
+            intent.putExtra("anime", Parcels.wrap(entry.getAnime())); // Pass in the entry's anime
+
+            // Animate the transition
+            Activity activity = ParseApplication.currentActivity;
+            ActivityOptionsCompat options = ActivityOptionsCompat
+                    .makeSceneTransitionAnimation(activity, binding.cvEntry, "card");
+            fragment.startActivityForResult(intent, HomeFragment.VIEW_ENTRY_REQUEST_CODE, options.toBundle());
         }
     }
 }

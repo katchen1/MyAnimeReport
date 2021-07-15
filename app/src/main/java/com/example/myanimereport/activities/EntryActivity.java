@@ -18,17 +18,23 @@ import com.example.MediaDetailsByTitleQuery;
 import com.example.fragment.MediaFragment;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
+import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import org.parceler.Parcels;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class EntryActivity extends AppCompatActivity {
 
+    private final String[] months = new DateFormatSymbols().getMonths(); // To convert month string and int
     private ActivityEntryBinding binding;
+    private Integer mode; // 0 for creating a new entry; 1 for editing an existing entry
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
-    private final String[] months = new DateFormatSymbols().getMonths(); // To convert month string and int
+    private Entry entry; // The entry being edited
+    private Anime anime; // The anime of the entry
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +42,43 @@ public class EntryActivity extends AppCompatActivity {
         binding = ActivityEntryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Hide status bar
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
-        // Creating a new entry, mediaId has not been found
-        mediaId = -1;
+        // Set up focus change and click listeners
+        binding.etTitle.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.etNote.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.etRating.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.tvTitle.setOnClickListener(this::tvTitleOnClick);
+
+        // Set up number pickers for month and year
+        setUpNumberPickers();
+
+        // Determine if creating or editing
+        if (!getIntent().hasExtra("entry")) {
+            // Creating a new entry, mediaId has not been found
+            mode = 0;
+            binding.tvToolbar.setText(R.string.add_entry);
+            mediaId = -1;
+        } else {
+            // Editing an existing entry, set the entry to be the one passed in
+            mode = 1;
+            binding.tvToolbar.setText(R.string.edit_entry);
+            entry = getIntent().getParcelableExtra("entry");
+            mediaId = entry.getMediaId();
+
+            // Populate the views
+            anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
+            binding.etTitle.setText(anime.getTitleEnglish());
+            binding.npMonthWatched.setValue(entry.getMonthWatched());
+            binding.npYearWatched.setValue(entry.getYearWatched());
+            binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+            binding.etNote.setText(entry.getNote());
+        }
+
 
         // Add text changed listener to the title search bar
         binding.etTitle.addTextChangedListener(new TextWatcher() {
@@ -55,15 +93,6 @@ public class EntryActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) { }
         });
-
-        // Set up focus change and click listeners
-        binding.etTitle.setOnFocusChangeListener(this::etOnChangeFocus);
-        binding.etNote.setOnFocusChangeListener(this::etOnChangeFocus);
-        binding.etRating.setOnFocusChangeListener(this::etOnChangeFocus);
-        binding.tvTitle.setOnClickListener(this::tvTitleOnClick);
-
-        // Set up number pickers for month and year
-        setUpNumberPickers();
     }
 
     /* When user clicks the suggested title, set the title to the suggested title. */
@@ -182,13 +211,43 @@ public class EntryActivity extends AppCompatActivity {
             return;
         }
 
-        // Create a new entry, save it, and return to the main activity
-        Entry entry = new Entry(mediaId, month, year, Double.parseDouble(rating), note);
+        if (mode == 0) createNewEntry(month, year, Double.parseDouble(rating), note);
+        else updateExistingEntry(month, year, Double.parseDouble(rating), note);
+    }
+
+    /* Creates a new entry, saves it, and return to the home list. */
+    public void createNewEntry(Integer month, Integer year, Double rating, String note) {
+        entry = new Entry(mediaId, month, year, rating, note);
+        entry.setAnime();
         entry.saveInBackground(e -> {
             if (e == null) {
-                Toast.makeText(EntryActivity.this, "Entry saved.", Toast.LENGTH_SHORT).show();
+                // Pass back the entry so it can be inserted in the recycler view
+                Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("entry", entry);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /* Updates an existing entry with the newly filled information. */
+    private void updateExistingEntry(Integer month, Integer year, Double rating, String note) {
+        entry.setMediaId(mediaId);
+        entry.setAnime();
+        entry.setMonthWatched(month);
+        entry.setYearWatched(year);
+        entry.setRating(rating);
+        entry.setNote(note);
+        entry.saveInBackground(e -> {
+            if (e == null) {
+                // Pass back the entry so it can be redrawn in the entry details activity
+                Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra("entry", entry);
+                intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
                 setResult(RESULT_OK, intent);
                 finish();
             } else {

@@ -12,25 +12,29 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
+import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.utils.EndlessRecyclerViewScrollListener;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    public static final int NEW_ENTRY_REQUEST_CODE = 1;
+    public static final int VIEW_ENTRY_REQUEST_CODE = 2;
+
     private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
     private List<Entry> entries;
     private EntriesAdapter adapter;
-    public static final int NEW_ENTRY_REQUEST_CODE = 1;
-    public static final int VIEW_ENTRY_REQUEST_CODE = 2;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -50,6 +54,10 @@ public class HomeFragment extends Fragment {
         binding.rvEntries.setLayoutManager(layoutManager);
         binding.rvEntries.setAdapter(adapter);
 
+        // Remove the default on-change animations of the recycler view
+        SimpleItemAnimator animator = (SimpleItemAnimator) binding.rvEntries.getItemAnimator();
+        if (animator != null) animator.setSupportsChangeAnimations(false);
+
         // Button listeners
         binding.btnLogOut.setOnClickListener(this::logOutOnClick);
         binding.btnCreate.setOnClickListener(this::createOnClick);
@@ -66,11 +74,11 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    /* Queries the entries 20 at a time. Skips the first skip items. */
+    /* Queries the entries 10 at a time. Skips the first skip items. */
     public void queryEntries(int skip) {
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
-        query.setLimit(20); // Limit query to 20 items
+        query.setLimit(10); // Limit query to 10 items
         query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
         query.addDescendingOrder("createdAt"); // Order posts by creation date
         query.findInBackground((entriesFound, e) -> { // Start async query for entries
@@ -81,10 +89,7 @@ public class HomeFragment extends Fragment {
             }
 
             // Add entries to the recycler view and notify its adapter of new data
-            for (Entry entry: entriesFound) {
-                entry.setAnime();
-                entries.add(entry);
-            }
+            entries.addAll(entriesFound);
             adapter.notifyDataSetChanged();
         });
     }
@@ -107,8 +112,26 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            entries.add(0, data.getParcelableExtra("entry"));
+            // A new entry was created, add it to the front of the list
+            Entry entry = data.getParcelableExtra("entry");
+            entries.add(0, entry);
             adapter.notifyItemInserted(0);
+            binding.rvEntries.smoothScrollToPosition(0); // Scroll to the top to see the new entry
+        }
+
+        if (requestCode == VIEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // Returning from an entry details activity
+            int position = data.getIntExtra("position", -1);
+            if (data.hasExtra("entry")) {
+                // Entry updated
+                Entry entry = data.getParcelableExtra("entry");
+                entries.set(position, entry);
+                adapter.notifyItemChanged(position);
+            } else {
+                // Entry deleted
+                entries.remove(position);
+                adapter.notifyItemRemoved(position);
+            }
         }
     }
 
