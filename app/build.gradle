@@ -61,4 +61,7 @@ dependencies {
 
     // GraphQL
     implementation("com.apollographql.apollo:apollo-runtime:2.5.9")
+
+    // Charts
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
