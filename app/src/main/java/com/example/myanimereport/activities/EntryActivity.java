@@ -218,6 +218,7 @@ public class EntryActivity extends AppCompatActivity {
     /* Creates a new entry, saves it, and return to the home list. */
     public void createNewEntry(Integer month, Integer year, Double rating, String note) {
         entry = new Entry(mediaId, month, year, rating, note);
+        entry.setAnime();
         entry.saveInBackground(e -> {
             if (e == null) {
                 // Pass back the entry so it can be inserted in the recycler view
