@@ -1,5 +1,6 @@
 package com.example.myanimereport.fragments;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.CustomMarkerView;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -33,12 +35,14 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 /* Charts I want to include:
  * 1. Overview [Score Cards]
@@ -101,6 +105,7 @@ public class ReportFragment extends Fragment {
             setChartActivity();
             setChartGenre();
             setChartGenrePref();
+            setGenreBreakdownByYear();
         }
     }
 
@@ -286,7 +291,6 @@ public class ReportFragment extends Fragment {
         binding.chartGenrePref.getAxisLeft().setDrawGridLines(false);
 
         YAxis yAxis = binding.chartGenrePref.getAxisRight();
-        yAxis.setAxisMaximum(10);
 
         XAxis xAxis = binding.chartGenrePref.getXAxis();
         xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
@@ -298,6 +302,84 @@ public class ReportFragment extends Fragment {
         binding.chartGenrePref.invalidate();
     }
 
+    /* Genres breakdown by year [Stacked Bar] - year vs. num anime in each genre */
+    public void setGenreBreakdownByYear() {
+        BarChart chart = binding.chartGenreBreakdown;
+        //chart.setOnChartValueSelectedListener(this);
+
+        chart.getDescription().setEnabled(false);
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+
+        for (int yr = 2012; yr <= 2021; yr++) { // replace this later
+            float[] yVals = new float[genreToList.keySet().size()];
+            int i = 0;
+            for (String genre: genreToList.keySet()) {
+                int genreCount = 0;
+                if (yearToList.containsKey(yr)) {
+                    for (Entry entry: yearToList.get(yr)) {
+                        if (entry.getAnime().getGenres().contains(genre)) {
+                            genreCount++;
+                        }
+                    }
+                }
+                yVals[i++] = genreCount;
+            }
+            barEntries.add(new BarEntry(yr, yVals, genreToList.keySet()));
+        }
+
+        BarDataSet set;
+        set = new BarDataSet(barEntries, "Animes Watched");
+        set.setDrawIcons(false);
+        List<Integer> colors = new ArrayList<>();
+        int i = 0;
+        for (String genre: genreToList.keySet()) {
+            colors.add(ColorTemplate.MATERIAL_COLORS[i%4]);
+            i++;
+        }
+        set.setColors(colors);
+        set.setStackLabels(genreToList.keySet().toArray(new String[0]));
+        set.setDrawValues(false);
+        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+        dataSets.add(set);
+
+        BarData data = new BarData(dataSets);
+        data.setValueTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+        Legend l = chart.getLegend();
+        l.setDrawInside(false);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setWordWrapEnabled(true);
+        l.setXEntrySpace(8f);
+        l.setYEntrySpace(3f);
+        l.setYOffset(3f);
+
+
+        chart.setData(data);
+        chart.setFitBars(true);
+
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        xAxis.setDrawGridLines(false);
+
+        YAxis yAxisL = chart.getAxisLeft();
+        YAxis yAxisR = chart.getAxisRight();
+        yAxisR.setDrawGridLines(false);
+        yAxisR.setDrawLabels(false);
+        yAxisL.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        yAxisL.setAxisMinimum(0);
+
+        // Custom marker
+        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout, 3);
+        mv.setChartView(chart);
+        chart.setMarker(mv);
+        chart.getLegend().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        chart.animateXY(2000, 2000);
+        chart.invalidate();
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
