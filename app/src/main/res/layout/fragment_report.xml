@@ -12,9 +12,10 @@
         android:layout_height="match_parent"
         android:overScrollMode="never">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvOverview"
@@ -95,7 +96,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_below="@id/llOverview1"
                 android:weightSum="2">
 
                 <LinearLayout
@@ -159,7 +159,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginVertical="10dp"
-                android:layout_below="@id/llOverview2"
                 android:text="@string/activity"
                 android:textColor="@color/white"
                 android:textSize="22sp"
@@ -169,8 +168,24 @@
                 android:id="@+id/chartActivity"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:layout_below="@id/tvActivity"
                 android:layout_margin="10dp"/>
-        </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvGenre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:text="@string/genre"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chartGenre"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginHorizontal="10dp"/>
+        </LinearLayout>
     </ScrollView>
 </RelativeLayout>
