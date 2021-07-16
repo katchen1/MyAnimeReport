@@ -42,4 +42,6 @@
     <string name="overview">Overview</string>
     <string name="activity">Activity</string>
     <string name="genre">Genre</string>
+    <string name="top_5">Top 5</string>
+    <string name="genre_preference">Genre Preference</string>
 </resources>
