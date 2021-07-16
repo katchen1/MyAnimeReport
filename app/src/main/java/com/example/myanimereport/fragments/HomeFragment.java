@@ -17,13 +17,11 @@ import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
-import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
+import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.EndlessRecyclerViewScrollListener;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import org.parceler.Parcels;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -48,7 +46,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set up adapter and layout of recycler view
-        entries = new ArrayList<>();
+        entries = ParseApplication.entries;
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         adapter = new EntriesAdapter(this, entries);
         binding.rvEntries.setLayoutManager(layoutManager);
@@ -89,7 +87,10 @@ public class HomeFragment extends Fragment {
             }
 
             // Add entries to the recycler view and notify its adapter of new data
-            entries.addAll(entriesFound);
+            for (Entry entry: entriesFound) {
+                entry.setAnime();
+                entries.add(entry);
+            }
             adapter.notifyDataSetChanged();
         });
     }
