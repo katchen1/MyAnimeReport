@@ -41,4 +41,5 @@
     <string name="average_rating_this_year">Average Rating This Year</string>
     <string name="overview">Overview</string>
     <string name="activity">Activity</string>
+    <string name="genre">Genre</string>
 </resources>

@@ -11,11 +11,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+import com.example.MediaDetailsByIdQuery;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.FragmentReportBinding;
+import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
+import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.CustomMarkerView;
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -23,6 +31,9 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -74,7 +85,28 @@ public class ReportFragment extends Fragment {
                 Log.e(TAG, "Error when getting entries.", e);
                 return;
             }
-            entries.addAll(entriesFound);
+            for (Entry entry: entriesFound) {
+                ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(entry.getMediaId())).enqueue(
+                    new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
+                        @Override
+                        public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
+                            Anime anime = new Anime(response);
+                            for (String genre: anime.getGenres()) {
+                                if (!genreToList.containsKey(genre)) {
+                                    genreToList.put(genre, new ArrayList<>());
+                                }
+                                genreToList.get(genre).add(entry);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull ApolloException e) {
+                            Log.e("Apollo", e.getMessage());
+                        }
+                    }
+                );
+                entries.add(entry);
+            }
             setCharts();
         });
     }
@@ -104,6 +136,7 @@ public class ReportFragment extends Fragment {
 
         setOverview();
         setChartActivity();
+        setChartGenre();
     }
 
     /* 1. Overview [Score Cards]
@@ -141,7 +174,7 @@ public class ReportFragment extends Fragment {
         binding.tvRecentRating.setText(recentRatingText);
     }
 
-    /* 2. Activity (Line Chart) - year vs. entry count */
+    /* 3. Activity (Line Chart) - year vs. entry count */
     public void setChartActivity() {
         // Create data points
         List<com.github.mikephil.charting.data.Entry> chartEntries = new ArrayList<>();
@@ -209,6 +242,30 @@ public class ReportFragment extends Fragment {
 
         // Refresh
         binding.chartActivity.invalidate();
+    }
+
+    /* 4. Genres breakdown by year [Stacked Bar] - year vs. num anime in each genre. */
+    public void setChartGenre() {
+        // Create data points
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+
+        // Create data set
+        PieDataSet pieDataSet = new PieDataSet(pieEntries,"Genre");
+        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        pieDataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        pieDataSet.setValueTextSize(16);
+
+
+        PieData pieData = new PieData(pieDataSet);
+        binding.chartGenre.setData(pieData);
+        Legend legend = binding.chartGenre.getLegend();
+        legend.setTextSize(13);
+        legend.setDrawInside(false);
+        legend.setTextColor(getResources().getColor(R.color.white));
+        legend.setWordWrapEnabled(true);
+        binding.chartGenre.animateXY(2000,2000);
+        binding.chartGenre.invalidate();
     }
 
     @Override
