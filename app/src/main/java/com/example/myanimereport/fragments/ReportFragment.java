@@ -1,9 +1,7 @@
 package com.example.myanimereport.fragments;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,34 +9,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
-import com.example.MediaDetailsByIdQuery;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.FragmentReportBinding;
-import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.CustomMarkerView;
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -47,14 +33,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/* Charts I want to include:
+ * 1. Overview [Score Cards]
+ *   1A. Total watched
+ *   1B. Average rating
+ *   1C. Watched this year (compared to last year)
+ *   1D. Avg rating this year (compared to last year)
+ * 2. Top 5
+ * 3. Activity [Line Chart] - year vs. entry count
+ * 4. Genres breakdown by year [Stacked Bar] - year vs. num anime in each genre
+ * 5. Demographics [Pie]
+ * 6. Genres [Pie]
+ * 7. Genre Preference [Bar] - genre vs. average rating
+ */
 public class ReportFragment extends Fragment {
 
     private final String TAG = "ReportFragment";
     private FragmentReportBinding binding;
-    List<Entry> entries;
-
-    Map<Integer, List<Entry>> yearToList;
-    Map<String, List<Entry>> genreToList;
+    private List<Entry> entries;
+    private Map<Integer, List<Entry>> yearToList; // Organize the entries by year
+    private Map<String, List<Entry>> genreToList; // Organize the entries by genre
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -66,85 +64,39 @@ public class ReportFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        entries = new ArrayList<>();
+    }
+
+    /* When the report tab is clicked, regenerate the charts. */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) return;
+        entries = ParseApplication.entries;
+
+        // Generate the maps
         yearToList = new HashMap<>();
         genreToList = new HashMap<>();
-        queryEntries(0);
-    }
-
-    /* Queries the entries 10 at a time. Skips the first skip items. */
-    public void queryEntries(int skip) {
-        ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
-        query.setSkip(skip); // Skip the first skip items
-        query.setLimit(10); // Limit query to 10 items
-        query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
-        query.addDescendingOrder("createdAt"); // Order posts by creation date
-        query.findInBackground((entriesFound, e) -> {
-            // Check for errors
-            if (e != null) {
-                Log.e(TAG, "Error when getting entries.", e);
-                return;
-            }
-            for (Entry entry: entriesFound) {
-                ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(entry.getMediaId())).enqueue(
-                    new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
-                        @Override
-                        public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
-                            Anime anime = new Anime(response);
-                            for (String genre: anime.getGenres()) {
-                                if (!genreToList.containsKey(genre)) {
-                                    genreToList.put(genre, new ArrayList<>());
-                                }
-                                genreToList.get(genre).add(entry);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull ApolloException e) {
-                            Log.e("Apollo", e.getMessage());
-                        }
-                    }
-                );
-                entries.add(entry);
-            }
-            setCharts();
-        });
-    }
-
-    /* Charts I want to include:
-     * 1. Overview [Score Cards]
-     *   1A. Total watched
-     *   1B. Average rating
-     *   1C. Watched this year (compared to last year)
-     *   1D. Avg rating this year (compared to last year)
-     * 2. Top 5
-     * 3. Activity [Line Chart] - year vs. entry count
-     * 4. Genres breakdown by year [Stacked Bar] - year vs. num anime in each genre
-     * 5. Demographics [Pie]
-     * 6. Genres [Pie]
-     * 7. Genre Preference [Bar] - genre vs. average rating
-     */
-    private void setCharts() {
-        // Set up maps
         for (Entry entry: entries) {
+            // Year to entries map
             Integer year = entry.getYearWatched();
-            if (!yearToList.containsKey(year)) {
-                yearToList.put(year, new ArrayList<>());
-            }
+            if (!yearToList.containsKey(year)) yearToList.put(year, new ArrayList<>());
             yearToList.get(year).add(entry);
-        }
 
-        setOverview();
-        setChartActivity();
-        setChartGenre();
+            // Genre to entries map
+            List<String> genres = entry.getAnime().getGenres();
+            for (String genre: genres) {
+                if (!genreToList.containsKey(genre)) genreToList.put(genre, new ArrayList<>());
+                genreToList.get(genre).add(entry);
+            }
+
+            // Generate the charts
+            setOverview();
+            setChartActivity();
+            setChartGenre();
+        }
     }
 
-    /* 1. Overview [Score Cards]
-     *   1A. Total watched
-     *   1B. Average rating
-     *   1C. Watched this year (compared to last year)
-     *   1D. Avg rating this year (compared to last year)
-     */
+    /* 1. Overview [Score Cards] */
     public void setOverview() {
         // Total animes watched
         int count = entries.size();
@@ -241,6 +193,7 @@ public class ReportFragment extends Fragment {
         binding.chartActivity.setDoubleTapToZoomEnabled(false);
 
         // Refresh
+        binding.chartActivity.animateXY(2000,2000);
         binding.chartActivity.invalidate();
     }
 
@@ -248,14 +201,24 @@ public class ReportFragment extends Fragment {
     public void setChartGenre() {
         // Create data points
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        for (String genre: genreToList.keySet()) {
+            pieEntries.add(new PieEntry(genreToList.get(genre).size(),  genre));
+        }
 
         // Create data set
         PieDataSet pieDataSet = new PieDataSet(pieEntries,"Genre");
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         pieDataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-        pieDataSet.setValueTextSize(16);
+        pieDataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        pieDataSet.setDrawValues(false);
+        pieDataSet.setSelectionShift(50);
+        pieDataSet.setValueLineColor(ContextCompat.getColor(getContext(), R.color.white));
 
+        // Custom marker
+        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout);
+        mv.setChartView(binding.chartGenre);
+        binding.chartGenre.setMarker(mv);
 
         PieData pieData = new PieData(pieDataSet);
         binding.chartGenre.setData(pieData);
@@ -265,6 +228,23 @@ public class ReportFragment extends Fragment {
         legend.setTextColor(getResources().getColor(R.color.white));
         legend.setWordWrapEnabled(true);
         binding.chartGenre.animateXY(2000,2000);
+        binding.chartGenre.getLegend().setEnabled(false);
+        binding.chartGenre.getDescription().setEnabled(false);
+        binding.chartGenre.setHoleColor(ContextCompat.getColor(getContext(), R.color.dark_gray));
+
+        binding.chartGenre.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(com.github.mikephil.charting.data.Entry e, Highlight h) {
+                mv.refreshContent(e, h);
+                //binding.chartGenre.getOnTouchListener().setLastHighlighted(null);
+                binding.chartGenre.highlightValues(null);
+            }
+
+            @Override
+            public void onNothingSelected() {
+                binding.chartGenre.highlightValues(null);
+            }
+        });
         binding.chartGenre.invalidate();
     }
 
