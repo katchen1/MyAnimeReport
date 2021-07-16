@@ -14,15 +14,22 @@ import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.CustomMarkerView;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
@@ -93,10 +100,11 @@ public class ReportFragment extends Fragment {
             setOverview();
             setChartActivity();
             setChartGenre();
+            setChartGenrePref();
         }
     }
 
-    /* 1. Overview [Score Cards] */
+    /* Overview [Score Cards] */
     public void setOverview() {
         // Total animes watched
         int count = entries.size();
@@ -126,7 +134,7 @@ public class ReportFragment extends Fragment {
         binding.tvRecentRating.setText(recentRatingText);
     }
 
-    /* 3. Activity (Line Chart) - year vs. entry count */
+    /* Activity (Line Chart) - year vs. entry count */
     public void setChartActivity() {
         // Create data points
         List<com.github.mikephil.charting.data.Entry> chartEntries = new ArrayList<>();
@@ -180,7 +188,7 @@ public class ReportFragment extends Fragment {
         binding.chartActivity.getLegend().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
         // Custom marker
-        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout);
+        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout, 0);
         mv.setChartView(binding.chartActivity);
         binding.chartActivity.setMarker(mv);
 
@@ -197,7 +205,7 @@ public class ReportFragment extends Fragment {
         binding.chartActivity.invalidate();
     }
 
-    /* 4. Genres breakdown by year [Stacked Bar] - year vs. num anime in each genre. */
+    /* Genre [Pie] */
     public void setChartGenre() {
         // Create data points
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
@@ -212,11 +220,10 @@ public class ReportFragment extends Fragment {
         pieDataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         pieDataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.white));
         pieDataSet.setDrawValues(false);
-        pieDataSet.setSelectionShift(50);
         pieDataSet.setValueLineColor(ContextCompat.getColor(getContext(), R.color.white));
 
         // Custom marker
-        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout);
+        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout, 1);
         mv.setChartView(binding.chartGenre);
         binding.chartGenre.setMarker(mv);
 
@@ -231,21 +238,64 @@ public class ReportFragment extends Fragment {
         binding.chartGenre.getLegend().setEnabled(false);
         binding.chartGenre.getDescription().setEnabled(false);
         binding.chartGenre.setHoleColor(ContextCompat.getColor(getContext(), R.color.dark_gray));
-
-        binding.chartGenre.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(com.github.mikephil.charting.data.Entry e, Highlight h) {
-                mv.refreshContent(e, h);
-                //binding.chartGenre.getOnTouchListener().setLastHighlighted(null);
-                binding.chartGenre.highlightValues(null);
-            }
-
-            @Override
-            public void onNothingSelected() {
-                binding.chartGenre.highlightValues(null);
-            }
-        });
         binding.chartGenre.invalidate();
+    }
+
+    /* Genre Preference [Bar] - genre vs. average rating */
+    private void setChartGenrePref() {
+        binding.chartGenrePref.getDescription().setEnabled(false);
+
+        // Create data set
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        int count = 0;
+        ArrayList<String> xAxisLabels = new ArrayList<>();
+        ArrayList<Float> yValues = new ArrayList<>();
+        for (String genre: genreToList.keySet()) {
+            // Calculate average rating
+            float sumRating = 0;
+            for (Entry entry: genreToList.get(genre)) {
+                sumRating += entry.getRating();
+            }
+            float avgRating = sumRating / genreToList.get(genre).size();
+            barEntries.add(new BarEntry(count, avgRating, genre));
+            yValues.add(avgRating);
+            count++;
+            xAxisLabels.add(genre);
+        }
+
+        BarDataSet dataSet = new BarDataSet(barEntries, "Average Rating");
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.theme));
+        dataSet.setDrawValues(false);
+
+        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+        dataSets.add(dataSet);
+
+        BarData data = new BarData(dataSets);
+
+        // Custom marker
+        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout, 2);
+        mv.setChartView(binding.chartGenrePref);
+        binding.chartGenrePref.setMarker(mv);
+
+        data.setValueTextSize(12f);
+        binding.chartGenrePref.setData(data);
+        binding.chartGenrePref.getLegend().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        binding.chartGenrePref.getXAxis().setDrawGridLines(false);
+        binding.chartGenrePref.getAxisRight().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        binding.chartGenrePref.getAxisLeft().setDrawLabels(false);
+        binding.chartGenrePref.getAxisLeft().setDrawGridLines(false);
+
+        YAxis yAxis = binding.chartGenrePref.getAxisRight();
+        yAxis.setAxisMaximum(10);
+
+        XAxis xAxis = binding.chartGenrePref.getXAxis();
+        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabels));
+        xAxis.setLabelCount(genreToList.keySet().size());
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        binding.chartGenrePref.animateXY(2000, 2000);
+        binding.chartGenrePref.invalidate();
     }
 
     @Override
