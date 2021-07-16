@@ -123,6 +123,13 @@
                         android:text="@string/animes_watched_this_year"
                         android:textSize="14sp"
                         android:textColor="@color/white" />
+
+                    <TextView
+                        android:id="@+id/tvCountCompare"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -150,6 +157,13 @@
                         android:text="@string/average_rating_this_year"
                         android:textSize="14sp"
                         android:textColor="@color/white" />
+
+                    <TextView
+                        android:id="@+id/tvRatingCompare"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -164,60 +178,87 @@
                 android:textSize="22sp"
                 android:textStyle="bold"/>
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/chartActivity"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginHorizontal="20dp"/>
+                <LinearLayout
+                    android:id="@+id/llActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvGenre"
-                android:layout_width="wrap_content"
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chartActivity"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginHorizontal="20dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llGenre"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginVertical="10dp"
-                android:text="@string/genre"
-                android:textColor="@color/white"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvGenre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:text="@string/genre"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
 
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/chartGenre"
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/chartGenre"
+                    android:layout_width="match_parent"
+                    android:layout_height="230dp"
+                    android:layout_marginHorizontal="20dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llGenrePref"
                 android:layout_width="match_parent"
-                android:layout_height="230dp"
-                android:layout_marginHorizontal="20dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginVertical="10dp"
-                android:text="@string/genre_preference"
-                android:textColor="@color/white"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
+                android:orientation="vertical">
 
-            <com.github.mikephil.charting.charts.HorizontalBarChart
-                android:id="@+id/chartGenrePref"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:text="@string/genre_preference"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <com.github.mikephil.charting.charts.HorizontalBarChart
+                    android:id="@+id/chartGenrePref"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginHorizontal="20dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llGenreBreakdown"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginHorizontal="20dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginVertical="10dp"
-                android:text="@string/genre_breakdown_by_year"
-                android:textColor="@color/white"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
+                android:orientation="vertical">
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/chartGenreBreakdown"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:layout_marginHorizontal="20dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:text="@string/genre_breakdown_by_year"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/chartGenreBreakdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:layout_marginHorizontal="20dp"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/llTop5"
@@ -235,6 +276,10 @@
                     android:textStyle="bold"
                     android:textColor="@color/white"/>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvTop5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

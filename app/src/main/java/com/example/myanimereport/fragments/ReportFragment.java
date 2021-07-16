@@ -6,11 +6,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.example.myanimereport.R;
+import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
@@ -106,6 +112,7 @@ public class ReportFragment extends Fragment {
             setChartGenre();
             setChartGenrePref();
             setGenreBreakdownByYear();
+            setTop5();
         }
     }
 
@@ -125,8 +132,9 @@ public class ReportFragment extends Fragment {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         String recentCountText = "";
         String recentRatingText = "";
+        List<Entry> recentEntries = new ArrayList<>();
         if (yearToList.containsKey(currentYear)) {
-            List<Entry> recentEntries = yearToList.get(currentYear);
+            recentEntries = yearToList.get(currentYear);
             double sumRecentRating = 0;
             for (Entry entry: recentEntries) sumRecentRating += entry.getRating();
             recentCountText = recentEntries.size() + "";
@@ -137,6 +145,55 @@ public class ReportFragment extends Fragment {
         }
         binding.tvRecentCount.setText(recentCountText);
         binding.tvRecentRating.setText(recentRatingText);
+
+        // Comparison to previous year
+        int prevYear = currentYear - 1;
+        String countCompare = "";
+        String ratingCompare = "";
+        List<Entry> prevEntries = new ArrayList<>();
+        if (yearToList.containsKey(prevYear)) {
+            prevEntries = yearToList.get(prevYear);
+            double sumPrevRating = 0;
+            for (Entry entry : prevEntries) sumPrevRating += entry.getRating();
+
+            // Animes watched comparison
+            double countDiff = (recentEntries.size() - prevEntries.size()) / (double) prevEntries.size();
+            if (countDiff > 0) {
+                countCompare = "\u2191 " + countDiff;
+                binding.tvCountCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
+            } else if (countDiff == 0) {
+                countCompare = "\u2195 " + countDiff;
+                binding.tvCountCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+            } else if (countDiff < 0) {
+                countCompare = "\u2193 " + countDiff;
+                binding.tvCountCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
+            }
+
+            // Avg rating comparison
+            if (!binding.tvRecentRating.getText().equals("n/a")) {
+                double prevRating = sumPrevRating / prevEntries.size();
+                double recentRating = Double.parseDouble(binding.tvRecentRating.getText().toString());
+                double ratingDiff = (recentRating - prevRating) / prevRating;
+                System.out.println("recent rating: " + recentRating + " prev rating: " + prevRating);
+                if (ratingDiff > 0) {
+                    ratingCompare = "\u2191 " + ratingDiff;
+                    binding.tvRatingCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.green));
+                } else if (ratingDiff == 0) {
+                    ratingCompare = "\u2195 " + ratingDiff;
+                    binding.tvRatingCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                } else if (ratingDiff < 0) {
+                    ratingCompare = "\u2193 " + ratingDiff;
+                    binding.tvRatingCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
+                }
+            }
+        } else {
+            countCompare = "\u2195 n/a";
+            ratingCompare = "\u2195 n/a";
+            binding.tvCountCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+            binding.tvRatingCompare.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+        }
+        binding.tvCountCompare.setText(countCompare);
+        binding.tvRatingCompare.setText(ratingCompare);
     }
 
     /* Activity (Line Chart) - year vs. entry count */
@@ -380,6 +437,23 @@ public class ReportFragment extends Fragment {
         chart.animateXY(2000, 2000);
         chart.invalidate();
     }
+
+    /* The 5 animes with the highest rating. */
+    private void setTop5() {
+        // Sort by rating (descending) and get the top 5
+        List<Entry> sortedEntries = new ArrayList<>();
+        for (Entry entry: entries) sortedEntries.add(entry);
+        sortedEntries.sort((e1, e2) -> Double.compare(e2.getRating(), e1.getRating()));
+        if (sortedEntries.size() > 5) sortedEntries = sortedEntries.subList(0, 5);
+
+        // Set up adapter and layout of recycler view
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        EntriesAdapter adapter = new EntriesAdapter(this, sortedEntries);
+        binding.rvTop5.setLayoutManager(layoutManager);
+        binding.rvTop5.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
