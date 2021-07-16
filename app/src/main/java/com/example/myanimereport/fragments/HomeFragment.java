@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment {
         // Set up adapter and layout of recycler view
         entries = ParseApplication.entries;
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
-        adapter = new EntriesAdapter(this, entries);
+        adapter = new EntriesAdapter(this, entries, true);
         binding.rvEntries.setLayoutManager(layoutManager);
         binding.rvEntries.setAdapter(adapter);
 
@@ -100,6 +100,7 @@ public class HomeFragment extends Fragment {
         ParseUser.logOut();
         Intent i = new Intent(getContext(), LoginActivity.class);
         startActivity(i);
+        entries.clear();
         if (getActivity() != null) getActivity().finish();
     }
 

@@ -32,12 +32,14 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     private final Fragment fragment;
     private final Context context;
     private final List<Entry> entries;
+    private final boolean editable;
 
     /* Constructor takes the fragment and the list of entries in the recycler view. */
-    public EntriesAdapter(Fragment fragment, List<Entry> entries) {
+    public EntriesAdapter(Fragment fragment, List<Entry> entries, boolean editable) {
         this.fragment = fragment;
         this.context = fragment.getContext();
         this.entries = entries;
+        this.editable = editable;
     }
 
     /* Creates a view holder for the entry. */
@@ -127,6 +129,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
             intent.putExtra("entry", entry); // Pass in the entry
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
             intent.putExtra("anime", Parcels.wrap(entry.getAnime())); // Pass in the entry's anime
+            intent.putExtra("editable", editable);
 
             // Animate the transition
             Activity activity = ParseApplication.currentActivity;
