@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
+import com.example.myanimereport.utils.CustomMarkerView;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -161,9 +162,11 @@ public class ReportFragment extends Fragment {
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.theme));
         dataSet.setDrawCircleHole(false);
         dataSet.setValueTextSize(12f);
-        dataSet.setLineWidth(3f);
-        dataSet.setCircleRadius(5f);
+        dataSet.setLineWidth(1.5f);
+        dataSet.setCircleRadius(4f);
         dataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
+        dataSet.setDrawHighlightIndicators(false);
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.transparent));
 
         // Create a line chart
         LineData lineData = new LineData(dataSet);
@@ -174,14 +177,15 @@ public class ReportFragment extends Fragment {
         xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setAxisMinimum(chartEntries.get(0).getX());
-        xAxis.setGridLineWidth(2f);
+        xAxis.setGridLineWidth(1f);
         xAxis.setGranularity(1f);
 
         // Customize y-axis
         binding.chartActivity.getAxisRight().setDrawLabels(false);
         binding.chartActivity.getAxisRight().setDrawGridLines(false);
         YAxis yAxis = binding.chartActivity.getAxisLeft();
-        yAxis.setGridLineWidth(2f);
+        yAxis.setGridLineWidth(1f);
+        yAxis.setLabelCount(Collections.max(yValues) + 2, true);
         yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
         yAxis.setAxisMinimum(0);
         yAxis.setAxisMaximum(Collections.max(yValues) + 1);
@@ -190,13 +194,21 @@ public class ReportFragment extends Fragment {
         binding.chartActivity.getDescription().setEnabled(false);
         binding.chartActivity.getLegend().setTextColor(ContextCompat.getColor(getContext(), R.color.white));
 
+        // Custom marker
+        CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout);
+        mv.setChartView(binding.chartActivity);
+        binding.chartActivity.setMarker(mv);
+
         // Interaction
         binding.chartActivity.setTouchEnabled(true);
         binding.chartActivity.setDragEnabled(true);
         binding.chartActivity.setScaleEnabled(false);
         binding.chartActivity.setPinchZoom(true);
-        binding.chartActivity.setDoubleTapToZoomEnabled(true);
-        binding.chartActivity.invalidate(); // refresh
+        binding.chartActivity.setHighlightPerTapEnabled(true);
+        binding.chartActivity.setDoubleTapToZoomEnabled(false);
+
+        // Refresh
+        binding.chartActivity.invalidate();
     }
 
     @Override
