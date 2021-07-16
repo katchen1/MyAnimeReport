@@ -44,4 +44,5 @@
     <string name="genre">Genre</string>
     <string name="top_5">Top 5</string>
     <string name="genre_preference">Genre Preference</string>
+    <string name="genre_breakdown_by_year">Genre Breakdown by Year</string>
 </resources>
