@@ -15,18 +15,18 @@ import java.util.List;
 /* A media object from the AniList API. */
 @Parcel
 public class Anime {
-    private Integer mediaId; // Unique id for the anime in the AniList database
-    private String titleEnglish; // The official English title
-    private String titleRomaji; // Romanization of the native language title
-    private String titleNative; // Official title in its native language
-    private String description; // Short description of the media’s story and characters
-    private Double averageScore; // A weighted average score of all the user’s scores of the media
-    private Integer seasonYear; // The season year the media was initially released in
-    private String coverImage; // URL of the cover image of the media
-    private String bannerImage; // URL of the banner image of the media
-    private List<String> genres; // List of genres of the media
-    private String color; // Primary color of the cover image
-    private Integer episodes; // Number of episodes
+    Integer mediaId; // Unique id for the anime in the AniList database
+    String titleEnglish; // The official English title
+    String titleRomaji; // Romanization of the native language title
+    String titleNative; // Official title in its native language
+    String description; // Short description of the media’s story and characters
+    Double averageScore; // A weighted average score of all the user’s scores of the media
+    Integer seasonYear; // The season year the media was initially released in
+    String coverImage; // URL of the cover image of the media
+    String bannerImage; // URL of the banner image of the media
+    List<String> genres; // List of genres of the media
+    String color; // Primary color of the cover image
+    Integer episodes; // Number of episodes
 
     /* Default constructor. */
     public Anime() {
