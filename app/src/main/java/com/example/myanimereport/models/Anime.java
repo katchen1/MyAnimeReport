@@ -85,6 +85,24 @@ public class Anime {
         this.episodes = media.episodes();
     }
 
+    /* Alternative constructor (from MediaFragment). */
+    public Anime(MediaFragment media) {
+        mediaId = media.id();
+        this.titleEnglish = media.title().english();
+        this.titleRomaji = media.title().romaji();
+        this.titleNative = media.title().native_();
+        this.description = media.description();
+        if (media.averageScore() != null) {
+            this.averageScore = media.averageScore() / 10.0;
+        }
+        this.seasonYear = media.seasonYear();
+        this.coverImage = media.coverImage().extraLarge();
+        this.bannerImage = media.bannerImage();
+        this.genres = media.genres();
+        this.color = media.coverImage().color();
+        this.episodes = media.episodes();
+    }
+
     /* Getters. */
     public Integer getMediaId() {
         return mediaId;
