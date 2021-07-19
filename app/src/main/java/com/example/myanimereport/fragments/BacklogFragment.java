@@ -16,10 +16,13 @@ import com.example.myanimereport.adapters.BacklogItemsAdapter;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.Entry;
+import com.example.myanimereport.models.ParseApplication;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,7 +45,7 @@ public class BacklogFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set up adapter and layout of recycler view
-        items = new ArrayList<>();
+        items = ParseApplication.backlogItems;
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         adapter = new BacklogItemsAdapter(getContext(), items);
         binding.rvBacklogItems.setLayoutManager(layoutManager);
@@ -56,13 +59,21 @@ public class BacklogFragment extends Fragment {
         queryBacklogItems(0);
     }
 
+    /* When the backlog tab is clicked, refresh the recycler view. */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) return;
+        adapter.notifyDataSetChanged();
+    }
+
     /* Queries the items 10 at a time. Skips the first skip items. */
     public void queryBacklogItems(int skip) {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
         query.setLimit(10); // Limit query to 10 items
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
-        query.addDescendingOrder("createdAt"); // Order posts by creation date
+        query.addAscendingOrder("createdAt"); // Order posts by creation date
         query.findInBackground((itemsFound, e) -> { // Start async query for entries
             // Check for errors
             if (e != null) {

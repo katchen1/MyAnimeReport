@@ -139,7 +139,8 @@ public class MatchFragment extends Fragment {
             if (e == null) {
                 // Pass back the entry so it can be inserted in the recycler view
                 Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
-
+                item.setAnime(currentAnime);
+                ParseApplication.backlogItems.add(item);
                 generateMatch();
             } else {
                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();

@@ -17,6 +17,7 @@ public class ParseApplication extends Application {
     public static ApolloClient apolloClient;
     public static Activity currentActivity;
     public static List<Entry> entries;
+    public static List<BacklogItem> backlogItems;
 
     @Override
     public void onCreate() {
@@ -39,6 +40,9 @@ public class ParseApplication extends Application {
 
         // List of entries shared between all activity/fragments
         entries = new ArrayList<>();
+
+        // List of backlog items shared between all activities/fragments
+        backlogItems = new ArrayList<>();
 
         // Register callback to keep the current activity updated
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

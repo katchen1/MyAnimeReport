@@ -101,6 +101,7 @@ public class HomeFragment extends Fragment {
         Intent i = new Intent(getContext(), LoginActivity.class);
         startActivity(i);
         entries.clear();
+        ParseApplication.backlogItems.clear();
         if (getActivity() != null) getActivity().finish();
     }
 
