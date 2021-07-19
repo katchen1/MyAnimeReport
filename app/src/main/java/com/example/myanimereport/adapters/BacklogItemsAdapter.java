@@ -12,8 +12,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myanimereport.activities.AnimeDetailsActivity;
+import com.example.myanimereport.activities.BacklogItemDetailsActivity;
 import com.example.myanimereport.activities.EntryDetailsActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
+import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
@@ -88,11 +90,12 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
             }
 
             // Navigate to the anime details activity
-            Intent intent = new Intent(context, AnimeDetailsActivity.class);
+            Intent intent = new Intent(context, BacklogItemDetailsActivity.class);
+            intent.putExtra("item", item); // Pass in the entry
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
-            intent.putExtra("anime", Parcels.wrap(item.getAnime())); // Pass in the anime
-            intent.putExtra("editable", true);
-            fragment.startActivity(intent);
+            intent.putExtra("anime", Parcels.wrap(item.getAnime())); // Pass in the entry's anime
+            fragment.startActivityForResult(intent, BacklogFragment.VIEW_BACKLOG_ITEM_REQUEST_CODE);
+
         }
     }
 }
