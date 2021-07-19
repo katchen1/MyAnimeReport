@@ -47,7 +47,7 @@ public class BacklogFragment extends Fragment {
         // Set up adapter and layout of recycler view
         items = ParseApplication.backlogItems;
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
-        adapter = new BacklogItemsAdapter(getContext(), items);
+        adapter = new BacklogItemsAdapter(this, items);
         binding.rvBacklogItems.setLayoutManager(layoutManager);
         binding.rvBacklogItems.setAdapter(adapter);
 
