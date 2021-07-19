@@ -1,5 +1,6 @@
 package com.example.myanimereport.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -18,11 +19,14 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.example.MediaAllQuery;
 import com.example.myanimereport.R;
+import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
+import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,7 @@ public class MatchFragment extends Fragment {
 
     private FragmentMatchBinding binding;
     private List<Anime> allAnime;
+    private Anime currentAnime; // Anime that's currently shown
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -82,6 +87,7 @@ public class MatchFragment extends Fragment {
     public void generateMatch() {
         Random rand = new Random();
         Anime anime = allAnime.get(rand.nextInt(allAnime.size()));
+        currentAnime = anime;
         Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
         binding.tvTitle.setText(anime.getTitleEnglish());
         binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
@@ -126,8 +132,19 @@ public class MatchFragment extends Fragment {
 
     /* Adds the anime to the user's backlog and generates a new anime. */
     private void accept(View view) {
-        Toast.makeText(requireContext(), "Added to backlog", Toast.LENGTH_SHORT).show();
-        generateMatch();
+        BacklogItem item = new BacklogItem();
+        item.setMediaId(currentAnime.getMediaId());
+        item.setUser(ParseUser.getCurrentUser());
+        item.saveInBackground(e -> {
+            if (e == null) {
+                // Pass back the entry so it can be inserted in the recycler view
+                Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
+
+                generateMatch();
+            } else {
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /* Generates a new anime. */

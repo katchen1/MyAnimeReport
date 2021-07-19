@@ -1,6 +1,7 @@
 package com.example.myanimereport.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,17 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
+import com.example.myanimereport.models.Entry;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class BacklogFragment extends Fragment {
 
+    private final String TAG = "BacklogFragment";
     private FragmentBacklogBinding binding;
     private List<BacklogItem> items;
     private BacklogItemsAdapter adapter;
@@ -47,9 +53,30 @@ public class BacklogFragment extends Fragment {
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
         binding.rvBacklogItems.addItemDecoration(divider);
 
-        // Add placeholder items
-        for (int i = 0; i < 30; i++) items.add(new BacklogItem());
-        adapter.notifyDataSetChanged();
+        queryBacklogItems(0);
+    }
+
+    /* Queries the items 10 at a time. Skips the first skip items. */
+    public void queryBacklogItems(int skip) {
+        ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
+        query.setSkip(skip); // Skip the first skip items
+        query.setLimit(10); // Limit query to 10 items
+        query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
+        query.addDescendingOrder("createdAt"); // Order posts by creation date
+        query.findInBackground((itemsFound, e) -> { // Start async query for entries
+            // Check for errors
+            if (e != null) {
+                Log.e(TAG, "Error when getting backlog items.", e);
+                return;
+            }
+
+            // Add entries to the recycler view and notify its adapter of new data
+            for (BacklogItem item: itemsFound) {
+                item.setAnime();
+                items.add(item);
+            }
+            adapter.notifyDataSetChanged();
+        });
     }
 
     @Override
