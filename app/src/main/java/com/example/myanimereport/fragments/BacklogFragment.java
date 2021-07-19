@@ -1,5 +1,7 @@
 package com.example.myanimereport.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +29,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class BacklogFragment extends Fragment {
+
+    public static final int VIEW_BACKLOG_ITEM_REQUEST_CODE = 5;
 
     private final String TAG = "BacklogFragment";
     private FragmentBacklogBinding binding;
@@ -88,6 +92,17 @@ public class BacklogFragment extends Fragment {
             }
             adapter.notifyDataSetChanged();
         });
+    }
+
+    /* After returning from another activity, update the entry at its position. */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == VIEW_BACKLOG_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // Returning from a backlog item details activity (item deleted)
+            int position = data.getIntExtra("position", -1);
+            items.remove(position);
+            adapter.notifyItemRemoved(position);
+        }
     }
 
     @Override

@@ -45,4 +45,5 @@
     <string name="top_5">Top 5</string>
     <string name="genre_preference">Genre Preference</string>
     <string name="genre_breakdown_by_year">Genre Breakdown by Year</string>
+    <string name="backlog_item_details">Backlog Item Details</string>
 </resources>
