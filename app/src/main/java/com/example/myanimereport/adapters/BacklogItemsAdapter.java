@@ -1,24 +1,40 @@
 package com.example.myanimereport.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.myanimereport.activities.AnimeDetailsActivity;
+import com.example.myanimereport.activities.EntryDetailsActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
+import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
+import com.example.myanimereport.models.Entry;
+import com.example.myanimereport.models.ParseApplication;
+
+import org.parceler.Parcels;
+
 import java.util.List;
 import java.util.Locale;
 
 public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapter.ViewHolder> {
 
+    private final Fragment fragment;
     private final Context context;
     private final List<BacklogItem> items;
 
     /* Constructor takes the context and the list of backlog items in the recycler view. */
-    public BacklogItemsAdapter(Context context, List<BacklogItem> items) {
-        this.context = context;
+    public BacklogItemsAdapter(Fragment fragment, List<BacklogItem> items) {
+        this.fragment = fragment;
+        this.context = fragment.getContext();
         this.items = items;
     }
 
@@ -43,7 +59,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
     }
 
     /* Defines the view holder for an item. */
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final ItemBacklogBinding binding;
 
@@ -51,6 +67,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         public ViewHolder(ItemBacklogBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+            binding.getRoot().setOnClickListener(this);
         }
 
         /* Binds the item's data to the view's components. */
@@ -58,6 +75,24 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
             Anime anime = item.getAnime();
             binding.tvTitle.setText(anime.getTitleEnglish());
             binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
+        }
+
+        /* When the backlog item is clicked, expand it to show the anime details. */
+        @Override
+        public void onClick(View v) {
+            // Check if anime data has been set
+            BacklogItem item = items.get(getAdapterPosition());
+            if (item.getAnime() == null) {
+                item.setAnime();
+                return;
+            }
+
+            // Navigate to the anime details activity
+            Intent intent = new Intent(context, AnimeDetailsActivity.class);
+            intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
+            intent.putExtra("anime", Parcels.wrap(item.getAnime())); // Pass in the anime
+            intent.putExtra("editable", true);
+            fragment.startActivity(intent);
         }
     }
 }
