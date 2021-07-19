@@ -1,28 +1,35 @@
 package com.example.myanimereport.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
+import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MatchFragment extends Fragment {
 
     private FragmentMatchBinding binding;
+    private List<Anime> allAnime;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -34,11 +41,27 @@ public class MatchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        allAnime = new ArrayList<>();
 
         // Present an anime for the user to accept or reject
         generateMatch();
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
+
+        // Get all available mediaIds
+//        ParseApplication.apolloClient.query(new MediaAllQuery()).enqueue(
+//            new ApolloCall.Callback<MediaAllQuery.Data>() {
+//                @Override
+//                public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
+//                    System.out.println(response.getData().Media());
+//                }
+//
+//                @Override
+//                public void onFailure(@NonNull ApolloException e) {
+//                    Log.e("Apollo", e.getMessage() + e.getCause());
+//                }
+//            }
+//        );
     }
 
     @Override
@@ -49,6 +72,7 @@ public class MatchFragment extends Fragment {
 
     /* Generates the default anime for now. */
     public void generateMatch() {
+
         Anime anime = new Anime();
         Glide.with(this).load(anime.getBannerImage()).into(binding.ivImage);
         binding.tvTitle.setText(anime.getTitleEnglish());
