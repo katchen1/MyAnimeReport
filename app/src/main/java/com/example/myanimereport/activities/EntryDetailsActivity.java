@@ -31,6 +31,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
     private Entry entry; // The entry whose information is being shown
     private Integer position; // The position of the entry in the adapter
     private Anime anime; // The anime of the entry
+    private boolean editable; // Whether or not the user is allowed to edit the entry
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
         entry = getIntent().getParcelableExtra("entry");
         position = getIntent().getIntExtra("position", -1);
         anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
+        editable = getIntent().getBooleanExtra("editable", true);
 
         // Show the entry's information
         populateEntryView();
@@ -66,6 +68,12 @@ public class EntryDetailsActivity extends AppCompatActivity {
         Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
         binding.tvTitle.setText(anime.getTitleEnglish());
         binding.cvEntry.setStrokeColor(anime.getColor());
+
+        // View-only mode
+        if (!editable) {
+            binding.btnEdit.setVisibility(View.GONE);
+            binding.btnDelete.setVisibility(View.GONE);
+        }
     }
 
     /* Shows the anime's details. */
