@@ -185,27 +185,17 @@ public class ReportFragment extends Fragment {
         // Turn the points into a data set (sorted chronologically)
         chartEntries.sort((e1, e2) -> (Double.compare(e1.getX(), e2.getX())));
         LineDataSet dataSet = new LineDataSet(chartEntries, "Animes Watched");
-        dataSet.setColor(theme);
-        dataSet.setCircleColor(theme);
-        dataSet.setDrawCircleHole(false);
-        dataSet.setValueTextSize(12f);
-        dataSet.setLineWidth(1.5f);
-        dataSet.setCircleRadius(4f);
-        dataSet.setHighLightColor(theme);
-        dataSet.setDrawHighlightIndicators(false);
-        dataSet.setDrawValues(false);
+        customizeLineDataSet(dataSet);
         chart.setData(new LineData(dataSet));
 
         // Customize the chart
+        int maxY = Collections.max(entryCounts) + 1;
         customizeChart(chart, 0);
-        customizeXAxis(chart.getXAxis());
-        customizeYAxisMain(chart.getAxisLeft());
+        customizeXAxis(chart.getXAxis(), chartEntries.get(0).getX(), -1, -1, false, true);
+        customizeYAxisMain(chart.getAxisLeft(), 0, maxY, maxY + 1);
         customizeYAxisSecondary(chart.getAxisRight());
-        chart.getXAxis().setAxisMinimum(chartEntries.get(0).getX());
-        chart.getAxisLeft().setLabelCount(Collections.max(entryCounts) + 2, true);
-        chart.getAxisLeft().setAxisMinimum(0);
-        chart.getAxisLeft().setAxisMaximum(Collections.max(entryCounts) + 1);
         chart.setScaleEnabled(false);
+        chart.highlightValue(null);
         refreshChart(chart);
     }
 
@@ -220,18 +210,15 @@ public class ReportFragment extends Fragment {
         }
 
         // Create data set
-        PieDataSet pieDataSet = new PieDataSet(pieEntries,"Genre");
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-        pieDataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-        pieDataSet.setDrawValues(false);
-        pieDataSet.setValueLineColor(white);
-        chart.setData(new PieData(pieDataSet));
+        PieDataSet dataSet = new PieDataSet(pieEntries,"Genre");
+        customizePieDataSet(dataSet);
+        chart.setData(new PieData(dataSet));
 
         // Customize the chart
         customizeChart(chart, 1);
         chart.getLegend().setEnabled(false);
         chart.setHoleColor(darkGray);
+        chart.highlightValue(null);
         refreshChart(chart);
     }
 
@@ -249,19 +236,17 @@ public class ReportFragment extends Fragment {
 
         // Create data set
         BarDataSet dataSet = new BarDataSet(barEntries, "Average Rating");
-        dataSet.setColor(theme);
-        dataSet.setDrawValues(false);
+        customizeBarDataSet(dataSet, null, theme, null);
         chart.setData(new BarData(Arrays.asList(dataSet)));
 
         // Customize the chart
         customizeChart(chart, 2);
-        customizeXAxis(chart.getXAxis());
-        customizeYAxisMain(chart.getAxisRight());
+        customizeXAxis(chart.getXAxis(), -1, -1, genreToList.keySet().size(), false, false);
+        customizeYAxisMain(chart.getAxisRight(), -1, -1, -1);
         customizeYAxisSecondary(chart.getAxisLeft());
-        chart.getXAxis().setDrawGridLines(false);
         chart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(genreToList.keySet()));
-        chart.getXAxis().setLabelCount(genreToList.keySet().size());
         chart.setScaleEnabled(false);
+        chart.highlightValue(null);
         chart.setFitBars(true);
         refreshChart(chart);
     }
@@ -292,22 +277,17 @@ public class ReportFragment extends Fragment {
         List<Integer> colors = new ArrayList<>();
         int i = 0;
         for (String ignored : genreToList.keySet()) colors.add(ColorTemplate.MATERIAL_COLORS[i++%4]);
-        dataSet.setColors(colors);
-        dataSet.setStackLabels(genreToList.keySet().toArray(new String[0]));
-        dataSet.setDrawValues(false);
-        BarData data = new BarData(Arrays.asList(dataSet));
-        data.setValueTextColor(white);
-        chart.setData(data);
+        customizeBarDataSet(dataSet, genreToList.keySet().toArray(new String[0]), -1, colors);
+        chart.setData(new BarData(Arrays.asList(dataSet)));
 
         // Customize the chart
         customizeChart(chart, 3);
-        customizeXAxis(chart.getXAxis());
-        customizeYAxisMain(chart.getAxisLeft());
+        customizeXAxis(chart.getXAxis(), -1, -1, -1, false, false);
+        customizeYAxisMain(chart.getAxisLeft(), 0, -1, -1);
         customizeYAxisSecondary(chart.getAxisRight());
-        chart.getXAxis().setDrawGridLines(false);
-        chart.getAxisLeft().setAxisMinimum(0);
-        chart.setFitBars(true);
         chart.setScaleEnabled(false);
+        chart.highlightValue(null);
+        chart.setFitBars(true);
         refreshChart(chart);
     }
 
@@ -353,18 +333,25 @@ public class ReportFragment extends Fragment {
         chart.invalidate();
     }
 
-    /* General styling of the x-axis. */
-    public void customizeXAxis(XAxis xAxis) {
+    /* General styling of the x-axis. Range between min and max (auto range if min/max = -1). */
+    public void customizeXAxis(XAxis xAxis, float min, float max, int labelCount, boolean force, boolean gridLines) {
         xAxis.setTextColor(white);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGridLineWidth(1f);
         xAxis.setGranularity(1f);
+        if (min != -1) xAxis.setAxisMinimum(min);
+        if (max != -1) xAxis.setAxisMaximum(max);
+        if (labelCount != -1) xAxis.setLabelCount(labelCount, force);
+        xAxis.setDrawGridLines(gridLines);
     }
 
-    /* General styling of the main y-axis. */
-    public void customizeYAxisMain(YAxis yAxis) {
+    /* General styling of the main y-axis. Range between min and max (auto range if min/max = -1). */
+    public void customizeYAxisMain(YAxis yAxis, float min, float max, int labelCount) {
         yAxis.setGridLineWidth(1f);
         yAxis.setTextColor(white);
+        if (min != -1) yAxis.setAxisMinimum(min);
+        if (max != -1) yAxis.setAxisMaximum(max);
+        if (labelCount != -1) yAxis.setLabelCount(labelCount, true);
     }
 
     /* General styling of the secondary y-axis. */
@@ -382,6 +369,36 @@ public class ReportFragment extends Fragment {
         CustomMarkerView mv = new CustomMarkerView(getContext(), R.layout.custom_marker_view_layout, mode);
         mv.setChartView(chart);
         chart.setMarker(mv);
+    }
+
+    /* General styling of a line dataset. */
+    public void customizeLineDataSet(LineDataSet dataSet) {
+        dataSet.setColor(theme);
+        dataSet.setCircleColor(theme);
+        dataSet.setDrawCircleHole(false);
+        dataSet.setValueTextSize(12f);
+        dataSet.setLineWidth(1.5f);
+        dataSet.setCircleRadius(4f);
+        dataSet.setHighLightColor(theme);
+        dataSet.setDrawHighlightIndicators(false);
+        dataSet.setDrawValues(false);
+    }
+
+    /* General styling of a pie dataset. */
+    public void customizePieDataSet(PieDataSet dataSet) {
+        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        dataSet.setDrawValues(false);
+        dataSet.setValueLineColor(white);
+    }
+
+    /* General styling of a bar dataset. */
+    public void customizeBarDataSet(BarDataSet dataSet, String[] stackLabels, int color, List<Integer> colors) {
+        if (stackLabels != null) dataSet.setStackLabels(stackLabels);
+        if (color != -1) dataSet.setColor(color);
+        if (colors != null) dataSet.setColors(colors);
+        dataSet.setDrawValues(false);
     }
 
     @Override

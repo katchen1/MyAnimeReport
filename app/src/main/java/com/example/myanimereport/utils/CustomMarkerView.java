@@ -12,6 +12,8 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.example.myanimereport.R;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
+
+import java.util.Locale;
 import java.util.Set;
 
 public class CustomMarkerView extends MarkerView implements IMarker {
@@ -44,9 +46,9 @@ public class CustomMarkerView extends MarkerView implements IMarker {
         // Set value (Y)
         String yText = "";
         if (mode == 0 || mode == 1) {
-            yText = "Animes Watched: <b>" + Utils.formatNumber(e.getY(), 0, true) + "</b>";
+            yText = "Animes Watched: " + String.format(Locale.getDefault(), "<b>%.0f</b>", e.getY());
         } else if (mode == 2) {
-            yText = "Average Rating: " + e.getY();
+            yText = "Average Rating: " + String.format(Locale.getDefault(), "<b>%.2f</b>", e.getY());
         } else if (mode == 3) { // Show count for each genre
             tvYContent.setSingleLine(false);
             int i = 0;
