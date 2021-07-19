@@ -1,6 +1,7 @@
 package com.example.myanimereport.fragments;
 
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
+import com.example.MediaAllQuery;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
@@ -25,6 +27,7 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class MatchFragment extends Fragment {
 
@@ -44,24 +47,29 @@ public class MatchFragment extends Fragment {
         allAnime = new ArrayList<>();
 
         // Present an anime for the user to accept or reject
-        generateMatch();
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
 
         // Get all available mediaIds
-//        ParseApplication.apolloClient.query(new MediaAllQuery()).enqueue(
-//            new ApolloCall.Callback<MediaAllQuery.Data>() {
-//                @Override
-//                public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
-//                    System.out.println(response.getData().Media());
-//                }
-//
-//                @Override
-//                public void onFailure(@NonNull ApolloException e) {
-//                    Log.e("Apollo", e.getMessage() + e.getCause());
-//                }
-//            }
-//        );
+        ParseApplication.apolloClient.query(new MediaAllQuery(1)).enqueue(
+            new ApolloCall.Callback<MediaAllQuery.Data>() {
+                @Override
+                public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
+                    for (MediaAllQuery.Medium m: response.getData().Page().media()) {
+                        Anime anime = new Anime(m.fragments().mediaFragment());
+                        allAnime.add(anime);
+                    }
+                    ParseApplication.currentActivity.runOnUiThread(() -> {
+                        generateMatch();
+                    });
+                }
+
+                @Override
+                public void onFailure(@NonNull ApolloException e) {
+                    Log.e("Apollo", e.getMessage() + e.getCause());
+                }
+            }
+        );
     }
 
     @Override
@@ -72,12 +80,13 @@ public class MatchFragment extends Fragment {
 
     /* Generates the default anime for now. */
     public void generateMatch() {
-
-        Anime anime = new Anime();
-        Glide.with(this).load(anime.getBannerImage()).into(binding.ivImage);
+        Random rand = new Random();
+        Anime anime = allAnime.get(rand.nextInt(allAnime.size()));
+        Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
         binding.tvTitle.setText(anime.getTitleEnglish());
         binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
-        binding.tvDescription.setText(anime.getDescription());
+        binding.tvDescription.setText(Html.fromHtml(anime.getDescription()));
+        binding.cvAnime.setStrokeColor(anime.getColor());
 
         // Fill in genres chip group
         ChipGroup cgGenres = binding.cgGenres;
