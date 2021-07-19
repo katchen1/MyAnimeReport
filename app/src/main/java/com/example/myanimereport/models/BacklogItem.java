@@ -1,5 +1,13 @@
 package com.example.myanimereport.models;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+import com.example.MediaDetailsByIdQuery;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -10,8 +18,35 @@ public class BacklogItem extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_MEDIA_ID = "mediaId";
 
-    public BacklogItem() {
-        setMediaId(155);
+    private Anime anime;
+
+    /* Default constructor required by Parse. */
+    public BacklogItem() { }
+
+    /* Getters and setters. */
+    public Anime getAnime() {
+        return anime;
+    }
+
+    public void setAnime() {
+        System.out.println("SET ANIME");
+        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
+                new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
+                    @Override
+                    public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
+                        anime = new Anime(response);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull ApolloException e) {
+                        Log.e("Apollo", e.getMessage());
+                    }
+                }
+        );
+    }
+
+    public void setAnime(Anime anime) {
+        this.anime = anime;
     }
 
     public ParseUser getUser() {
@@ -28,9 +63,5 @@ public class BacklogItem extends ParseObject {
 
     public void setMediaId(Integer mediaId) {
         put(KEY_MEDIA_ID, mediaId);
-    }
-
-    public Anime getAnime() {
-        return new Anime();
     }
 }
