@@ -88,6 +88,29 @@ public class MatchFragment extends Fragment {
         binding.tvDescription.setText(Html.fromHtml(anime.getDescription()));
         binding.cvAnime.setStrokeColor(anime.getColor());
 
+        // Handle values that may be null - hide the views
+        if (anime.getSeasonYear() == null) binding.llYear.setVisibility(View.GONE);
+        else {
+            binding.llYear.setVisibility(View.VISIBLE);
+            binding.tvYear.setText(String.format(Locale.getDefault(), "%d", anime.getSeasonYear()));
+        }
+        if (anime.getEpisodes() == null) binding.llEpisodes.setVisibility(View.GONE);
+        else {
+            binding.llEpisodes.setVisibility(View.VISIBLE);
+            binding.tvEpisodes.setText(String.format(Locale.getDefault(), "%d Episodes", anime.getEpisodes()));
+        }
+        if (anime.getAverageScore() == null) binding.llRating.setVisibility(View.GONE);
+        else {
+            binding.llRating.setVisibility(View.VISIBLE);
+            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
+        }
+
+        // Scroll down a bit so that the poster doesn't take up the whole card view
+        binding.nestedScrollView.post(() -> {
+            int targetPosition = binding.appBar.getHeight() * 2;
+            binding.nestedScrollView.smoothScrollTo(0, targetPosition);
+        });
+
         // Fill in genres chip group
         ChipGroup cgGenres = binding.cgGenres;
         cgGenres.removeAllViews();
