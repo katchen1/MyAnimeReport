@@ -64,4 +64,7 @@ dependencies {
 
     // Charts
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // Card stack
+    implementation 'com.github.yuyakaido:cardstackview:2.3.4'
 }
