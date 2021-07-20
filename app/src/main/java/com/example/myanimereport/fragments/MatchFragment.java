@@ -139,6 +139,8 @@ public class MatchFragment extends Fragment implements CardStackListener {
         if (direction == Direction.Right) {
             BacklogItem item = new BacklogItem();
             Anime currentAnime = allAnime.get(layoutManager.getTopPosition() - 1);
+            allAnime.remove(currentAnime);
+            adapter.notifyItemRemoved(layoutManager.getTopPosition() - 1);
             item.setMediaId(currentAnime.getMediaId());
             item.setUser(ParseUser.getCurrentUser());
             item.saveInBackground(e -> {
