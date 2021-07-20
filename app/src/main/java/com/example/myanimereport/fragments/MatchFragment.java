@@ -62,14 +62,23 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
 
+        // Get all the media
+        queryAnimePage(1);
+    }
+
+    public void queryAnimePage(int page) {
         // Get all available mediaIds
-        ParseApplication.apolloClient.query(new MediaAllQuery(1)).enqueue(
+        ParseApplication.apolloClient.query(new MediaAllQuery(page)).enqueue(
             new ApolloCall.Callback<MediaAllQuery.Data>() {
                 @Override
                 public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
                     for (MediaAllQuery.Medium m: response.getData().Page().media()) {
                         Anime anime = new Anime(m.fragments().mediaFragment());
                         allAnime.add(anime);
+                    }
+                    System.out.println("size: " + allAnime.size());
+                    if (response.getData().Page().pageInfo().hasNextPage()) {
+                        queryAnimePage(page + 1);
                     }
                 }
 
@@ -114,9 +123,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     }
 
     @Override
-    public void onCardDragging(Direction direction, float ratio) {
-
-    }
+    public void onCardDragging(Direction direction, float ratio) { }
 
     @Override
     public void onCardSwiped(Direction direction) {
@@ -139,22 +146,14 @@ public class MatchFragment extends Fragment implements CardStackListener {
     }
 
     @Override
-    public void onCardRewound() {
-
-    }
+    public void onCardRewound() { }
 
     @Override
-    public void onCardCanceled() {
-
-    }
+    public void onCardCanceled() { }
 
     @Override
-    public void onCardAppeared(View view, int position) {
-
-    }
+    public void onCardAppeared(View view, int position) { }
 
     @Override
-    public void onCardDisappeared(View view, int position) {
-
-    }
+    public void onCardDisappeared(View view, int position) { }
 }
