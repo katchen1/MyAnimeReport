@@ -27,6 +27,7 @@ import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MatchFragment extends Fragment implements CardStackListener {
@@ -67,7 +68,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
     }
 
     public void queryAnimePage(int page) {
-        // Get all available mediaIds
         ParseApplication.apolloClient.query(new MediaAllQuery(page)).enqueue(
             new ApolloCall.Callback<MediaAllQuery.Data>() {
                 @Override
@@ -76,9 +76,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
                         Anime anime = new Anime(m.fragments().mediaFragment());
                         allAnime.add(anime);
                     }
-                    System.out.println("size: " + allAnime.size());
                     if (response.getData().Page().pageInfo().hasNextPage()) {
                         queryAnimePage(page + 1);
+                    } else {
+                        Collections.shuffle(allAnime);
                     }
                 }
 
@@ -88,6 +89,15 @@ public class MatchFragment extends Fragment implements CardStackListener {
                 }
             }
         );
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) return;
+        System.out.println("Before: " + allAnime.size());
+        allAnime.removeIf(anime -> ParseApplication.seenMediaIds.contains(anime.getMediaId()));
+        System.out.println("After: " + allAnime.size());
     }
 
     @Override

@@ -18,6 +18,7 @@ public class ParseApplication extends Application {
     public static Activity currentActivity;
     public static List<Entry> entries;
     public static List<BacklogItem> backlogItems;
+    public static List<Integer> seenMediaIds;
 
     @Override
     public void onCreate() {
@@ -43,6 +44,9 @@ public class ParseApplication extends Application {
 
         // List of backlog items shared between all activities/fragments
         backlogItems = new ArrayList<>();
+
+        // List of seen media ids shared between all activities/fragments
+        seenMediaIds = new ArrayList<>();
 
         // Register callback to keep the current activity updated
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
