@@ -49,7 +49,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         super.onViewCreated(view, savedInstanceState);
         allAnime = new ArrayList<>();
 
-        // Present an anime for the user to accept or reject
+        // Set the button listeners
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
         binding.btnRewind.setOnClickListener(this::rewind);
@@ -62,11 +62,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
         layoutManager.setCanScrollVertical(false);
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
-
-        // Get all the media
         queryAnimePage(1);
     }
 
+    /* Recursive function for pagination. Fetches all the anime with popularity > 30000. */
     public void queryAnimePage(int page) {
         ParseApplication.apolloClient.query(new MediaAllQuery(page)).enqueue(
             new ApolloCall.Callback<MediaAllQuery.Data>() {
@@ -77,9 +76,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
                         allAnime.add(anime);
                     }
                     Collections.shuffle(allAnime);
-                    if (response.getData().Page().pageInfo().hasNextPage()) {
-                        queryAnimePage(page + 1);
-                    }
+                    if (response.getData().Page().pageInfo().hasNextPage()) queryAnimePage(page + 1);
                 }
 
                 @Override
@@ -90,13 +87,12 @@ public class MatchFragment extends Fragment implements CardStackListener {
         );
     }
 
+    /* When the match tab is clicked, remove all the seen animes from the card stack. */
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) return;
-        System.out.println("Before: " + allAnime.size());
         allAnime.removeIf(anime -> ParseApplication.seenMediaIds.contains(anime.getMediaId()));
-        System.out.println("After: " + allAnime.size());
     }
 
     @Override
@@ -105,7 +101,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding = null;
     }
 
-    /* Adds the anime to the user's backlog and generates a new anime. */
+    /* Accepts an anime. */
     private void accept(View view) {
         SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
                 .setDirection(Direction.Right)
@@ -116,7 +112,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.cardStack.swipe();
     }
 
-    /* Generates a new anime. */
+    /* Rejects an anime. */
     private void reject(View view) {
         SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
                 .setDirection(Direction.Left)
@@ -127,6 +123,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.cardStack.swipe();
     }
 
+    /* Rewinds an anime. */
     private void rewind(View view) {
         binding.cardStack.rewind();
     }
@@ -134,21 +131,22 @@ public class MatchFragment extends Fragment implements CardStackListener {
     @Override
     public void onCardDragging(Direction direction, float ratio) { }
 
+    /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
         if (direction == Direction.Right) {
             BacklogItem item = new BacklogItem();
-            Anime currentAnime = allAnime.get(layoutManager.getTopPosition() - 1);
-            allAnime.remove(currentAnime);
-            adapter.notifyItemRemoved(layoutManager.getTopPosition() - 1);
-            item.setMediaId(currentAnime.getMediaId());
+            int position = layoutManager.getTopPosition() - 1;
+            Anime anime = allAnime.get(position);
+            allAnime.remove(anime);
+            adapter.notifyItemRemoved(position);
+            item.setMediaId(anime.getMediaId());
             item.setUser(ParseUser.getCurrentUser());
+            item.setAnime(anime);
             item.saveInBackground(e -> {
                 if (e == null) {
-                    // Pass back the entry so it can be inserted in the recycler view
-                    Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
-                    item.setAnime(currentAnime);
                     ParseApplication.backlogItems.add(item);
+                    Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }

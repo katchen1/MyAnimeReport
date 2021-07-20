@@ -3,36 +3,27 @@ package com.example.myanimereport.activities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.databinding.ActivityBacklogItemDetailsBinding;
-import com.example.myanimereport.databinding.ActivityEntryDetailsBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
-import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import org.parceler.Parcels;
-
-import java.text.DateFormatSymbols;
 import java.util.Locale;
 
 public class BacklogItemDetailsActivity extends AppCompatActivity {
 
-    public static final int EDIT_BACKLOG_REQUEST_CODE = 5;
-
     private ActivityBacklogItemDetailsBinding binding;
-    private BacklogItem item; // The entry whose information is being shown
-    private Integer position; // The position of the entry in the adapter
-    private Anime anime; // The anime of the entry
+    private BacklogItem item; // The item whose information is being shown
+    private Integer position; // The position of the item in the adapter
+    private Anime anime; // The anime of the item
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +31,8 @@ public class BacklogItemDetailsActivity extends AppCompatActivity {
         binding = ActivityBacklogItemDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Hide status bar
+        // Hide status bar and action bar
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-
-        // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
         // Get the passed in data
@@ -59,7 +48,7 @@ public class BacklogItemDetailsActivity extends AppCompatActivity {
     public void populateBacklogItemView() {
         Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
         binding.tvTitle.setText(anime.getTitleEnglish());
-        binding.cvEntry.setStrokeColor(anime.getColor());
+        binding.cvItem.setStrokeColor(anime.getColor());
         binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
     }
 
@@ -71,7 +60,7 @@ public class BacklogItemDetailsActivity extends AppCompatActivity {
         // Animate the transition
         Activity activity = ParseApplication.currentActivity;
         ActivityOptionsCompat options = ActivityOptionsCompat
-                .makeSceneTransitionAnimation(activity, binding.cvEntry, "card");
+                .makeSceneTransitionAnimation(activity, binding.cvItem, "card");
         startActivity(intent, options.toBundle());
     }
 

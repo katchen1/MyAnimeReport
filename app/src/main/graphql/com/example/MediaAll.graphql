@@ -5,7 +5,6 @@ query MediaAll($page:Int!) {
           currentPage
           lastPage
           hasNextPage
-
         }
 
         media (type: ANIME, popularity_greater: 30000) {
