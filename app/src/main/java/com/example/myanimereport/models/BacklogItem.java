@@ -1,9 +1,7 @@
 package com.example.myanimereport.models;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;

@@ -17,14 +17,9 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
-import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,16 +45,14 @@ public class BacklogFragment extends Fragment {
 
         // Set up adapter and layout of recycler view
         items = ParseApplication.backlogItems;
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         adapter = new BacklogItemsAdapter(this, items);
-        binding.rvBacklogItems.setLayoutManager(layoutManager);
+        binding.rvBacklogItems.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvBacklogItems.setAdapter(adapter);
 
         // Divider between items
         DividerItemDecoration divider = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
         binding.rvBacklogItems.addItemDecoration(divider);
-
         queryBacklogItems(0);
     }
 
@@ -68,7 +61,7 @@ public class BacklogFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) return;
-        adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged(); // Items may have been added from the match tab
     }
 
     /* Queries the items 10 at a time. Skips the first skip items. */
@@ -76,16 +69,16 @@ public class BacklogFragment extends Fragment {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
         query.setLimit(10); // Limit query to 10 items
-        query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
-        query.addAscendingOrder("createdAt"); // Order posts by creation date
-        query.findInBackground((itemsFound, e) -> { // Start async query for entries
+        query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
+        query.addAscendingOrder("createdAt"); // Order by creation date
+        query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
             // Check for errors
             if (e != null) {
                 Log.e(TAG, "Error when getting backlog items.", e);
                 return;
             }
 
-            // Add entries to the recycler view and notify its adapter of new data
+            // Add items to the recycler view and notify its adapter of new data
             for (BacklogItem item: itemsFound) {
                 item.setAnime();
                 ParseApplication.seenMediaIds.add(item.getMediaId());
@@ -95,11 +88,10 @@ public class BacklogFragment extends Fragment {
         });
     }
 
-    /* After returning from another activity, update the entry at its position. */
+    /* After deleting an item from details activity, update the recycler view. */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == VIEW_BACKLOG_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            // Returning from a backlog item details activity (item deleted)
             int position = data.getIntExtra("position", -1);
             items.remove(position);
             adapter.notifyItemRemoved(position);

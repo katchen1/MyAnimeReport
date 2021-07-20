@@ -103,6 +103,7 @@ public class HomeFragment extends Fragment {
         startActivity(i);
         entries.clear();
         ParseApplication.backlogItems.clear();
+        ParseApplication.seenMediaIds.clear();
         if (getActivity() != null) getActivity().finish();
     }
 

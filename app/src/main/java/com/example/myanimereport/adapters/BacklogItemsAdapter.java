@@ -1,29 +1,19 @@
 package com.example.myanimereport.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.myanimereport.activities.AnimeDetailsActivity;
 import com.example.myanimereport.activities.BacklogItemDetailsActivity;
-import com.example.myanimereport.activities.EntryDetailsActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
-import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
-import com.example.myanimereport.models.Entry;
-import com.example.myanimereport.models.ParseApplication;
-
 import org.parceler.Parcels;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -95,7 +85,6 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
             intent.putExtra("anime", Parcels.wrap(item.getAnime())); // Pass in the entry's anime
             fragment.startActivityForResult(intent, BacklogFragment.VIEW_BACKLOG_ITEM_REQUEST_CODE);
-
         }
     }
 }
