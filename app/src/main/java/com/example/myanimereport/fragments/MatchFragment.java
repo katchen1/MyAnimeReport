@@ -76,10 +76,9 @@ public class MatchFragment extends Fragment implements CardStackListener {
                         Anime anime = new Anime(m.fragments().mediaFragment());
                         allAnime.add(anime);
                     }
+                    Collections.shuffle(allAnime);
                     if (response.getData().Page().pageInfo().hasNextPage()) {
                         queryAnimePage(page + 1);
-                    } else {
-                        Collections.shuffle(allAnime);
                     }
                 }
 
