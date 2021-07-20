@@ -51,6 +51,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         // Present an anime for the user to accept or reject
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
+        binding.btnRewind.setOnClickListener(this::rewind);
 
         // Set up the card stack
         layoutManager = new CardStackLayoutManager(getContext(), this);
@@ -106,6 +107,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
                 .build();
         layoutManager.setSwipeAnimationSetting(setting);
         binding.cardStack.swipe();
+    }
+
+    private void rewind(View view) {
+        binding.cardStack.rewind();
     }
 
     @Override
