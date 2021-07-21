@@ -59,6 +59,7 @@ public class HomeFragment extends Fragment {
         // Button listeners
         binding.btnLogOut.setOnClickListener(this::logOutOnClick);
         binding.btnCreate.setOnClickListener(this::createOnClick);
+        binding.tvCreate.setOnClickListener(this::createOnClick);
 
         // Add entries to the recycler view
         queryEntries(0);
@@ -93,6 +94,7 @@ public class HomeFragment extends Fragment {
                 entries.add(entry);
             }
             adapter.notifyDataSetChanged();
+            checkEntriesExist();
         });
     }
 
@@ -111,6 +113,17 @@ public class HomeFragment extends Fragment {
     private void createOnClick(View view) {
         Intent i = new Intent(getContext(), EntryActivity.class);
         startActivityForResult(i, NEW_ENTRY_REQUEST_CODE);
+    }
+
+    /* Shows a message if user has no entries. */
+    private void checkEntriesExist() {
+        if (entries.isEmpty()) {
+            binding.rvEntries.setVisibility(View.INVISIBLE);
+            binding.rlMessage.setVisibility(View.VISIBLE);
+        } else {
+            binding.rvEntries.setVisibility(View.VISIBLE);
+            binding.rlMessage.setVisibility(View.INVISIBLE);
+        }
     }
 
     /* After returning from a entry activity, update the entry at its position. */
@@ -137,6 +150,7 @@ public class HomeFragment extends Fragment {
                 entries.remove(position);
                 adapter.notifyItemRemoved(position);
             }
+            checkEntriesExist();
         }
     }
 
