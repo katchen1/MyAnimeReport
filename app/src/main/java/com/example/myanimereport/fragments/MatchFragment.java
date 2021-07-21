@@ -29,6 +29,7 @@ import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class MatchFragment extends Fragment implements CardStackListener {
 
@@ -71,7 +72,14 @@ public class MatchFragment extends Fragment implements CardStackListener {
             new ApolloCall.Callback<MediaAllQuery.Data>() {
                 @Override
                 public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
-                    for (MediaAllQuery.Medium m: response.getData().Page().media()) {
+                    // Null checking
+                    if (response.getData().Page() == null) return;
+                    if (response.getData().Page().media() == null) return;
+                    if (response.getData().Page().pageInfo() == null) return;
+                    if (response.getData().Page().pageInfo().hasNextPage() == null) return;
+
+                    // Add the animes to the list
+                    for (MediaAllQuery.Medium m: Objects.requireNonNull(response.getData().Page().media())) {
                         Anime anime = new Anime(m.fragments().mediaFragment());
                         allAnime.add(anime);
                     }

@@ -237,7 +237,7 @@ public class ReportFragment extends Fragment {
         // Create data set
         BarDataSet dataSet = new BarDataSet(barEntries, "Average Rating");
         customizeBarDataSet(dataSet, null, theme, null);
-        chart.setData(new BarData(Arrays.asList(dataSet)));
+        chart.setData(new BarData(Collections.singletonList(dataSet)));
 
         // Customize the chart
         customizeChart(chart, 2);
@@ -278,7 +278,7 @@ public class ReportFragment extends Fragment {
         int i = 0;
         for (String ignored : genreToList.keySet()) colors.add(ColorTemplate.MATERIAL_COLORS[i++%4]);
         customizeBarDataSet(dataSet, genreToList.keySet().toArray(new String[0]), -1, colors);
-        chart.setData(new BarData(Arrays.asList(dataSet)));
+        chart.setData(new BarData(Collections.singletonList(dataSet)));
 
         // Customize the chart
         customizeChart(chart, 3);

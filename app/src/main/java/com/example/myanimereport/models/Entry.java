@@ -64,12 +64,15 @@ public class Entry extends ParseObject {
     }
 
     public static void setAnimes(List<Entry> entries) {
+        System.out.println("Set animes.");
         List<Integer> ids = new ArrayList<>();
         for (Entry entry: entries) ids.add(entry.getMediaId());
         ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(1, ids)).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
                 @Override
                 public void onResponse(@NonNull Response<MediaDetailsByIdListQuery.Data> response) {
+                    if (response.getData().Page() == null) return;
+                    if (response.getData().Page().media() == null) return;
                     for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
                         Anime anime = new Anime(m.fragments().mediaFragment());
                         ParseApplication.seenMediaIds.add(anime.getMediaId());

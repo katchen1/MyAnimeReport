@@ -30,11 +30,12 @@ public class AnimeDetailsActivity extends AppCompatActivity {
 
         // Fill in anime's info
         Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
-        Glide.with(this).load(anime.getBannerImage()).into(binding.ivBanner);
-        Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
-        binding.tvTitle.setText(anime.getTitleEnglish());
-        binding.tvDescription.setText(Html.fromHtml(anime.getDescription()));
-        binding.cvAnime.setStrokeColor(anime.getColor());
+        if (anime == null) finish();
+        if (anime.getBannerImage() != null) Glide.with(this).load(anime.getBannerImage()).into(binding.ivBanner);
+        if (anime.getCoverImage() != null) Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
+        if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
+        if (anime.getDescription() != null) binding.tvDescription.setText(Html.fromHtml(anime.getDescription()));
+        if (anime.getColor() != null) binding.cvAnime.setStrokeColor(anime.getColor());
 
         // Handle values that may be null - hide the views
         if (anime.getSeasonYear() == null) binding.llYear.setVisibility(View.GONE);
@@ -51,15 +52,17 @@ public class AnimeDetailsActivity extends AppCompatActivity {
         });
 
         // Fill in genres chip group
-        ChipGroup cgGenres = binding.cgGenres;
-        cgGenres.removeAllViews();
-        for (String genre: anime.getGenres()) {
-            Chip chip = new Chip(this);
-            chip.setText(genre);
-            chip.setChipBackgroundColorResource(R.color.white);
-            chip.setTextColor(ContextCompat.getColor(this, R.color.dark_gray));
-            chip.setEnabled(false);
-            cgGenres.addView(chip);
+        if (anime.getGenres() != null) {
+            ChipGroup cgGenres = binding.cgGenres;
+            cgGenres.removeAllViews();
+            for (String genre : anime.getGenres()) {
+                Chip chip = new Chip(this);
+                chip.setText(genre);
+                chip.setChipBackgroundColorResource(R.color.white);
+                chip.setTextColor(ContextCompat.getColor(this, R.color.dark_gray));
+                chip.setEnabled(false);
+                cgGenres.addView(chip);
+            }
         }
     }
 }
