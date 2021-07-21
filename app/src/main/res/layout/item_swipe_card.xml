@@ -116,7 +116,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:layout_gravity="center_vertical"                            android:textSize="16sp"
+                            android:layout_gravity="center_vertical"
+                            android:textSize="16sp"
                             android:textColor="@color/white"
                             tools:text="25 Episodes" />
                     </LinearLayout>
@@ -152,7 +153,8 @@
                             android:id="@+id/tvRatingOutOf"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"                            android:textSize="16sp"
+                            android:layout_gravity="center_vertical"
+                            android:textSize="16sp"
                             android:textColor="@color/white"
                             android:text="@string/_10" />
                     </LinearLayout>
