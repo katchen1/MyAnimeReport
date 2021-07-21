@@ -17,6 +17,6 @@
 
     <item
         android:id="@+id/navigation_backlog"
-        android:icon="@drawable/ic_baseline_list_24"
+        android:icon="@drawable/ic_baseline_check_24"
         android:title="@string/title_backlog" />
 </menu>
