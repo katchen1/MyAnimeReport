@@ -1,6 +1,9 @@
 package com.example.myanimereport.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +17,17 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
-import java.util.ArrayList;
+import com.example.myanimereport.models.ParseApplication;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import java.util.List;
 import java.util.Objects;
 
 public class BacklogFragment extends Fragment {
 
+    public static final int VIEW_BACKLOG_ITEM_REQUEST_CODE = 5;
+
+    private final String TAG = "BacklogFragment";
     private FragmentBacklogBinding binding;
     private List<BacklogItem> items;
     private BacklogItemsAdapter adapter;
@@ -36,20 +44,58 @@ public class BacklogFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set up adapter and layout of recycler view
-        items = new ArrayList<>();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
-        adapter = new BacklogItemsAdapter(getContext(), items);
-        binding.rvBacklogItems.setLayoutManager(layoutManager);
+        items = ParseApplication.backlogItems;
+        adapter = new BacklogItemsAdapter(this, items);
+        binding.rvBacklogItems.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvBacklogItems.setAdapter(adapter);
 
         // Divider between items
         DividerItemDecoration divider = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
         binding.rvBacklogItems.addItemDecoration(divider);
+        queryBacklogItems(0);
+    }
 
-        // Add placeholder items
-        for (int i = 0; i < 30; i++) items.add(new BacklogItem());
-        adapter.notifyDataSetChanged();
+    /* When the backlog tab is clicked, refresh the recycler view. */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) return;
+        adapter.notifyDataSetChanged(); // Items may have been added from the match tab
+    }
+
+    /* Queries the items 10 at a time. Skips the first skip items. */
+    public void queryBacklogItems(int skip) {
+        ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
+        query.setSkip(skip); // Skip the first skip items
+        query.setLimit(10); // Limit query to 10 items
+        query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
+        query.addAscendingOrder("createdAt"); // Order by creation date
+        query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
+            // Check for errors
+            if (e != null) {
+                Log.e(TAG, "Error when getting backlog items.", e);
+                return;
+            }
+
+            // Add items to the recycler view and notify its adapter of new data
+            for (BacklogItem item: itemsFound) {
+                item.setAnime();
+                ParseApplication.seenMediaIds.add(item.getMediaId());
+                items.add(item);
+            }
+            adapter.notifyDataSetChanged();
+        });
+    }
+
+    /* After deleting an item from details activity, update the recycler view. */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == VIEW_BACKLOG_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            int position = data.getIntExtra("position", -1);
+            items.remove(position);
+            adapter.notifyItemRemoved(position);
+        }
     }
 
     @Override

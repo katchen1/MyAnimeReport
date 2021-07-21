@@ -12,29 +12,26 @@
         android:theme="@style/Theme.MyAnimeReport">
 
         <activity
+            android:name=".activities.BacklogItemDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".activities.AnimeDetailsActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.EntryDetailsActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.EntryActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.SignupActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.MainActivity"
-            android:screenOrientation="portrait"/>
-
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.LoginActivity"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,4 +39,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

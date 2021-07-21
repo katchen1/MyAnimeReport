@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import com.apollographql.apollo.ApolloClient;
 import com.parse.Parse;
 import com.parse.ParseObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +16,8 @@ public class ParseApplication extends Application {
     public static ApolloClient apolloClient;
     public static Activity currentActivity;
     public static List<Entry> entries;
+    public static List<BacklogItem> backlogItems;
+    public static List<Integer> seenMediaIds;
 
     @Override
     public void onCreate() {
@@ -37,8 +38,10 @@ public class ParseApplication extends Application {
         // Initialize the Apollo client
         apolloClient = ApolloClient.builder().serverUrl("https://graphql.anilist.co/post").build();
 
-        // List of entries shared between all activity/fragments
+        // Lists shared between all activities/fragments
         entries = new ArrayList<>();
+        backlogItems = new ArrayList<>();
+        seenMediaIds = new ArrayList<>();
 
         // Register callback to keep the current activity updated
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
