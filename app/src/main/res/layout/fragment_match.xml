@@ -33,121 +33,22 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cvAnime"
+    <com.yuyakaido.android.cardstackview.CardStackView
+        android:id="@+id/cardStack"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appBar"
-        android:layout_above="@id/llButtons"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="10dp"
-        app:cardCornerRadius="10dp"
-        app:strokeColor="@color/white"
-        app:strokeWidth="1dp">
-
-        <ScrollView
-            android:id="@+id/nestedScrollView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:overScrollMode="never">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/dark_gray">
-
-                <ImageView
-                    android:id="@+id/ivImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    tools:src="@tools:sample/backgrounds/scenic" />
-
-                <TextView
-                    android:id="@+id/tvTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ivImage"
-                    android:layout_marginVertical="5dp"
-                    android:layout_marginHorizontal="10dp"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    tools:text="Detective Conan" />
-
-                <RelativeLayout
-                    android:id="@+id/rlRating"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tvTitle"
-                    android:layout_marginVertical="5dp"
-                    android:layout_marginHorizontal="10dp">
-
-                    <ImageView
-                        android:id="@+id/ivRatingIcon"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/ic_baseline_star_24"
-                        android:backgroundTint="@color/yellow" />
-
-                    <TextView
-                        android:id="@+id/tvRating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/ivRatingIcon"
-                        android:layout_marginStart="5dp"
-                        android:layout_centerVertical="true"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white"
-                        tools:text="9.8" />
-
-                    <TextView
-                        android:id="@+id/tvRatingOutOf"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/tvRating"
-                        android:layout_centerVertical="true"
-                        android:textSize="16sp"
-                        android:textColor="@color/white"
-                        android:text="@string/_10" />
-                </RelativeLayout>
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/cgGenres"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/rlRating"
-                    android:layout_marginVertical="5dp"
-                    android:layout_marginHorizontal="10dp"
-                    app:chipSpacingHorizontal="5dp"
-                    app:chipSpacingVertical="-10dp" />
-
-                <TextView
-                    android:id="@+id/tvDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/cgGenres"
-                    android:layout_marginVertical="5dp"
-                    android:layout_marginHorizontal="10dp"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    tools:text="Description of the anime." />
-            </RelativeLayout>
-        </ScrollView>
-    </com.google.android.material.card.MaterialCardView>
+        android:layout_above="@id/llButtons"/>
 
     <LinearLayout
         android:id="@+id/llButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:weightSum="2"
-        android:layout_marginHorizontal="40dp"
+        android:weightSum="3"
+        android:layout_marginHorizontal="30dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <ImageButton
@@ -158,6 +59,15 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/theme_rounded_bg"
             android:src="@drawable/ic_baseline_close_24"
+            app:tint="@color/dark_gray" />
+
+        <ImageButton
+            android:id="@+id/btnRewind"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/theme_rounded_bg"
+            android:src="@drawable/ic_baseline_replay_24"
             app:tint="@color/dark_gray" />
 
         <ImageButton

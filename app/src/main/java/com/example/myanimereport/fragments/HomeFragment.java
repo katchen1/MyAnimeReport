@@ -89,6 +89,7 @@ public class HomeFragment extends Fragment {
             // Add entries to the recycler view and notify its adapter of new data
             for (Entry entry: entriesFound) {
                 entry.setAnime();
+                ParseApplication.seenMediaIds.add(entry.getMediaId());
                 entries.add(entry);
             }
             adapter.notifyDataSetChanged();
@@ -101,6 +102,8 @@ public class HomeFragment extends Fragment {
         Intent i = new Intent(getContext(), LoginActivity.class);
         startActivity(i);
         entries.clear();
+        ParseApplication.backlogItems.clear();
+        ParseApplication.seenMediaIds.clear();
         if (getActivity() != null) getActivity().finish();
     }
 

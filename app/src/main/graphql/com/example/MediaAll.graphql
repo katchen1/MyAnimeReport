@@ -1,0 +1,14 @@
+query MediaAll($page:Int!) {
+    Page (page: $page, perPage: 50) {
+        pageInfo {
+          total
+          currentPage
+          lastPage
+          hasNextPage
+        }
+
+        media (type: ANIME, popularity_greater: 30000) {
+          ...mediaFragment
+        }
+    }
+}
