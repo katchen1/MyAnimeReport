@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -48,6 +49,9 @@ public class BacklogFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Button listeners
+        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
 
         // Set up adapter and layout of recycler view
         items = ParseApplication.backlogItems;

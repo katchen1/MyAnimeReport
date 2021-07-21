@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -85,6 +86,9 @@ public class ReportFragment extends Fragment {
             theme = ContextCompat.getColor(getContext(), R.color.theme);
             darkGray = ContextCompat.getColor(getContext(), R.color.dark_gray);
         }
+
+        // Button listeners
+        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
     }
 
     /* When the report tab is clicked, regenerate the charts. */

@@ -9,11 +9,13 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaAllQuery;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.CardStackAdapter;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
@@ -53,6 +55,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
         binding.btnRewind.setOnClickListener(this::rewind);
+        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
 
         // Set up the card stack
         layoutManager = new CardStackLayoutManager(getContext(), this);
