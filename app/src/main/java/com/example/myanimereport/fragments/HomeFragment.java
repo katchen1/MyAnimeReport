@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.LoginActivity;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
 import com.example.myanimereport.models.Entry;
@@ -33,6 +35,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private List<Entry> entries;
     private EntriesAdapter adapter;
+    private GridLayoutManager layoutManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -47,7 +50,7 @@ public class HomeFragment extends Fragment {
 
         // Set up adapter and layout of recycler view
         entries = ParseApplication.entries;
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        layoutManager = new GridLayoutManager(getContext(), 2);
         adapter = new EntriesAdapter(this, entries, true);
         binding.rvEntries.setLayoutManager(layoutManager);
         binding.rvEntries.setAdapter(adapter);
@@ -57,9 +60,9 @@ public class HomeFragment extends Fragment {
         if (animator != null) animator.setSupportsChangeAnimations(false);
 
         // Button listeners
-        binding.btnLogOut.setOnClickListener(this::logOutOnClick);
         binding.btnCreate.setOnClickListener(this::createOnClick);
         binding.tvCreate.setOnClickListener(this::createOnClick);
+        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
 
         // Add entries to the recycler view
         queryEntries(0);
@@ -98,15 +101,16 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    /* Logs out and returns to the login page. */
-    private void logOutOnClick(View view) {
-        ParseUser.logOut();
-        Intent i = new Intent(getContext(), LoginActivity.class);
-        startActivity(i);
-        entries.clear();
-        ParseApplication.backlogItems.clear();
-        ParseApplication.seenMediaIds.clear();
-        if (getActivity() != null) getActivity().finish();
+    /* Toggles between list and grid layouts. */
+    public void switchLayout() {
+        if (layoutManager.getSpanCount() == 1) {
+            layoutManager.setSpanCount(2);
+            adapter.setGridView(true);
+        } else {
+            layoutManager.setSpanCount(1);
+            adapter.setGridView(false);
+        }
+        adapter.notifyItemRangeChanged(0, entries.size());
     }
 
     /* Creates an entry and adds it to the beginning of the list. */

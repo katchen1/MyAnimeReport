@@ -23,9 +23,18 @@
             android:background="@color/dark_gray">
 
             <ImageView
-                android:id="@+id/ivImage"
+                android:id="@+id/ivImageStart"
+                android:layout_width="50dp"
+                android:layout_height="70dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <ImageView
+                android:id="@+id/ivImageTop"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
+                android:layout_toEndOf="@id/ivImageStart"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 tools:src="@tools:sample/backgrounds/scenic" />
@@ -34,7 +43,8 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ivImage"
+                android:layout_below="@id/ivImageTop"
+                android:layout_toEndOf="@id/ivImageStart"
                 android:layout_marginVertical="5dp"
                 android:layout_marginHorizontal="10dp"
                 android:textSize="16sp"
@@ -46,6 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tvTitle"
+                android:layout_toEndOf="@id/ivImageStart"
                 android:layout_marginVertical="5dp"
                 android:layout_marginHorizontal="10dp">
 

@@ -33,6 +33,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     private final Context context;
     private final List<Entry> entries;
     private final boolean editable;
+    private boolean gridView;
 
     /* Constructor takes the fragment and the list of entries in the recycler view. */
     public EntriesAdapter(Fragment fragment, List<Entry> entries, boolean editable) {
@@ -40,6 +41,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         this.context = fragment.getContext();
         this.entries = entries;
         this.editable = editable;
+        this.gridView = true;
     }
 
     /* Creates a view holder for the entry. */
@@ -60,6 +62,10 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     @Override
     public int getItemCount() {
         return entries.size();
+    }
+
+    public void setGridView(boolean gridView) {
+        this.gridView = gridView;
     }
 
     /* Defines the view holder for a entry. */
@@ -110,7 +116,15 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's anime-relevant data to the view's components. */
         public void loadAnimeData(Anime anime) {
-            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
+            if (gridView) {
+                binding.ivImageTop.setVisibility(View.VISIBLE);
+                binding.ivImageStart.setVisibility(View.GONE);
+                Glide.with(context).load(anime.getBannerImage()).into(binding.ivImageTop);
+            } else {
+                binding.ivImageTop.setVisibility(View.GONE);
+                binding.ivImageStart.setVisibility(View.VISIBLE);
+                Glide.with(context).load(anime.getCoverImage()).into(binding.ivImageStart);
+            }
             binding.tvTitle.setText(anime.getTitleEnglish());
         }
 
