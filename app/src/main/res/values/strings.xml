@@ -47,6 +47,6 @@
     <string name="genre_breakdown_by_year">Genre Breakdown by Year</string>
     <string name="backlog_item_details">Backlog Item Details</string>
     <string name="no_user_data_click_to_add_an_entry">No user data. Click \'+\' to add an entry!</string>
-    <string name="create_an_entry">Create an entry.</string>
+    <string name="create_an_entry">Add an entry.</string>
     <string name="no_data">No data.</string>
 </resources>
