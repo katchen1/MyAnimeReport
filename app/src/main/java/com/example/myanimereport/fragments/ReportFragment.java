@@ -277,7 +277,8 @@ public class ReportFragment extends Fragment {
                 int genreCount = 0;
                 if (yearToList.containsKey(year)) {
                     for (Entry entry: yearToList.get(year)) {
-                        if (entry.getAnime().getGenres().contains(genre)) genreCount++;
+                        if (entry.getAnime() != null && entry.getAnime().getGenres().contains(genre))
+                            genreCount++;
                     }
                 }
                 genreCounts[i++] = genreCount;
