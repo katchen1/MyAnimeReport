@@ -1,5 +1,6 @@
 package com.example.myanimereport.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myanimereport.R;
+import com.example.myanimereport.activities.EntryActivity;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
@@ -40,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /* Charts included:
  * 1. Overview [Score Cards]
@@ -89,9 +94,15 @@ public class ReportFragment extends Fragment {
         if (hidden) return;
         entries = ParseApplication.entries;
 
+        // Check if user has data
         if (entries.isEmpty()) {
-            // Do something to indicate no data
+            binding.scrollView.setVisibility(View.INVISIBLE);
+            binding.rlMessage.setVisibility(View.VISIBLE);
+            binding.tvCreate.setOnClickListener(this::createOnClick);
             return;
+        } else {
+            binding.scrollView.setVisibility(View.VISIBLE);
+            binding.rlMessage.setVisibility(View.INVISIBLE);
         }
 
         // Generate the maps
@@ -399,6 +410,18 @@ public class ReportFragment extends Fragment {
         if (color != -1) dataSet.setColor(color);
         if (colors != null) dataSet.setColors(colors);
         dataSet.setDrawValues(false);
+    }
+
+    /* Creates an entry from the home fragment. */
+    public void createOnClick(View view) {
+        Intent i = new Intent(getContext(), EntryActivity.class);
+        FragmentManager manager = getFragmentManager();
+        if (manager == null) return;
+        Fragment homeFragment = manager.findFragmentByTag("home");
+        if (homeFragment == null) return;
+        homeFragment.startActivityForResult(i, HomeFragment.NEW_ENTRY_REQUEST_CODE);
+        manager.beginTransaction().hide(this).show(homeFragment).commit();
+        MainActivity.binding.navView.setSelectedItemId(R.id.navigation_home);
     }
 
     @Override

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/dark_gray"
-    tools:context=".fragments.BacklogFragment">
+    android:fitsSystemWindows="false">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -36,5 +36,7 @@
         android:id="@+id/rvBacklogItems"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/appBar" />
-</RelativeLayout>
+        android:layout_below="@id/appBar"
+        android:background="@color/dark_gray"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

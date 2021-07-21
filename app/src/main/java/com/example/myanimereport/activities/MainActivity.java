@@ -15,10 +15,12 @@ import com.example.myanimereport.fragments.ReportFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Hide status bar
