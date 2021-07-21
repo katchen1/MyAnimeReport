@@ -3,7 +3,7 @@
     <string name="title_home">Watched</string>
     <string name="title_report">Report</string>
     <string name="title_match">Match</string>
-    <string name="title_backlog">Backlog</string>
+    <string name="title_backlog">Accepted Matches</string>
     <string name="test">Test</string>
     <string name="_10">/10</string>
     <string name="username">Username</string>
@@ -49,4 +49,5 @@
     <string name="no_user_data_click_to_add_an_entry">No user data. Click \'+\' to add an entry!</string>
     <string name="create_an_entry">Add an entry.</string>
     <string name="no_data">No data.</string>
+    <string name="accept_a_match">Accept a match.</string>
 </resources>
