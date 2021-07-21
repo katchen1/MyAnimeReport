@@ -115,10 +115,12 @@ public class ReportFragment extends Fragment {
             yearToList.get(year).add(entry);
 
             // Genre to entries map
-            List<String> genres = entry.getAnime().getGenres();
-            for (String genre: genres) {
-                if (!genreToList.containsKey(genre)) genreToList.put(genre, new ArrayList<>());
-                genreToList.get(genre).add(entry);
+            if (entry.getAnime() != null) {
+                List<String> genres = entry.getAnime().getGenres();
+                for (String genre : genres) {
+                    if (!genreToList.containsKey(genre)) genreToList.put(genre, new ArrayList<>());
+                    genreToList.get(genre).add(entry);
+                }
             }
         }
 
