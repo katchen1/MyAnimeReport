@@ -53,4 +53,6 @@
     <string name="edit_name">Edit Name</string>
     <string name="edit_password">Edit Password</string>
     <string name="list_layout">List Layout</string>
+    <string name="entry_creation_date">Entry Creation Date</string>
+    <string name="anime_title">Anime Title</string>
 </resources>
