@@ -25,6 +25,7 @@ import org.parceler.Parcels;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 public class EntryActivity extends AppCompatActivity {
 
@@ -34,7 +35,6 @@ public class EntryActivity extends AppCompatActivity {
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
     private Entry entry; // The entry being edited
-    private Anime anime; // The anime of the entry
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +71,14 @@ public class EntryActivity extends AppCompatActivity {
             mediaId = entry.getMediaId();
 
             // Populate the views
-            anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
-            binding.etTitle.setText(anime.getTitleEnglish());
-            binding.npMonthWatched.setValue(entry.getMonthWatched());
-            binding.npYearWatched.setValue(entry.getYearWatched());
-            binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
-            binding.etNote.setText(entry.getNote());
+            // The anime of the entry
+            Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
+            if (anime == null) return;
+            if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
+            if (entry.getMonthWatched() != null) binding.npMonthWatched.setValue(entry.getMonthWatched());
+            if (entry.getYearWatched() != null) binding.npYearWatched.setValue(entry.getYearWatched());
+            if (entry.getRating() != null) binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+            if (entry.getNote() != null) binding.etNote.setText(entry.getNote());
         }
 
 
@@ -139,8 +141,9 @@ public class EntryActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Response<MediaDetailsByTitleQuery.Data> response) {
                     // View editing needs to happen on the main thread, not the background thread
                     runOnUiThread(() -> {
-                        // Try to find the English or Romaji title
-                        MediaFragment media = response.getData().Media().fragments().mediaFragment();
+                        // Try to find the English or Romaji title (with null checking)
+                        MediaFragment media = Objects.requireNonNull(Objects.requireNonNull(
+                                response.getData()).Media()).fragments().mediaFragment();
                         String title = media.title().english();
                         if (title == null) title = media.title().romaji();
 

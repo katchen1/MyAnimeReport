@@ -46,10 +46,12 @@ public class BacklogItemDetailsActivity extends AppCompatActivity {
 
     /* Shows the backlog item's information. */
     public void populateBacklogItemView() {
-        Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
-        binding.tvTitle.setText(anime.getTitleEnglish());
-        binding.cvItem.setStrokeColor(anime.getColor());
-        binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
+        if (anime == null) finish();
+        if (anime.getCoverImage() != null) Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
+        if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
+        if (anime.getColor() != null) binding.cvItem.setStrokeColor(anime.getColor());
+        if (anime.getAverageScore() != null) binding.tvRating.setText(String.format(Locale.getDefault(),
+                "%.1f", anime.getAverageScore()));
     }
 
     /* Shows the anime's details. */

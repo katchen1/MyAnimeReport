@@ -5,12 +5,10 @@ import android.graphics.Color;
 import com.apollographql.apollo.api.Response;
 import com.example.MediaDetailsByIdQuery;
 import com.example.fragment.MediaFragment;
-import com.example.myanimereport.R;
-
 import org.parceler.Parcel;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /* A media object from the AniList API. */
 @Parcel
@@ -68,38 +66,36 @@ public class Anime {
 
     /* Alternative constructor (from GraphQL response object). */
     public Anime(Response<MediaDetailsByIdQuery.Data> response) {
-        MediaFragment media = response.getData().Media().fragments().mediaFragment();
+
+        MediaFragment media = Objects.requireNonNull(
+                Objects.requireNonNull(response.getData()).Media()).fragments().mediaFragment();
         mediaId = media.id();
-        this.titleEnglish = media.title().english();
-        this.titleRomaji = media.title().romaji();
-        this.titleNative = media.title().native_();
+        this.titleEnglish = Objects.requireNonNull(media.title()).english();
+        this.titleRomaji = Objects.requireNonNull(media.title()).romaji();
+        this.titleNative = Objects.requireNonNull(media.title()).native_();
         this.description = media.description();
-        if (media.averageScore() != null) {
-            this.averageScore = media.averageScore() / 10.0;
-        }
+        this.averageScore = Objects.requireNonNull(media.averageScore()) / 10.0;
         this.seasonYear = media.seasonYear();
-        this.coverImage = media.coverImage().extraLarge();
+        this.coverImage = Objects.requireNonNull(media.coverImage()).extraLarge();
         this.bannerImage = media.bannerImage();
         this.genres = media.genres();
-        this.color = media.coverImage().color();
+        this.color = Objects.requireNonNull(media.coverImage()).color();
         this.episodes = media.episodes();
     }
 
     /* Alternative constructor (from MediaFragment). */
     public Anime(MediaFragment media) {
         mediaId = media.id();
-        this.titleEnglish = media.title().english();
-        this.titleRomaji = media.title().romaji();
-        this.titleNative = media.title().native_();
+        this.titleEnglish = Objects.requireNonNull(media.title()).english();
+        this.titleRomaji = Objects.requireNonNull(media.title()).romaji();
+        this.titleNative = Objects.requireNonNull(media.title()).native_();
         this.description = media.description();
-        if (media.averageScore() != null) {
-            this.averageScore = media.averageScore() / 10.0;
-        }
+        this.averageScore = media.averageScore() != null? media.averageScore() / 10.0: -1;
         this.seasonYear = media.seasonYear();
-        this.coverImage = media.coverImage().extraLarge();
+        this.coverImage = Objects.requireNonNull(media.coverImage()).extraLarge();
         this.bannerImage = media.bannerImage();
         this.genres = media.genres();
-        this.color = media.coverImage().color();
+        this.color = Objects.requireNonNull(media.coverImage()).color();
         this.episodes = media.episodes();
     }
 
@@ -111,10 +107,6 @@ public class Anime {
     public String getTitleEnglish() {
         return titleEnglish != null? titleEnglish: titleRomaji;
     }
-
-    public String getTitleRomaji() { return titleRomaji; }
-
-    public String getTitleNative() { return titleNative; }
 
     public String getDescription() {
         return description;
