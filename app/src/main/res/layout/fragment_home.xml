@@ -98,6 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_baseline_add_24"
+        android:backgroundTint="@color/theme"
         app:maxImageSize="36dp"
         app:tint="@color/dark_gray"
         android:contentDescription="@string/create_an_entry"
