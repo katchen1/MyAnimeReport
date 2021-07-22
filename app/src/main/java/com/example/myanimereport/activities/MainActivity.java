@@ -23,6 +23,8 @@ import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.fragments.MatchFragment;
 import com.example.myanimereport.fragments.ReportFragment;
+import com.example.myanimereport.models.BacklogItem;
+import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.LogInCallback;
@@ -308,8 +310,6 @@ public class MainActivity extends AppCompatActivity {
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
 
-        // Hide status bar of the alert dialog's window
-        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         alertDialog.show();
     }
 
@@ -342,8 +342,52 @@ public class MainActivity extends AppCompatActivity {
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
 
-        // Hide status bar of the alert dialog's window
-        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        alertDialog.show();
+    }
+
+    /* Deletes all entries of the current user. */
+    public void deleteAllEntriesOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
+                .setTitle("Delete All Entries")
+                .setMessage("Are you sure?")
+                .setPositiveButton("Delete All", (dialog, which) -> {
+                    for (Entry entry: ParseApplication.entries) {
+                        entry.deleteInBackground();
+                    }
+                    ParseApplication.entries.clear();
+                    Toast.makeText(MainActivity.this, "Entries deleted.", Toast.LENGTH_SHORT).show();
+                    HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+                    if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+                    homeFragment.checkEntriesExist();
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+                .create();
+
+        alertDialog.show();
+    }
+
+    /* Deletes all backlog items of the current user. */
+    public void deleteBacklogOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
+            .setTitle("Delete All Backlog Items")
+            .setMessage("Are you sure?")
+            .setPositiveButton("Delete All", (dialog, which) -> {
+                for (BacklogItem item: ParseApplication.backlogItems) {
+                    item.deleteInBackground();
+                }
+                ParseApplication.backlogItems.clear();
+                Toast.makeText(MainActivity.this, "Backlog deleted.", Toast.LENGTH_SHORT).show();
+                BacklogFragment backlogFragment = (BacklogFragment) manager.findFragmentByTag("backlog");
+                if (backlogFragment != null) backlogFragment.getAdapter().notifyDataSetChanged();
+                backlogFragment.checkItemsExist();
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .create();
+
         alertDialog.show();
     }
 }

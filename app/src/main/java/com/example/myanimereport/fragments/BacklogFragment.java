@@ -84,6 +84,11 @@ public class BacklogFragment extends Fragment {
         checkItemsExist();
     }
 
+    /* Returns the adapter. */
+    public BacklogItemsAdapter getAdapter() {
+        return adapter;
+    }
+
     /* Queries the items 10 at a time. Skips the first skip items. */
     public void queryBacklogItems(int skip) {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
@@ -107,7 +112,7 @@ public class BacklogFragment extends Fragment {
     }
 
     /* Shows a message if user has no backlog items. */
-    private void checkItemsExist() {
+    public void checkItemsExist() {
         if (items.isEmpty()) {
             binding.rvBacklogItems.setVisibility(View.INVISIBLE);
             binding.rlMessage.setVisibility(View.VISIBLE);

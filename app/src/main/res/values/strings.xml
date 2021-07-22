@@ -61,4 +61,6 @@
     <string name="confirm_new_password">Confirm new password</string>
     <string name="new_name">New name</string>
     <string name="watch_date">Watch Date</string>
+    <string name="delete_all_entries">Delete All Entries</string>
+    <string name="delete_all_backlog_items">Delete All Backlog Items</string>
 </resources>

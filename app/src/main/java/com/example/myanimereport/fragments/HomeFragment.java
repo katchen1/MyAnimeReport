@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment {
     }
 
     /* Shows a message if user has no entries. */
-    private void checkEntriesExist() {
+    public void checkEntriesExist() {
         if (entries.isEmpty()) {
             binding.rvEntries.setVisibility(View.INVISIBLE);
             binding.rlMessage.setVisibility(View.VISIBLE);
