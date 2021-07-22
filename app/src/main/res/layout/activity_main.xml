@@ -353,6 +353,64 @@
                     android:textSize="16sp"
                     android:textColor="@color/light_gray"/>
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnDeleteAllEntries"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:onClick="deleteAllEntriesOnClick"
+                android:visibility="visible"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ivDeleteAllEntries"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_baseline_delete_24"
+                    android:background="@color/dark_gray"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvDeleteAllEntries"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/delete_all_entries"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnDeleteBacklog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:onClick="deleteBacklogOnClick"
+                android:visibility="visible"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ivDeleteBacklog"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_baseline_delete_24"
+                    android:background="@color/dark_gray"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvDeleteBacklog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/delete_all_backlog_items"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>
