@@ -47,7 +47,6 @@ public class Entry extends ParseObject {
     }
 
     public void setAnime() {
-        System.out.println("SET ANIME");
         ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
                 @Override
@@ -64,7 +63,6 @@ public class Entry extends ParseObject {
     }
 
     public static void setAnimes(List<Entry> entries) {
-        System.out.println("Set animes.");
         List<Integer> ids = new ArrayList<>();
         for (Entry entry: entries) ids.add(entry.getMediaId());
         ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(1, ids)).enqueue(
