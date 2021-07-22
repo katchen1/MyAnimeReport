@@ -1,20 +1,32 @@
 package com.example.myanimereport.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.myanimereport.R;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.example.myanimereport.databinding.ActivityMainBinding;
+import com.example.myanimereport.databinding.EditNameBinding;
+import com.example.myanimereport.databinding.EditPasswordBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.fragments.MatchFragment;
 import com.example.myanimereport.fragments.ReportFragment;
 import com.example.myanimereport.models.ParseApplication;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
 import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -234,5 +246,64 @@ public class MainActivity extends AppCompatActivity {
         binding.btnSortAnimeTitle.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /* Allows the user to edit their name. */
+    public void editNameOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        EditNameBinding dialogBinding = EditNameBinding.inflate(getLayoutInflater());
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
+            .setView(dialogBinding.getRoot())
+            .setPositiveButton("Save", (dialog, which) -> {
+                ParseUser.getCurrentUser().put("name", dialogBinding.etName.getText().toString());
+                ParseUser.getCurrentUser().saveInBackground(e -> {
+                    if (e == null) {
+                        Toast.makeText(MainActivity.this, "Name saved.", Toast.LENGTH_SHORT).show();
+                        binding.tvName.setText(dialogBinding.etName.getText().toString());
+                    } else {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .create();
+
+        // Hide status bar of the alert dialog's window
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        alertDialog.show();
+    }
+
+    /* Allows the user to edit their password. */
+    public void editPasswordOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        EditPasswordBinding dialogBinding = EditPasswordBinding.inflate(getLayoutInflater());
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
+            .setView(dialogBinding.getRoot())
+            .setPositiveButton("Save", (dialog, which) -> {
+                String oldPassword = dialogBinding.etOldPassword.getText().toString();
+                String password = dialogBinding.etPassword.getText().toString();
+                String confirmPassword = dialogBinding.etConfirmPassword.getText().toString();
+
+                // Change password
+                ParseUser.logInInBackground(ParseUser.getCurrentUser().getUsername(), oldPassword, (user, e) -> {
+                    if (user != null) {
+                        if (!password.equals(confirmPassword)) {
+                            Toast.makeText(MainActivity.this, "New passwords do not match.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        ParseUser.getCurrentUser().setPassword(password);
+                        ParseUser.getCurrentUser().saveInBackground();
+                        Toast.makeText(MainActivity.this, "Password updated.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Old password is incorrect.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .create();
+
+        // Hide status bar of the alert dialog's window
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        alertDialog.show();
     }
 }
