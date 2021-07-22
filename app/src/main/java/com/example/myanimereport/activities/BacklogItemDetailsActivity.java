@@ -31,8 +31,7 @@ public class BacklogItemDetailsActivity extends AppCompatActivity {
         binding = ActivityBacklogItemDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Hide status bar and action bar
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
         // Get the passed in data
@@ -87,8 +86,6 @@ public class BacklogItemDetailsActivity extends AppCompatActivity {
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
 
-        // Hide status bar of the alert dialog's window
-        alertDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
         alertDialog.show();
     }
 }
