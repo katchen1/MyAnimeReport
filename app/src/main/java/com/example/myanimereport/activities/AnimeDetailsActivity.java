@@ -24,8 +24,7 @@ public class AnimeDetailsActivity extends AppCompatActivity {
         binding = ActivityAnimeDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Hide status bar and action bar
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
         // Fill in anime's info
