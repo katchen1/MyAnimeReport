@@ -64,13 +64,15 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
             });
         }
 
-        /* Binds the anime's data to the view's components. */
+        /* Binds the anime's data to the view's components (with null checking). */
         public void bind(Anime anime) {
-            Glide.with(context).load(anime.getCoverImage()).into(binding.ivImage);
-            binding.tvTitle.setText(anime.getTitleEnglish());
-            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
-            binding.tvDescription.setText(Html.fromHtml(anime.getDescription()));
-            binding.cvAnime.setStrokeColor(anime.getColor());
+            if (anime == null) return;
+            if (anime.getCoverImage() != null) Glide.with(context).load(anime.getCoverImage()).into(binding.ivImage);
+            if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
+            if (anime.getAverageScore() != null) binding.tvRating.setText(String.format(Locale.getDefault(),
+                    "%.1f", anime.getAverageScore()));
+            if (anime.getDescription() != null) binding.tvDescription.setText(Html.fromHtml(anime.getDescription()));
+            if (anime.getColor() != null) binding.cvAnime.setStrokeColor(anime.getColor());
 
             // Handle values that may be null - hide the views
             if (anime.getSeasonYear() == null) binding.llYear.setVisibility(View.GONE);
@@ -81,15 +83,17 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
             else binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
 
             // Fill in genres chip group
-            ChipGroup cgGenres = binding.cgGenres;
-            cgGenres.removeAllViews();
-            for (String genre: anime.getGenres()) {
-                Chip chip = new Chip(context);
-                chip.setText(genre);
-                chip.setChipBackgroundColorResource(R.color.white);
-                chip.setTextColor(ContextCompat.getColor(context, R.color.dark_gray));
-                chip.setEnabled(false);
-                cgGenres.addView(chip);
+            if (anime.getGenres() != null) {
+                ChipGroup cgGenres = binding.cgGenres;
+                cgGenres.removeAllViews();
+                for (String genre : anime.getGenres()) {
+                    Chip chip = new Chip(context);
+                    chip.setText(genre);
+                    chip.setChipBackgroundColorResource(R.color.white);
+                    chip.setTextColor(ContextCompat.getColor(context, R.color.dark_gray));
+                    chip.setEnabled(false);
+                    cgGenres.addView(chip);
+                }
             }
         }
     }

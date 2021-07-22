@@ -1,0 +1,14 @@
+query MediaDetailsByIdList($page:Int!, $id_in:[Int]!) {
+    Page (page: $page, perPage: 50) {
+        pageInfo {
+          total
+          currentPage
+          lastPage
+          hasNextPage
+        }
+
+        media (type: ANIME, id_in: $id_in) {
+          ...mediaFragment
+        }
+    }
+}

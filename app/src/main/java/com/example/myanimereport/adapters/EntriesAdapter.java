@@ -76,9 +76,15 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's data to the view's components. */
         public void bind(Entry entry) {
+            if (entry == null) return;
+
             // Set data unrelated to the anime
-            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
-            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+            if (entry.getYearWatched() != null) {
+                binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
+            }
+            if (entry.getRating() != null) {
+                binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+            }
 
             // Use pre-queried anime to prevent excessive network requests
             if (entry.getAnime() != null) {
@@ -110,8 +116,8 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's anime-relevant data to the view's components. */
         public void loadAnimeData(Anime anime) {
-            Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
-            binding.tvTitle.setText(anime.getTitleEnglish());
+            if (anime.getBannerImage() != null) Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
+            if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
         }
 
         /* When the entry card is clicked, expand it to show its full information. */
