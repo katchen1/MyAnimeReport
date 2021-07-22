@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         binding.btnSortCreationDate.setVisibility(targetVisibility);
         binding.btnSortAnimeTitle.setVisibility(targetVisibility);
         binding.btnSortRating.setVisibility(targetVisibility);
+        binding.btnSortWatchDate.setVisibility(targetVisibility);
     }
 
     /* Sorts by creation date. */
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
         // Reset default order for other sort types
         binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
         binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        binding.ivSortWatchDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
 
         // Notify adapter
         HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
@@ -175,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         binding.btnSortCreationDate.setVisibility(View.GONE);
         binding.btnSortAnimeTitle.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
@@ -202,12 +205,14 @@ public class MainActivity extends AppCompatActivity {
         // Reset default order for other sort types
         binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
         binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        binding.ivSortWatchDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
 
         HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
         if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
         binding.btnSortCreationDate.setVisibility(View.GONE);
         binding.btnSortAnimeTitle.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
@@ -235,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
         // Reset default order for other sort types
         binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
         binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        binding.ivSortWatchDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
 
         // Notify adapter
         HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
@@ -242,6 +248,43 @@ public class MainActivity extends AppCompatActivity {
         binding.btnSortCreationDate.setVisibility(View.GONE);
         binding.btnSortAnimeTitle.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /* Sorts by watch date. */
+    public void btnSortWatchDateOnClick(View view) {
+        boolean descending = sortedBy.equals("watchDateDescending");
+
+        // If already descending, sort ascending
+        if (descending) {
+            ParseApplication.entries.sort((e1, e2) -> e1.getDateWatched().compareTo(e2.getDateWatched()));
+            sortedBy = "watchDateAscending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+            binding.ivSortWatchDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        }
+
+        // Otherwise sort descending
+        else {
+            ParseApplication.entries.sort((e1, e2) -> e2.getDateWatched().compareTo(e1.getDateWatched()));
+            sortedBy = "watchDateDescending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+            binding.ivSortWatchDate.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        }
+        binding.tvSort.setText(R.string.watch_date);
+
+        // Reset default order for other sort types
+        binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+
+        // Notify adapter
+        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+        if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortAnimeTitle.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
