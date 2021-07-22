@@ -265,6 +265,36 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnSortWatchDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:layout_marginStart="10dp"
+                android:onClick="btnSortWatchDateOnClick"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ivSortWatchDate"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_baseline_arrow_downward_24"
+                    android:background="@color/dark_gray"
+                    app:tint="@color/light_gray" />
+
+                <TextView
+                    android:id="@+id/tvSortWatchDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/watch_date"
+                    android:textSize="16sp"
+                    android:textColor="@color/light_gray"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnSortAnimeTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

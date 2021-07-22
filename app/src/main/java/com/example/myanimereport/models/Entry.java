@@ -12,8 +12,10 @@ import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /* Entry (Parse model). */
@@ -137,5 +139,9 @@ public class Entry extends ParseObject {
 
     public void setNote(String note) {
         put(KEY_NOTE, note);
+    }
+
+    public YearMonth getDateWatched() {
+        return YearMonth.of(getYearWatched(), getMonthWatched());
     }
 }
