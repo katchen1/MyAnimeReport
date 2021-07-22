@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static ActivityMainBinding binding;
     private FragmentManager manager;
+    private String sortedBy = "creationDateDescending";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +123,77 @@ public class MainActivity extends AppCompatActivity {
         }
         binding.tvLayoutType.setText(targetText);
         binding.ivLayoutType.setImageResource(targetResource);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /* Lets the user choose how to sort the entries. */
+    public void btnSortOnClick(View view) {
+        int currVisibility = binding.btnSortCreationDate.getVisibility();
+        int targetVisibility = currVisibility == View.VISIBLE? View.GONE: View.VISIBLE;
+        binding.btnSortCreationDate.setVisibility(targetVisibility);
+        binding.btnSortAnimeTitle.setVisibility(targetVisibility);
+    }
+
+    /* Sorts by creation date. */
+    public void btnSortCreationDateOnClick(View view) {
+        boolean descending = sortedBy.equals("creationDateDescending");
+
+        // If already descending, sort ascending
+        if (descending) {
+            ParseApplication.entries.sort((e1, e2) -> e1.getCreatedAt().compareTo(e2.getCreatedAt()));
+            sortedBy = "creationDateAscending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+            binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        }
+
+        // Otherwise sort descending
+        else {
+            ParseApplication.entries.sort((e1, e2) -> e2.getCreatedAt().compareTo(e1.getCreatedAt()));
+            sortedBy = "creationDateDescending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+            binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        }
+        binding.tvSort.setText(R.string.entry_creation_date);
+
+        // Reset default order for other sort types
+        binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+
+        // Notify adapter
+        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+        if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortAnimeTitle.setVisibility(View.GONE);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /* Sorts by anime title. */
+    public void btnSortAnimeTitleOnClick(View view) {
+        boolean ascending = sortedBy.equals("titleAscending");
+
+        // If already ascending, sort descending
+        if (ascending) {
+            ParseApplication.entries.sort((e1, e2) -> e2.getAnime().getTitleEnglish().compareTo(e1.getAnime().getTitleEnglish()));
+            sortedBy = "titleDescending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+            binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        }
+
+        // Otherwise sort ascending
+        else {
+            ParseApplication.entries.sort((e1, e2) -> e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
+            sortedBy = "titleAscending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+            binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        }
+        binding.tvSort.setText(R.string.anime_title);
+
+        // Reset default order for other sort types
+        binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+
+        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+        if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortAnimeTitle.setVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 }

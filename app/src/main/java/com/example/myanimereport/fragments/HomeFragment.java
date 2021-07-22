@@ -130,6 +130,10 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    public EntriesAdapter getAdapter() {
+        return adapter;
+    }
+
     /* After returning from a entry activity, update the entry at its position. */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
