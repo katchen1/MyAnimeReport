@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         int targetVisibility = currVisibility == View.VISIBLE? View.GONE: View.VISIBLE;
         binding.btnSortCreationDate.setVisibility(targetVisibility);
         binding.btnSortAnimeTitle.setVisibility(targetVisibility);
+        binding.btnSortRating.setVisibility(targetVisibility);
     }
 
     /* Sorts by creation date. */
@@ -157,12 +158,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Reset default order for other sort types
         binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
 
         // Notify adapter
         HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
         if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
         binding.btnSortCreationDate.setVisibility(View.GONE);
         binding.btnSortAnimeTitle.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
@@ -189,11 +192,47 @@ public class MainActivity extends AppCompatActivity {
 
         // Reset default order for other sort types
         binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
 
         HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
         if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
         binding.btnSortCreationDate.setVisibility(View.GONE);
         binding.btnSortAnimeTitle.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /* Sorts by creation date. */
+    public void btnSortRatingOnClick(View view) {
+        boolean descending = sortedBy.equals("ratingDescending");
+
+        // If already descending, sort ascending
+        if (descending) {
+            ParseApplication.entries.sort((e1, e2) -> e1.getRating().compareTo(e2.getRating()));
+            sortedBy = "ratingAscending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+            binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        }
+
+        // Otherwise sort descending
+        else {
+            ParseApplication.entries.sort((e1, e2) -> e2.getRating().compareTo(e1.getRating()));
+            sortedBy = "ratingDescending";
+            binding.ivSort.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+            binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        }
+        binding.tvSort.setText(R.string.rating);
+
+        // Reset default order for other sort types
+        binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        binding.ivSortAnimeTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+
+        // Notify adapter
+        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+        if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortAnimeTitle.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 }
