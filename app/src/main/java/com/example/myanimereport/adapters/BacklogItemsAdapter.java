@@ -65,8 +65,9 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         /* Binds the item's data to the view's components. */
         public void bind(BacklogItem item) {
             Anime anime = item.getAnime();
-            binding.tvTitle.setText(anime.getTitleEnglish());
-            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
+            if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
+            if (anime.getAverageScore() != null) binding.tvRating.setText(String.format(Locale.getDefault(),
+                    "%.1f", anime.getAverageScore()));
         }
 
         /* When the backlog item is clicked, expand it to show the anime details. */
