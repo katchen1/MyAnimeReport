@@ -99,11 +99,8 @@ public class BacklogFragment extends Fragment {
             }
 
             // Add items to the recycler view and notify its adapter of new data
-            for (BacklogItem item: itemsFound) {
-                item.setAnime();
-                ParseApplication.seenMediaIds.add(item.getMediaId());
-                items.add(item);
-            }
+            BacklogItem.setAnimes(itemsFound);
+            items.addAll(itemsFound);
             adapter.notifyDataSetChanged();
             checkItemsExist();
         });

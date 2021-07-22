@@ -5,10 +5,16 @@ import androidx.annotation.NonNull;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
+import com.example.MediaAllQuery;
+import com.example.MediaDetailsByIdListQuery;
 import com.example.MediaDetailsByIdQuery;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /* Entry (Parse model). */
 @ParseClassName("Entry")
@@ -41,7 +47,6 @@ public class Entry extends ParseObject {
     }
 
     public void setAnime() {
-        System.out.println("SET ANIME");
         ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
                 @Override
@@ -52,6 +57,31 @@ public class Entry extends ParseObject {
                 @Override
                 public void onFailure(@NonNull ApolloException e) {
                     Log.e("Apollo", e.getMessage());
+                }
+            }
+        );
+    }
+
+    public static void setAnimes(List<Entry> entries) {
+        List<Integer> ids = new ArrayList<>();
+        for (Entry entry: entries) ids.add(entry.getMediaId());
+        ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(1, ids)).enqueue(
+            new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
+                @Override
+                public void onResponse(@NonNull Response<MediaDetailsByIdListQuery.Data> response) {
+                    if (response.getData().Page() == null) return;
+                    if (response.getData().Page().media() == null) return;
+                    for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
+                        Anime anime = new Anime(m.fragments().mediaFragment());
+                        ParseApplication.seenMediaIds.add(anime.getMediaId());
+                        int index = ids.indexOf(anime.getMediaId());
+                        entries.get(index).setAnime(anime);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull ApolloException e) {
+                    Log.e("Apollo", e.getMessage() + e.getCause());
                 }
             }
         );

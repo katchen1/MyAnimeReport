@@ -3,7 +3,6 @@ package com.example.myanimereport.activities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,11 +15,8 @@ import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import java.text.DateFormatSymbols;
 import java.util.Locale;
-
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.dialog.MaterialDialogs;
-
 import org.parceler.Parcels;
 
 public class EntryDetailsActivity extends AppCompatActivity {
@@ -57,12 +53,22 @@ public class EntryDetailsActivity extends AppCompatActivity {
 
     /* Shows the entry's information. */
     public void populateEntryView() {
+        if (entry == null || anime == null) finish();
+
         // Data unrelated to the anime
-        String month = (new DateFormatSymbols().getMonths()[entry.getMonthWatched() - 1]);
-        binding.tvMonthWatched.setText(month);
-        binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
-        binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
-        binding.tvNote.setText(entry.getNote());
+        if (entry.getMonthWatched() != null) {
+            String month = (new DateFormatSymbols().getMonths()[entry.getMonthWatched() - 1]);
+            binding.tvMonthWatched.setText(month);
+        }
+        if (entry.getYearWatched() != null) {
+            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
+        }
+        if (entry.getRating() != null) {
+            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+        }
+        if (entry.getNote() != null) {
+            binding.tvNote.setText(entry.getNote());
+        }
 
         // Data related to the anime
         Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
