@@ -14,6 +14,7 @@ import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,7 @@ import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.EndlessRecyclerViewScrollListener;
+import com.example.myanimereport.utils.SwipeToDeleteCallback;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.List;
@@ -60,6 +62,11 @@ public class BacklogFragment extends Fragment {
         binding.rvBacklogItems.setLayoutManager(layoutManager);
         binding.rvBacklogItems.setAdapter(adapter);
 
+        // Swipe to delete
+        ItemTouchHelper itemTouchHelper = new
+                ItemTouchHelper(new SwipeToDeleteCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(binding.rvBacklogItems);
+
         // Divider between items
         DividerItemDecoration divider = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
@@ -73,15 +80,6 @@ public class BacklogFragment extends Fragment {
                 queryBacklogItems(items.size());
             }
         });
-    }
-
-    /* When the backlog tab is clicked, refresh the recycler view. */
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) return;
-        adapter.notifyDataSetChanged(); // Items may have been added from the match tab
-        checkItemsExist();
     }
 
     /* Returns the adapter. */
@@ -131,17 +129,6 @@ public class BacklogFragment extends Fragment {
         if (matchFragment == null) return;
         manager.beginTransaction().hide(this).show(matchFragment).commit();
         MainActivity.binding.navView.setSelectedItemId(R.id.navigation_match);
-    }
-
-    /* After deleting an item from details activity, update the recycler view. */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == VIEW_BACKLOG_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            int position = data.getIntExtra("position", -1);
-            items.remove(position);
-            adapter.notifyItemRemoved(position);
-            checkItemsExist();
-        }
     }
 
     @Override
