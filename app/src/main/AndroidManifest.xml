@@ -12,9 +12,6 @@
         android:theme="@style/Theme.MyAnimeReport">
 
         <activity
-            android:name=".activities.BacklogItemDetailsActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activities.AnimeDetailsActivity"
             android:screenOrientation="portrait" />
         <activity

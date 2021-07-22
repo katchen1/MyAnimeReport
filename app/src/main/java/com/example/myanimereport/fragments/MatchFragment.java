@@ -11,10 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaAllQuery;
+import com.example.myanimereport.R;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.CardStackAdapter;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
@@ -158,6 +161,9 @@ public class MatchFragment extends Fragment implements CardStackListener {
                 if (e == null) {
                     ParseApplication.backlogItems.add(item);
                     Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
+                    FragmentManager manager = getFragmentManager();
+                    BacklogFragment backlog = (BacklogFragment) manager.findFragmentByTag("backlog");
+                    backlog.getAdapter().notifyItemInserted(ParseApplication.backlogItems.size() - 1);
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }

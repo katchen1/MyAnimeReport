@@ -47,13 +47,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="expandOnClick"
-                android:layout_marginVertical="5dp">
+                android:paddingVertical="5dp">
 
                 <ImageButton
                     android:id="@+id/ivProfileImage"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_centerVertical="true"
+                    android:onClick="expandOnClick"
                     android:backgroundTint="@color/white"
                     android:background="@drawable/ic_baseline_account_circle_24"/>
 
@@ -85,6 +86,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@color/dark_gray"
+                    android:onClick="expandOnClick"
                     android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
                     app:tint="@color/white"/>
             </RelativeLayout>
@@ -93,9 +95,9 @@
                 android:id="@+id/btnEditName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
                 android:onClick="editNameOnClick"
                 android:visibility="gone"
+                android:paddingVertical="10dp"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -120,7 +122,7 @@
                 android:id="@+id/btnEditPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
+                android:paddingVertical="10dp"
                 android:onClick="editPasswordOnClick"
                 android:visibility="gone"
                 android:orientation="horizontal">
@@ -147,7 +149,7 @@
                 android:id="@+id/btnLogOut"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
+                android:paddingVertical="10dp"
                 android:onClick="logOutOnClick"
                 android:visibility="gone"
                 android:orientation="horizontal">
@@ -180,7 +182,7 @@
                 android:id="@+id/btnLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
+                android:paddingVertical="10dp"
                 android:onClick="btnLayoutOnClick"
                 android:visibility="visible"
                 android:orientation="horizontal">
@@ -209,7 +211,7 @@
                 android:id="@+id/btnSort"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
+                android:paddingVertical="10dp"
                 android:onClick="btnSortOnClick"
                 android:visibility="visible"
                 android:orientation="horizontal">
@@ -358,7 +360,7 @@
                 android:id="@+id/btnDeleteAllEntries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
+                android:paddingVertical="10dp"
                 android:onClick="deleteAllEntriesOnClick"
                 android:visibility="visible"
                 android:orientation="horizontal">
@@ -387,7 +389,7 @@
                 android:id="@+id/btnDeleteBacklog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
+                android:paddingVertical="10dp"
                 android:onClick="deleteBacklogOnClick"
                 android:visibility="visible"
                 android:orientation="horizontal">

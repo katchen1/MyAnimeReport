@@ -5,26 +5,29 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.myanimereport.activities.BacklogItemDetailsActivity;
+
+import com.example.myanimereport.activities.AnimeDetailsActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
+
 import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
 
 public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapter.ViewHolder> {
 
-    private final Fragment fragment;
+    private final BacklogFragment fragment;
     private final Context context;
     private final List<BacklogItem> items;
 
     /* Constructor takes the context and the list of backlog items in the recycler view. */
-    public BacklogItemsAdapter(Fragment fragment, List<BacklogItem> items) {
+    public BacklogItemsAdapter(BacklogFragment fragment, List<BacklogItem> items) {
         this.fragment = fragment;
         this.context = fragment.getContext();
         this.items = items;
@@ -48,6 +51,20 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    /* Returns the context of the adapter. */
+    public Context getContext() {
+        return context;
+    }
+
+    /* When user swipes to delete, remove the item and show a message. */
+    public void deleteItem(int position) {
+        items.get(position).deleteInBackground();
+        items.remove(position);
+        notifyItemRemoved(position);
+        fragment.checkItemsExist();
+        Toast.makeText(context, "Item deleted.", Toast.LENGTH_SHORT).show();
     }
 
     /* Defines the view holder for an item. */
@@ -82,11 +99,9 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
             }
 
             // Navigate to the anime details activity
-            Intent intent = new Intent(context, BacklogItemDetailsActivity.class);
-            intent.putExtra("item", item); // Pass in the entry
-            intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
+            Intent intent = new Intent(context, AnimeDetailsActivity.class);
             intent.putExtra("anime", Parcels.wrap(item.getAnime())); // Pass in the entry's anime
-            fragment.startActivityForResult(intent, BacklogFragment.VIEW_BACKLOG_ITEM_REQUEST_CODE);
+            fragment.startActivity(intent);
         }
     }
 }
