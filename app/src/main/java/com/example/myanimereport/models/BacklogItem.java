@@ -46,7 +46,6 @@ public class BacklogItem extends ParseObject {
     }
 
     public static void setAnimes(List<BacklogItem> items) {
-        System.out.println("Set animes.");
         List<Integer> ids = new ArrayList<>();
         for (BacklogItem item: items) ids.add(item.getMediaId());
         ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(1, ids)).enqueue(
