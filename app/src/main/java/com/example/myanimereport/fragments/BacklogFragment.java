@@ -88,7 +88,7 @@ public class BacklogFragment extends Fragment {
     public void queryBacklogItems(int skip) {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
-        query.setLimit(10); // Limit query to 10 items
+        query.setLimit(50); // Limit query to 50 items
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
         query.addAscendingOrder("createdAt"); // Order by creation date
         query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
