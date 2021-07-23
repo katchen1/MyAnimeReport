@@ -145,6 +145,12 @@ public class HomeFragment extends Fragment {
         return adapter;
     }
 
+    public void insertEntryAtFront(Entry entry) {
+        ParseApplication.entries.add(0, entry);
+        adapter.notifyItemInserted(0);
+        binding.rvEntries.smoothScrollToPosition(0);
+    }
+
     /* After returning from a entry activity, update the entry at its position. */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
