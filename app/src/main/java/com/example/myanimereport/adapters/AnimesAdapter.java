@@ -1,30 +1,17 @@
 package com.example.myanimereport.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
-import com.example.myanimereport.activities.AnimeDetailsActivity;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.databinding.ItemAnimeBinding;
-import com.example.myanimereport.databinding.ItemBacklogBinding;
-import com.example.myanimereport.fragments.BacklogFragment;
-import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
-import com.example.myanimereport.models.BacklogItem;
-
-import org.parceler.Parcels;
-
 import java.util.List;
-import java.util.Locale;
 
 public class AnimesAdapter extends RecyclerView.Adapter<AnimesAdapter.ViewHolder> {
 
@@ -33,7 +20,7 @@ public class AnimesAdapter extends RecyclerView.Adapter<AnimesAdapter.ViewHolder
     private final List<Anime> animes;
     private final EntryActivity activity;
 
-    /* Constructor takes the context and the list of backlog items in the recycler view. */
+    /* Constructor takes the context and the list of animes in the recycler view. */
     public AnimesAdapter(EntryActivity activity, EditText etTitle, List<Anime> animes) {
         this.activity = activity;
         this.etTitle = etTitle;
@@ -41,27 +28,26 @@ public class AnimesAdapter extends RecyclerView.Adapter<AnimesAdapter.ViewHolder
         this.animes = animes;
     }
 
-    /* Creates a view holder for the item. */
+    /* Creates a view holder for the anime. */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(ItemAnimeBinding.inflate(LayoutInflater.from(context)));
     }
 
-    /* Binds the item at the passed in position to the view holder. */
+    /* Binds the anime at the passed in position to the view holder. */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Anime anime = animes.get(position);
-        holder.bind(anime);
+        holder.bind(animes.get(position));
     }
 
-    /* Returns the number of items in the list. */
+    /* Returns the number of animes in the list. */
     @Override
     public int getItemCount() {
         return animes.size();
     }
 
-    /* Defines the view holder for an item. */
+    /* Defines the view holder for an anime. */
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final ItemAnimeBinding binding;
