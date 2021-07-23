@@ -7,23 +7,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+import com.example.myanimereport.R;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
+import com.example.myanimereport.databinding.GenreFilterBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
-import com.example.myanimereport.utils.EndlessRecyclerViewScrollListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -36,6 +42,7 @@ public class HomeFragment extends Fragment {
     private List<Entry> entries;
     private EntriesAdapter adapter;
     private GridLayoutManager layoutManager;
+    private List<String> selectedGenres;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -49,7 +56,9 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set up adapter and layout of recycler view
-        entries = ParseApplication.entries;
+        entries = new ArrayList<>();
+        entries.addAll(ParseApplication.entries);
+        selectedGenres = new ArrayList<>();
         layoutManager = new GridLayoutManager(getContext(), 2);
         adapter = new EntriesAdapter(this, entries, true);
         binding.rvEntries.setLayoutManager(layoutManager);
@@ -66,14 +75,6 @@ public class HomeFragment extends Fragment {
 
         // Add entries to the recycler view
         queryEntries(0);
-
-        // Endless scrolling
-        binding.rvEntries.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                queryEntries(entries.size());
-            }
-        });
     }
 
     /* Opens the navigation drawer. */
@@ -87,6 +88,7 @@ public class HomeFragment extends Fragment {
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.VISIBLE);
         binding.btnDeleteBacklog.setVisibility(View.GONE);
+        binding.btnFilter.setVisibility(View.VISIBLE);
         binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
@@ -106,6 +108,7 @@ public class HomeFragment extends Fragment {
 
             // Add entries to the recycler view and notify its adapter of new data
             Entry.setAnimes(entriesFound);
+            ParseApplication.entries.addAll(entriesFound);
             entries.addAll(entriesFound);
             adapter.notifyDataSetChanged();
             checkEntriesExist();
@@ -122,6 +125,59 @@ public class HomeFragment extends Fragment {
             adapter.setGridView(false);
         }
         adapter.notifyItemRangeChanged(0, entries.size());
+    }
+
+    /* Filters by genre. */
+    public void filterGenres () {
+        GenreFilterBinding dialogBinding = GenreFilterBinding.inflate(getLayoutInflater());
+
+        // Get available genres
+        List<String> genres = new ArrayList<>();
+        for (Entry entry: ParseApplication.entries) {
+            if (entry.getAnime() != null) {
+                for (String genre: entry.getAnime().getGenres()) {
+                    if (!genres.contains(genre)) genres.add(genre);
+                }
+            }
+        }
+        genres.sort(String::compareTo);
+        genres.add(0, "All");
+
+        // Add a checkbox for each genre
+        List<CheckBox> cbs = new ArrayList<>();
+        for (String genre: genres) {
+            CheckBox cb = new CheckBox(getContext());
+            cb.setText(genre);
+            cb.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            if ((selectedGenres.isEmpty() && !entries.isEmpty()) || selectedGenres.contains(genre)) cb.setChecked(true);
+            dialogBinding.llGenres.addView(cb);
+            cbs.add(cb);
+        }
+
+        // Handle "All" checkbox
+        cbs.get(0).setOnCheckedChangeListener((buttonView, isChecked) -> {
+            for (CheckBox cb: cbs) cb.setChecked(isChecked);
+        });
+
+        // Show the filter
+        new MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Genre Filter")
+            .setView(dialogBinding.getRoot())
+            .setPositiveButton("Save", (dialog, which) -> {
+                // Show only entries with selected genres
+                selectedGenres.clear();
+                for (CheckBox cb: cbs) if (cb.isChecked()) selectedGenres.add(cb.getText().toString());
+                entries.clear();
+                entries.addAll(ParseApplication.entries);
+                entries.removeIf(entry -> {
+                   if (entry.getAnime() == null) return true;
+                   return Collections.disjoint(entry.getAnime().getGenres(), selectedGenres);
+                });
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Genres updated.", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .show();
     }
 
     /* Creates an entry and adds it to the beginning of the list. */
@@ -145,8 +201,12 @@ public class HomeFragment extends Fragment {
         return adapter;
     }
 
+    /* Inserts an entry at the very front of the list. */
     public void insertEntryAtFront(Entry entry) {
         ParseApplication.entries.add(0, entry);
+        entries.clear();
+        entries.addAll(ParseApplication.entries);
+        selectedGenres.clear();
         adapter.notifyItemInserted(0);
         binding.rvEntries.smoothScrollToPosition(0);
     }
@@ -157,9 +217,7 @@ public class HomeFragment extends Fragment {
         if (requestCode == NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // A new entry was created, add it to the front of the list
             Entry entry = data.getParcelableExtra("entry");
-            entries.add(0, entry);
-            adapter.notifyItemInserted(0);
-            binding.rvEntries.smoothScrollToPosition(0); // Scroll to the top to see the new entry
+            insertEntryAtFront(entry);
         }
 
         if (requestCode == VIEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {

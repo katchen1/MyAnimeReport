@@ -93,6 +93,7 @@ public class BacklogFragment extends Fragment {
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.GONE);
         binding.btnDeleteBacklog.setVisibility(View.VISIBLE);
+        binding.btnFilter.setVisibility(View.GONE);
         binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 

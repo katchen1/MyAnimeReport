@@ -3,16 +3,20 @@ package com.example.myanimereport.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.example.myanimereport.R;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.EditNameBinding;
 import com.example.myanimereport.databinding.EditPasswordBinding;
+import com.example.myanimereport.databinding.GenreFilterBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.fragments.MatchFragment;
@@ -22,13 +26,21 @@ import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
     public static ActivityMainBinding binding;
     private FragmentManager manager;
     private String sortedBy = "Entry Creation Date Descending";
+    HomeFragment homeFragment;
+    ReportFragment reportFragment;
+    MatchFragment matchFragment;
+    BacklogFragment backlogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up fragments
         manager = getSupportFragmentManager();
-        final Fragment homeFragment = new HomeFragment();
-        final Fragment reportFragment = new ReportFragment();
-        final Fragment matchFragment = new MatchFragment();
-        final Fragment backlogFragment = new BacklogFragment();
+        homeFragment = new HomeFragment();
+        reportFragment = new ReportFragment();
+        matchFragment = new MatchFragment();
+        backlogFragment = new BacklogFragment();
 
         // Use a one-element array to store the active fragment to make it effectively final
         final Fragment[] activeFragment = { homeFragment };
@@ -120,8 +132,7 @@ public class MainActivity extends AppCompatActivity {
     /* Toggles between grid and list layouts for entries. */
     public void btnLayoutOnClick(View view) {
         // Change layout in the home fragment
-        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
-        if (homeFragment != null) homeFragment.switchLayout();
+        homeFragment.switchLayout();
 
         // Update UI
         String targetText = "Grid Layout";
@@ -197,8 +208,7 @@ public class MainActivity extends AppCompatActivity {
         binding.tvSort.setText(sortBy);
 
         // Notify adapter and close the drawer
-        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
-        if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+        homeFragment.getAdapter().notifyDataSetChanged();
         setSortVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
@@ -221,6 +231,11 @@ public class MainActivity extends AppCompatActivity {
     /* Sorts by watch date. */
     public void btnSortWatchDateOnClick(View view) {
         sort("Watch Date", binding.ivSortWatchDate);
+    }
+
+    /* Allows the user to filter anime genres. */
+    public void filterOnClick(View view) {
+        homeFragment.filterGenres();
     }
 
     /* Allows the user to edit their name. */
@@ -286,11 +301,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Entries deleted.", Toast.LENGTH_SHORT).show();
 
                 // Update UI
-                HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
-                if (homeFragment != null) {
-                    homeFragment.getAdapter().notifyDataSetChanged();
-                    homeFragment.checkEntriesExist();
-                }
+                homeFragment.getAdapter().notifyDataSetChanged();
+                homeFragment.checkEntriesExist();
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())

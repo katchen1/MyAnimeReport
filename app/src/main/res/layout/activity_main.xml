@@ -357,6 +357,35 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:onClick="filterOnClick"
+                android:visibility="visible"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ivFilter"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_baseline_filter_list_24"
+                    android:background="@color/dark_gray"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/genre_filter"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnDeleteAllEntries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
