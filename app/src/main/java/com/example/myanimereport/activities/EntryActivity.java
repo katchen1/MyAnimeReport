@@ -35,6 +35,7 @@ public class EntryActivity extends AppCompatActivity {
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
     private Entry entry; // The entry being edited
+    private Integer position; // Position of the anime in the backlog recycler view
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,14 @@ public class EntryActivity extends AppCompatActivity {
             mode = 0;
             binding.tvToolbar.setText(R.string.add_entry);
             mediaId = -1;
+
+            // Creating a new entry from a backlog anime
+            if (getIntent().hasExtra("anime")) {
+                Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
+                binding.etTitle.setText(anime.getTitleEnglish());
+                mediaId = anime.getMediaId();
+                position = getIntent().getIntExtra("position", -1);
+            }
         } else {
             // Editing an existing entry, set the entry to be the one passed in
             mode = 1;
@@ -233,6 +242,7 @@ public class EntryActivity extends AppCompatActivity {
                 Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("entry", entry);
+                intent.putExtra("position", position);
                 setResult(RESULT_OK, intent);
                 finish();
             } else {

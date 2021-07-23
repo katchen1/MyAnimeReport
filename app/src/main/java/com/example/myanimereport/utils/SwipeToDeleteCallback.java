@@ -14,15 +14,21 @@ import com.example.myanimereport.adapters.BacklogItemsAdapter;
 
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private final BacklogItemsAdapter adapter;
-    private final Drawable icon;
-    private final ColorDrawable background;
+    private final Drawable iconDelete, iconCheck;
+    private final ColorDrawable red, green;
+    private Drawable icon;
+    private ColorDrawable background;
 
     /* Constructor takes the backlog items adapter. */
     public SwipeToDeleteCallback(BacklogItemsAdapter adapter) {
-        super(0, ItemTouchHelper.LEFT);
+        super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         this.adapter = adapter;
-        icon = ContextCompat.getDrawable(adapter.getContext(), R.drawable.ic_baseline_delete_24);
-        background = new ColorDrawable(Color.RED);
+        iconDelete = ContextCompat.getDrawable(adapter.getContext(), R.drawable.ic_baseline_delete_24);
+        iconCheck = ContextCompat.getDrawable(adapter.getContext(), R.drawable.ic_baseline_check_24);
+        red = new ColorDrawable(Color.RED);
+        green = new ColorDrawable(Color.GREEN);
+        icon = iconDelete;
+        background = red;
     }
 
     @Override
@@ -33,7 +39,11 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     /* Deletes the item when user swipes left. */
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        adapter.deleteItem(viewHolder.getAdapterPosition());
+        if (direction == ItemTouchHelper.LEFT) {
+            adapter.deleteItem(viewHolder.getAdapterPosition());
+        } else if (direction == ItemTouchHelper.RIGHT) {
+            adapter.addItemAsEntry(viewHolder.getAdapterPosition());
+        }
     }
 
     /* Handles the UI effects of deleting to swipe. */
@@ -50,11 +60,21 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         int iconBottom = iconTop + icon.getIntrinsicHeight();
 
         if (dX < 0) { // Swiping to the left
+            icon = iconDelete;
+            background = red;
             int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
             int iconRight = itemView.getRight() - iconMargin;
             icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
             background.setBounds(itemView.getRight() + ((int) dX),
                     itemView.getTop(), itemView.getRight(), itemView.getBottom());
+        } else if (dX > 0) { // Swiping to the right
+            icon = iconCheck;
+            background = green;
+            int iconRight = itemView.getLeft() + iconMargin + icon.getIntrinsicWidth();
+            int iconLeft = itemView.getLeft() + iconMargin;
+            icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+            background.setBounds(itemView.getLeft(), itemView.getTop(),
+                    itemView.getLeft() + ((int) dX), itemView.getBottom());
         } else { // Swiper no swiping
             background.setBounds(0, 0, 0, 0);
         }

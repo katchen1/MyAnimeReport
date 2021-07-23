@@ -9,8 +9,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myanimereport.activities.AnimeDetailsActivity;
+import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
+import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import org.parceler.Parcels;
@@ -62,6 +64,14 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         notifyItemRemoved(position);
         fragment.checkItemsExist();
         Toast.makeText(context, "Item deleted.", Toast.LENGTH_SHORT).show();
+    }
+
+    /* When user checks a backlog item off the list, add an entry for it. */
+    public void addItemAsEntry(int position) {
+        Intent intent = new Intent(context, EntryActivity.class);
+        intent.putExtra("anime", Parcels.wrap(items.get(position).getAnime()));
+        intent.putExtra("position", position);
+        fragment.startActivityForResult(intent, HomeFragment.NEW_ENTRY_REQUEST_CODE);
     }
 
     /* Defines the view holder for an item. */
