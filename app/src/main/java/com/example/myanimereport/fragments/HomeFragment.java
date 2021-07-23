@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.SearchView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,6 +78,25 @@ public class HomeFragment extends Fragment {
         binding.btnCreate.setOnClickListener(this::createOnClick);
         binding.tvCreate.setOnClickListener(this::createOnClick);
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                List<Entry> updatedEntries = new ArrayList<>();
+                for (Entry entry: allEntries) {
+                    if (entry.getAnime() != null) {
+                        String title = entry.getAnime().getTitleEnglish().toLowerCase();
+                        if (title.contains(newText.toLowerCase())) updatedEntries.add(entry);
+                    }
+                }
+                adapter.updateList(updatedEntries);
+                return false;
+            }
+        });
 
         // Add entries to the recycler view
         queryEntries(0);
@@ -184,7 +204,7 @@ public class HomeFragment extends Fragment {
 
     /* Shows a message if user has no entries. */
     public void checkEntriesExist() {
-        if (entries.isEmpty()) {
+        if (ParseApplication.entries.isEmpty()) {
             binding.rvEntries.setVisibility(View.INVISIBLE);
             binding.rlMessage.setVisibility(View.VISIBLE);
         } else {
