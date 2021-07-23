@@ -68,4 +68,7 @@
     <string name="reject">Reject</string>
     <string name="delete_to_watch_list">Delete To-Watch List</string>
     <string name="clear_to_watch_list">Clear To-Watch List</string>
+    <string name="filter">Filter</string>
+    <string name="genre_filter">Genre Filter</string>
+    <string name="all">All</string>
 </resources>
