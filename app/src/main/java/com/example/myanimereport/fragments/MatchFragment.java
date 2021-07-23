@@ -18,6 +18,7 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaAllQuery;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.CardStackAdapter;
+import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
@@ -57,7 +58,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
         binding.btnRewind.setOnClickListener(this::rewind);
-        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
+        binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
         // Set up the card stack
         layoutManager = new CardStackLayoutManager(getContext(), this);
@@ -68,6 +69,20 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
         queryAnimePage(1);
+    }
+
+    /* Opens the navigation drawer. */
+    private void openNavDrawer(View view) {
+        ActivityMainBinding binding = MainActivity.binding;
+        binding.btnLayout.setVisibility(View.GONE);
+        binding.btnSort.setVisibility(View.GONE);
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortTitle.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnDeleteBacklog.setVisibility(View.GONE);
+        binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
     /* Recursive function for pagination. Fetches all the anime with popularity > 30000. */

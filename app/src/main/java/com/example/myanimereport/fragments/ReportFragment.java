@@ -17,6 +17,7 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
+import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
@@ -86,7 +87,21 @@ public class ReportFragment extends Fragment {
         }
 
         // Button listeners
-        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
+        binding.btnMenu.setOnClickListener(this::openNavDrawer);
+    }
+
+    /* Opens the navigation drawer. */
+    private void openNavDrawer(View view) {
+        ActivityMainBinding binding = MainActivity.binding;
+        binding.btnLayout.setVisibility(View.GONE);
+        binding.btnSort.setVisibility(View.GONE);
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortTitle.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnDeleteBacklog.setVisibility(View.GONE);
+        binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
     /* When the report tab is clicked, regenerate the charts. */

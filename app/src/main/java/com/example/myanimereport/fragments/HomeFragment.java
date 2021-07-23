@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
+import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
@@ -61,7 +62,7 @@ public class HomeFragment extends Fragment {
         // Button listeners
         binding.btnCreate.setOnClickListener(this::createOnClick);
         binding.tvCreate.setOnClickListener(this::createOnClick);
-        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
+        binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
         // Add entries to the recycler view
         queryEntries(0);
@@ -73,6 +74,20 @@ public class HomeFragment extends Fragment {
                 queryEntries(entries.size());
             }
         });
+    }
+
+    /* Opens the navigation drawer. */
+    private void openNavDrawer(View view) {
+        ActivityMainBinding binding = MainActivity.binding;
+        binding.btnLayout.setVisibility(View.VISIBLE);
+        binding.btnSort.setVisibility(View.VISIBLE);
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortTitle.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnDeleteAllEntries.setVisibility(View.VISIBLE);
+        binding.btnDeleteBacklog.setVisibility(View.GONE);
+        binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
     /* Queries the entries 10 at a time. Skips the first skip items. */

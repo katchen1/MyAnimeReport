@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myanimereport.R;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
+import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
@@ -47,7 +48,7 @@ public class BacklogFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Button listeners
-        binding.btnMenu.setOnClickListener(v -> MainActivity.binding.drawerLayout.openDrawer(GravityCompat.START));
+        binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
         // Set up adapter and layout of recycler view
         items = ParseApplication.backlogItems;
@@ -74,6 +75,20 @@ public class BacklogFragment extends Fragment {
                 queryBacklogItems(items.size());
             }
         });
+    }
+
+    /* Opens the navigation drawer. */
+    private void openNavDrawer(View view) {
+        ActivityMainBinding binding = MainActivity.binding;
+        binding.btnLayout.setVisibility(View.GONE);
+        binding.btnSort.setVisibility(View.GONE);
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortTitle.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnDeleteBacklog.setVisibility(View.VISIBLE);
+        binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
     /* Returns the adapter. */
