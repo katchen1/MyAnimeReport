@@ -50,6 +50,7 @@ public class Entry extends ParseObject {
                 @Override
                 public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
                     anime = new Anime(response);
+                    ParseApplication.genres.addAll(anime.getGenres());
                 }
 
                 @Override
@@ -71,6 +72,7 @@ public class Entry extends ParseObject {
                     if (response.getData().Page().media() == null) return;
                     for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
                         Anime anime = new Anime(m.fragments().mediaFragment());
+                        ParseApplication.genres.addAll(anime.getGenres());
                         ParseApplication.seenMediaIds.add(anime.getMediaId());
                         int index = ids.indexOf(anime.getMediaId());
                         entries.get(index).setAnime(anime);
@@ -139,5 +141,10 @@ public class Entry extends ParseObject {
 
     public YearMonth getDateWatched() {
         return YearMonth.of(getYearWatched(), getMonthWatched());
+    }
+
+    public boolean equals(Object object) {
+        if (getClass() != object.getClass()) return false;
+        return ((Entry) object).getMediaId().equals(getMediaId());
     }
 }

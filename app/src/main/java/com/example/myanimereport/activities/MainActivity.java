@@ -26,11 +26,7 @@ import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -109,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         ParseApplication.entries.clear();
         ParseApplication.backlogItems.clear();
         ParseApplication.seenMediaIds.clear();
+        ParseApplication.genres.clear();
         finish();
     }
 

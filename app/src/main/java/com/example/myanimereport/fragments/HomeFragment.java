@@ -30,7 +30,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
@@ -39,10 +41,12 @@ public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
-    private List<Entry> entries;
+    private List<Entry> entries; // Entries shown
+    private List<Entry> allEntries; // All entries
     private EntriesAdapter adapter;
     private GridLayoutManager layoutManager;
-    private List<String> selectedGenres;
+    private Set<String> allGenres;
+    private Set<String> selectedGenres;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,9 +60,10 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Set up adapter and layout of recycler view
+        allEntries = ParseApplication.entries;
         entries = new ArrayList<>();
-        entries.addAll(ParseApplication.entries);
-        selectedGenres = new ArrayList<>();
+        allGenres = ParseApplication.genres;
+        selectedGenres = new HashSet<>();
         layoutManager = new GridLayoutManager(getContext(), 2);
         adapter = new EntriesAdapter(this, entries, true);
         binding.rvEntries.setLayoutManager(layoutManager);
@@ -108,7 +113,7 @@ public class HomeFragment extends Fragment {
 
             // Add entries to the recycler view and notify its adapter of new data
             Entry.setAnimes(entriesFound);
-            ParseApplication.entries.addAll(entriesFound);
+            allEntries.addAll(entriesFound);
             entries.addAll(entriesFound);
             adapter.notifyDataSetChanged();
             checkEntriesExist();
@@ -130,16 +135,7 @@ public class HomeFragment extends Fragment {
     /* Filters by genre. */
     public void filterGenres () {
         GenreFilterBinding dialogBinding = GenreFilterBinding.inflate(getLayoutInflater());
-
-        // Get available genres
-        List<String> genres = new ArrayList<>();
-        for (Entry entry: ParseApplication.entries) {
-            if (entry.getAnime() != null) {
-                for (String genre: entry.getAnime().getGenres()) {
-                    if (!genres.contains(genre)) genres.add(genre);
-                }
-            }
-        }
+        List<String> genres = new ArrayList<>(allGenres);
         genres.sort(String::compareTo);
         genres.add(0, "All");
 
@@ -223,14 +219,17 @@ public class HomeFragment extends Fragment {
         if (requestCode == VIEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // Returning from an entry details activity
             int position = data.getIntExtra("position", -1);
+            int allPosition = data.getIntExtra("allPosition", -1);
             if (data.hasExtra("entry")) {
                 // Entry updated
                 Entry entry = data.getParcelableExtra("entry");
                 entries.set(position, entry);
+                allEntries.set(allPosition, entry);
                 adapter.notifyItemChanged(position);
             } else {
                 // Entry deleted
                 entries.remove(position);
+                allEntries.remove(allPosition);
                 adapter.notifyItemRemoved(position);
             }
             checkEntriesExist();

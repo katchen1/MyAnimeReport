@@ -27,42 +27,7 @@ public class Anime {
     Integer episodes; // Number of episodes
 
     /* Default constructor. */
-    public Anime() {
-        mediaId = 155;
-        titleEnglish = "Case Closed";
-        titleRomaji = "Meitantei Conan";
-        titleNative = "名探偵コナン";
-        description = "The story follows the high school detective Shinichi Kudo who was transformed" +
-                " into a child while investigating a mysterious organization and solves a multitude " +
-                "of cases while impersonating his childhood best friend's father and other characters.";
-        averageScore = 9.8;
-        seasonYear = 1994;
-        coverImage = "https://i.pinimg.com/originals/ad/b5/cd/adb5cdc9cd0c353f23cb04ca58d7a17d.png";
-        bannerImage = "https://i.pinimg.com/originals/7d/4a/f2/7d4af24e4a4578f9783dcd61f080fdda.jpg";
-        genres = new ArrayList<>();
-        genres.add("drama");
-        genres.add("science fiction");
-        color = "#000000";
-        episodes = 1000;
-    }
-
-    /* Alternative constructor. */
-    public Anime(Integer mediaId, String titleEnglish, String titleRomaji, String titleNative,
-                 String description, Double averageScore, Integer seasonYear, String coverImage,
-                 String bannerImage, List<String> genres, String color, Integer episodes) {
-        this.mediaId = mediaId;
-        this.titleEnglish = titleEnglish;
-        this.titleRomaji = titleRomaji;
-        this.titleNative = titleNative;
-        this.description = description;
-        this.averageScore = averageScore;
-        this.seasonYear = seasonYear;
-        this.coverImage = coverImage;
-        this.bannerImage = bannerImage;
-        this.genres = genres;
-        this.color = color;
-        this.episodes = episodes;
-    }
+    public Anime() {}
 
     /* Alternative constructor (from GraphQL response object). */
     public Anime(Response<MediaDetailsByIdQuery.Data> response) {
