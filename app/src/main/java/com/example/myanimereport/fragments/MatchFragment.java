@@ -12,12 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaAllQuery;
-import com.example.myanimereport.R;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.CardStackAdapter;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
@@ -106,7 +104,12 @@ public class MatchFragment extends Fragment implements CardStackListener {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) return;
-        allAnime.removeIf(anime -> ParseApplication.seenMediaIds.contains(anime.getMediaId()));
+        for (int i = allAnime.size() - 1; i >= 0; i--) {
+            if (ParseApplication.seenMediaIds.contains(allAnime.get(i).getMediaId())) {
+                allAnime.remove(i);
+                adapter.notifyItemRemoved(i);
+            }
+        }
     }
 
     @Override
@@ -118,10 +121,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
     /* Accepts an anime. */
     private void accept(View view) {
         SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
-                .setDirection(Direction.Right)
-                .setDuration(Duration.Normal.duration)
-                .setInterpolator(new AccelerateInterpolator())
-                .build();
+            .setDirection(Direction.Right)
+            .setDuration(Duration.Normal.duration)
+            .setInterpolator(new AccelerateInterpolator())
+            .build();
         layoutManager.setSwipeAnimationSetting(setting);
         binding.cardStack.swipe();
     }
@@ -129,10 +132,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
     /* Rejects an anime. */
     private void reject(View view) {
         SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
-                .setDirection(Direction.Left)
-                .setDuration(Duration.Normal.duration)
-                .setInterpolator(new AccelerateInterpolator())
-                .build();
+            .setDirection(Direction.Left)
+            .setDuration(Duration.Normal.duration)
+            .setInterpolator(new AccelerateInterpolator())
+            .build();
         layoutManager.setSwipeAnimationSetting(setting);
         binding.cardStack.swipe();
     }
@@ -149,20 +152,26 @@ public class MatchFragment extends Fragment implements CardStackListener {
     @Override
     public void onCardSwiped(Direction direction) {
         if (direction == Direction.Right) {
-            BacklogItem item = new BacklogItem();
+            // Remove the anime from the recycler view
             int position = layoutManager.getTopPosition() - 1;
             Anime anime = allAnime.get(position);
             allAnime.remove(anime);
             adapter.notifyItemRemoved(position);
+
+            // Create a backlog item
+            BacklogItem item = new BacklogItem();
             item.setMediaId(anime.getMediaId());
             item.setUser(ParseUser.getCurrentUser());
             item.setAnime(anime);
             item.saveInBackground(e -> {
                 if (e == null) {
+                    // Add the item to the backlog and notify its adapter
                     ParseApplication.backlogItems.add(item);
                     Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
                     FragmentManager manager = getFragmentManager();
+                    if (manager == null) return;
                     BacklogFragment backlog = (BacklogFragment) manager.findFragmentByTag("backlog");
+                    if (backlog == null) return;
                     backlog.getAdapter().notifyItemInserted(ParseApplication.backlogItems.size() - 1);
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();

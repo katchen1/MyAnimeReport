@@ -13,14 +13,15 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
 
 public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
-    private final BacklogItemsAdapter mAdapter;
+    private final BacklogItemsAdapter adapter;
     private final Drawable icon;
     private final ColorDrawable background;
 
+    /* Constructor takes the backlog items adapter. */
     public SwipeToDeleteCallback(BacklogItemsAdapter adapter) {
         super(0, ItemTouchHelper.LEFT);
-        mAdapter = adapter;
-        icon = ContextCompat.getDrawable(mAdapter.getContext(), R.drawable.ic_baseline_delete_24);
+        this.adapter = adapter;
+        icon = ContextCompat.getDrawable(adapter.getContext(), R.drawable.ic_baseline_delete_24);
         background = new ColorDrawable(Color.RED);
     }
 
@@ -29,19 +30,21 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         return false;
     }
 
+    /* Deletes the item when user swipes left. */
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        mAdapter.deleteItem(viewHolder.getAdapterPosition());
+        adapter.deleteItem(viewHolder.getAdapterPosition());
     }
 
+    /* Handles the UI effects of deleting to swipe. */
     @Override
     public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
                             @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
                             int actionState, boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
 
+        // Set boundaries of the delete icon
         View itemView = viewHolder.itemView;
-
         int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
         int iconTop = itemView.getTop() + iconMargin;
         int iconBottom = iconTop + icon.getIntrinsicHeight();
@@ -52,7 +55,7 @@ public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
             icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
             background.setBounds(itemView.getRight() + ((int) dX),
                     itemView.getTop(), itemView.getRight(), itemView.getBottom());
-        } else { // view is unSwiped
+        } else { // Swiper no swiping
             background.setBounds(0, 0, 0, 0);
         }
         background.draw(c);

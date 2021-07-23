@@ -6,16 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myanimereport.activities.AnimeDetailsActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
-
 import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
@@ -84,8 +81,15 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
             Anime anime = item.getAnime();
             if (anime == null) return;
             if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
-            if (anime.getAverageScore() != null) binding.tvRating.setText(String.format(Locale.getDefault(),
-                    "%.1f", anime.getAverageScore()));
+
+            // If no rating info, hide the rating component
+            if (anime.getAverageScore() != -1) {
+                binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
+            } else {
+                binding.tvRating.setVisibility(View.INVISIBLE);
+                binding.tvRatingOutOf.setVisibility(View.INVISIBLE);
+                binding.ivRatingIcon.setVisibility(View.INVISIBLE);
+            }
         }
 
         /* When the backlog item is clicked, expand it to show the anime details. */
