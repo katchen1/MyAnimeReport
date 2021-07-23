@@ -3,6 +3,7 @@ package com.example.myanimereport.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
-import android.widget.SearchView;
+import android.widget.EditText;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,6 +86,11 @@ public class HomeFragment extends Fragment {
         binding.btnCreate.setOnClickListener(this::createOnClick);
         binding.tvCreate.setOnClickListener(this::createOnClick);
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
+
+        // Search view
+        EditText searchEditText = binding.searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchEditText.setTextCursorDrawable(null);
+
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
