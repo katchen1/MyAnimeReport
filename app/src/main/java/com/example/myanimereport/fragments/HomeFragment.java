@@ -3,7 +3,6 @@ package com.example.myanimereport.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,9 +33,6 @@ import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -50,8 +46,8 @@ public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
-    private List<Entry> entries; // Entries shown
-    private List<Entry> allEntries; // All entries
+    private List<Entry> entries; // Shown in the recycler veiw
+    private List<Entry> allEntries;
     private EntriesAdapter adapter;
     private GridLayoutManager layoutManager;
     private Set<String> allGenres;
@@ -91,6 +87,7 @@ public class HomeFragment extends Fragment {
         EditText searchEditText = binding.searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         searchEditText.setTextCursorDrawable(null);
 
+        // Handle text change in search bar
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -100,6 +97,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                // Update the entries list to show only matching titles
                 List<Entry> updatedEntries = new ArrayList<>();
                 for (Entry entry: allEntries) {
                     if (entry.getAnime() != null) {
@@ -149,7 +147,7 @@ public class HomeFragment extends Fragment {
         binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
-    /* Queries the entries 10 at a time. Skips the first skip items. */
+    /* Queries the entries 50 at a time. Skips the first skip items. */
     public void queryEntries(int skip) {
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
@@ -212,17 +210,21 @@ public class HomeFragment extends Fragment {
             .setTitle("Genre Filter")
             .setView(dialogBinding.getRoot())
             .setPositiveButton("Save", (dialog, which) -> {
-                // Show only entries with selected genres
+                // Update selected genres
                 selectedGenres.clear();
                 for (CheckBox cb: cbs) if (cb.isChecked()) selectedGenres.add(cb.getText().toString());
+
+                // Show only entries containing at least one selected genre
                 entries.clear();
                 entries.addAll(ParseApplication.entries);
                 entries.removeIf(entry -> {
                    if (entry.getAnime() == null) return true;
                    return Collections.disjoint(entry.getAnime().getGenres(), selectedGenres);
                 });
+
+                // Update recycler view and close drawer
                 adapter.notifyDataSetChanged();
-                Toast.makeText(getContext(), "Genres updated.", Toast.LENGTH_SHORT).show();
+                MainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .show();
@@ -249,7 +251,7 @@ public class HomeFragment extends Fragment {
         return adapter;
     }
 
-    /* Inserts an entry at the very front of the list. */
+    /* Inserts an entry at the very front of the list and resets all filters. */
     public void insertEntryAtFront(Entry entry) {
         ParseApplication.entries.add(0, entry);
         entries.clear();

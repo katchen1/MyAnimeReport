@@ -3,20 +3,16 @@ package com.example.myanimereport.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.example.myanimereport.R;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.EditNameBinding;
 import com.example.myanimereport.databinding.EditPasswordBinding;
-import com.example.myanimereport.databinding.GenreFilterBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.fragments.MatchFragment;
@@ -31,12 +27,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static ActivityMainBinding binding;
-    private FragmentManager manager;
+    public static HomeFragment homeFragment;
+    public static ReportFragment reportFragment;
+    public static MatchFragment matchFragment;
+    public static BacklogFragment backlogFragment;
+    public static  FragmentManager manager;
+
     private String sortedBy = "Entry Creation Date Descending";
-    HomeFragment homeFragment;
-    ReportFragment reportFragment;
-    MatchFragment matchFragment;
-    BacklogFragment backlogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -7,8 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -138,11 +136,7 @@ public class BacklogFragment extends Fragment {
 
     /* Navigates to the match tab. */
     public void goMatch(View view) {
-        FragmentManager manager = getFragmentManager();
-        if (manager == null) return;
-        Fragment matchFragment = manager.findFragmentByTag("match");
-        if (matchFragment == null) return;
-        manager.beginTransaction().hide(this).show(matchFragment).commit();
+        MainActivity.manager.beginTransaction().hide(this).show(MainActivity.matchFragment).commit();
         MainActivity.binding.navView.setSelectedItemId(R.id.navigation_match);
     }
 
@@ -152,11 +146,7 @@ public class BacklogFragment extends Fragment {
             // A new entry was created, added it to the home list
             Entry entry = data.getParcelableExtra("entry");
             int position = data.getIntExtra("position", -1);
-            FragmentManager manager = getFragmentManager();
-            if (manager == null) return;
-            HomeFragment home = (HomeFragment) manager.findFragmentByTag("home");
-            if (home == null) return;
-            home.insertEntryAtFront(entry);
+            MainActivity.homeFragment.insertEntryAtFront(entry);
 
             // Remove the anime from the backlog
             items.get(position).deleteInBackground();
@@ -165,7 +155,7 @@ public class BacklogFragment extends Fragment {
             checkItemsExist();
 
             // Navigate to the home tab
-            manager.beginTransaction().hide(this).show(home).commit();
+            MainActivity.manager.beginTransaction().hide(this).show(MainActivity.homeFragment).commit();
             MainActivity.binding.navView.setSelectedItemId(R.id.navigation_home);
         }
     }

@@ -4,9 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,13 +16,9 @@ import android.widget.Toast;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
-import com.example.MediaAllQuery;
-import com.example.MediaDetailsByTitleQuery;
 import com.example.MediaPageByTitleQuery;
-import com.example.fragment.MediaFragment;
 import com.example.myanimereport.R;
 import com.example.myanimereport.adapters.AnimesAdapter;
-import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
@@ -46,8 +40,8 @@ public class EntryActivity extends AppCompatActivity {
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
     private Entry entry; // The entry being edited
     private Integer position; // Position of the anime in the backlog recycler view
-    private List<Anime> queriedAnimes;
-    private AnimesAdapter adapter;
+    private List<Anime> queriedAnimes; // Suggested animes based on title search
+    private AnimesAdapter adapter; // Adapter for recycler view for queriedAnimes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +57,6 @@ public class EntryActivity extends AppCompatActivity {
         adapter = new AnimesAdapter(this, binding.etTitle, queriedAnimes);
         binding.rvAnimes.setLayoutManager(new LinearLayoutManager(this));
         binding.rvAnimes.setAdapter(adapter);
-
-        // Divider between items
-        // Divider between items
         DividerItemDecoration divider = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.item_divider)));
         binding.rvAnimes.addItemDecoration(divider);
@@ -164,14 +155,11 @@ public class EntryActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Response<MediaPageByTitleQuery.Data> response) {
                     if (response.getData().Page() == null) return;
                     if (response.getData().Page().media() == null) return;
-                    if (response.getData().Page().pageInfo() == null) return;
-
                     runOnUiThread(() -> {
                         // Add the animes to the list
                         queriedAnimes.clear();
-                        for (MediaPageByTitleQuery.Medium m : Objects.requireNonNull(response.getData().Page().media())) {
-                            Anime anime = new Anime(m.fragments().mediaFragment());
-                            queriedAnimes.add(anime);
+                        for (MediaPageByTitleQuery.Medium m : response.getData().Page().media()) {
+                            queriedAnimes.add(new Anime(m.fragments().mediaFragment()));
                         }
                         adapter.notifyDataSetChanged();
                         showTitleSuggestion();
