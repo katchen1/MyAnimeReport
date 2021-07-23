@@ -1,12 +1,14 @@
 package com.example.myanimereport.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.myanimereport.R;
 import com.example.myanimereport.activities.EntryActivity;
@@ -29,6 +32,9 @@ import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -95,6 +101,16 @@ public class HomeFragment extends Fragment {
                 }
                 adapter.updateList(updatedEntries);
                 return false;
+            }
+        });
+
+        // Hide keyboard when recycler view is scrolled
+        binding.rvEntries.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+                InputMethodManager imm = (InputMethodManager) view.getContext()
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
 
