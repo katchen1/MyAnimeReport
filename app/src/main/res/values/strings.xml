@@ -3,7 +3,7 @@
     <string name="title_home">Watched</string>
     <string name="title_report">Report</string>
     <string name="title_match">Match</string>
-    <string name="title_backlog">Backlog</string>
+    <string name="title_backlog">To Watch</string>
     <string name="test">Test</string>
     <string name="_10">/10</string>
     <string name="username">Username</string>
@@ -46,4 +46,26 @@
     <string name="genre_preference">Genre Preference</string>
     <string name="genre_breakdown_by_year">Genre Breakdown by Year</string>
     <string name="backlog_item_details">Backlog Item Details</string>
+    <string name="no_user_data_click_to_add_an_entry">No user data. Click \'+\' to add an entry!</string>
+    <string name="create_an_entry">Add an entry.</string>
+    <string name="no_data">No data.</string>
+    <string name="accept_a_match">Accept a match.</string>
+    <string name="edit_name">Edit Name</string>
+    <string name="edit_password">Edit Password</string>
+    <string name="list_layout">List Layout</string>
+    <string name="entry_creation_date">Entry Creation Date</string>
+    <string name="anime_title">Anime Title</string>
+    <string name="name">Name</string>
+    <string name="old_password">Old password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_new_password">Confirm new password</string>
+    <string name="new_name">New name</string>
+    <string name="watch_date">Watch Date</string>
+    <string name="delete_all_entries">Delete All Entries</string>
+    <string name="delete_all_backlog_items">Delete All Backlog Items</string>
+    <string name="rewind">Rewind</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="delete_to_watch_list">Delete To-Watch List</string>
+    <string name="clear_to_watch_list">Clear To-Watch List</string>
 </resources>

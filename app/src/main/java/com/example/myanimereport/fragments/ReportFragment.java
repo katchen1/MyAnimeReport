@@ -1,5 +1,6 @@
 package com.example.myanimereport.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myanimereport.R;
+import com.example.myanimereport.activities.EntryActivity;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
+import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentReportBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
@@ -33,7 +39,6 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,6 +85,23 @@ public class ReportFragment extends Fragment {
             theme = ContextCompat.getColor(getContext(), R.color.theme);
             darkGray = ContextCompat.getColor(getContext(), R.color.dark_gray);
         }
+
+        // Button listeners
+        binding.btnMenu.setOnClickListener(this::openNavDrawer);
+    }
+
+    /* Opens the navigation drawer. */
+    private void openNavDrawer(View view) {
+        ActivityMainBinding binding = MainActivity.binding;
+        binding.btnLayout.setVisibility(View.GONE);
+        binding.btnSort.setVisibility(View.GONE);
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortTitle.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnDeleteBacklog.setVisibility(View.GONE);
+        binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
     /* When the report tab is clicked, regenerate the charts. */
@@ -89,9 +111,15 @@ public class ReportFragment extends Fragment {
         if (hidden) return;
         entries = ParseApplication.entries;
 
+        // Check if user has data
         if (entries.isEmpty()) {
-            // Do something to indicate no data
+            binding.scrollView.setVisibility(View.INVISIBLE);
+            binding.rlMessage.setVisibility(View.VISIBLE);
+            binding.tvCreate.setOnClickListener(this::createOnClick);
             return;
+        } else {
+            binding.scrollView.setVisibility(View.VISIBLE);
+            binding.rlMessage.setVisibility(View.INVISIBLE);
         }
 
         // Generate the maps
@@ -104,10 +132,12 @@ public class ReportFragment extends Fragment {
             yearToList.get(year).add(entry);
 
             // Genre to entries map
-            List<String> genres = entry.getAnime().getGenres();
-            for (String genre: genres) {
-                if (!genreToList.containsKey(genre)) genreToList.put(genre, new ArrayList<>());
-                genreToList.get(genre).add(entry);
+            if (entry.getAnime() != null) {
+                List<String> genres = entry.getAnime().getGenres();
+                for (String genre : genres) {
+                    if (!genreToList.containsKey(genre)) genreToList.put(genre, new ArrayList<>());
+                    genreToList.get(genre).add(entry);
+                }
             }
         }
 
@@ -264,7 +294,9 @@ public class ReportFragment extends Fragment {
                 int genreCount = 0;
                 if (yearToList.containsKey(year)) {
                     for (Entry entry: yearToList.get(year)) {
-                        if (entry.getAnime().getGenres().contains(genre)) genreCount++;
+                        if (entry.getAnime() != null && entry.getAnime().getGenres().contains(genre)) {
+                            genreCount++;
+                        }
                     }
                 }
                 genreCounts[i++] = genreCount;
@@ -399,6 +431,18 @@ public class ReportFragment extends Fragment {
         if (color != -1) dataSet.setColor(color);
         if (colors != null) dataSet.setColors(colors);
         dataSet.setDrawValues(false);
+    }
+
+    /* Creates an entry from the home fragment. */
+    public void createOnClick(View view) {
+        Intent i = new Intent(getContext(), EntryActivity.class);
+        FragmentManager manager = getFragmentManager();
+        if (manager == null) return;
+        Fragment homeFragment = manager.findFragmentByTag("home");
+        if (homeFragment == null) return;
+        homeFragment.startActivityForResult(i, HomeFragment.NEW_ENTRY_REQUEST_CODE);
+        manager.beginTransaction().hide(this).show(homeFragment).commit();
+        MainActivity.binding.navView.setSelectedItemId(R.id.navigation_home);
     }
 
     @Override

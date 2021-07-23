@@ -67,4 +67,7 @@ dependencies {
 
     // Card stack
     implementation 'com.github.yuyakaido:cardstackview:2.3.4'
+
+    // Coordinator layout
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
 }
