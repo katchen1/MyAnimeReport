@@ -204,6 +204,14 @@ public class EntryActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if user already has an entry for this anime
+        for (Entry entry: ParseApplication.entries) {
+            if (entry.getMediaId().equals(mediaId)) {
+                Toast.makeText(EntryActivity.this, "Already have an entry for this anime.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         // Check if rating is valid
         if (rating.isEmpty() || Double.parseDouble(rating) > 10 || Double.parseDouble(rating) < 0) {
             binding.etRating.setText("");
