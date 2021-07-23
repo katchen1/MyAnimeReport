@@ -31,7 +31,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     private final String TAG = "EntriesAdapter";
     private final Fragment fragment;
     private final Context context;
-    private final List<Entry> entries;
+    private List<Entry> entries;
     private final boolean editable;
     private boolean gridView;
 
@@ -66,6 +66,11 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
     public void setGridView(boolean gridView) {
         this.gridView = gridView;
+    }
+
+    public void updateList(List<Entry> updatedEntries){
+        entries = updatedEntries;
+        notifyDataSetChanged();
     }
 
     /* Defines the view holder for a entry. */
