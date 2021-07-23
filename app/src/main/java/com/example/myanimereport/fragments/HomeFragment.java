@@ -87,6 +87,7 @@ public class HomeFragment extends Fragment {
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                binding.searchView.clearFocus();
                 return false;
             }
 
@@ -99,7 +100,8 @@ public class HomeFragment extends Fragment {
                         if (title.contains(newText.toLowerCase())) updatedEntries.add(entry);
                     }
                 }
-                adapter.updateList(updatedEntries);
+                adapter.updateEntries(updatedEntries);
+                selectedGenres.clear();
                 return false;
             }
         });
@@ -107,10 +109,8 @@ public class HomeFragment extends Fragment {
         // Hide keyboard when recycler view is scrolled
         binding.rvEntries.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
-                InputMethodManager imm = (InputMethodManager) view.getContext()
-                        .getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
+                hideSoftKeyboard();
             }
         });
 
@@ -118,8 +118,17 @@ public class HomeFragment extends Fragment {
         queryEntries(0);
     }
 
+    /* Hides the soft keyboard. */
+    public void hideSoftKeyboard() {
+        InputMethodManager imm = (InputMethodManager) binding.rvEntries.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(binding.rvEntries.getWindowToken(), 0);
+        binding.searchView.clearFocus();
+    }
+
     /* Opens the navigation drawer. */
     private void openNavDrawer(View view) {
+        hideSoftKeyboard();
         ActivityMainBinding binding = MainActivity.binding;
         binding.btnLayout.setVisibility(View.VISIBLE);
         binding.btnSort.setVisibility(View.VISIBLE);
