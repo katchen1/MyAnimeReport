@@ -83,8 +83,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Set up drawer view
-        binding.tvName.setText(ParseUser.getCurrentUser().getString("name"));
-        binding.tvUsername.setText(ParseUser.getCurrentUser().getUsername());
+        ParseUser user = ParseUser.getCurrentUser();
+        String name = user.has("name")? user.getString("name"): user.getUsername();
+        binding.tvName.setText(name);
+        binding.tvUsername.setText(user.getUsername());
     }
 
     /* Logs out and returns to the login page. */
