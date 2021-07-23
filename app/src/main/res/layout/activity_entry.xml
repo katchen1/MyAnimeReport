@@ -69,18 +69,15 @@
                     android:drawableEnd="@drawable/ic_baseline_search_24"
                     android:drawableTint="@color/white" />
 
-                    <TextView
-                        android:id="@+id/tvTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/etTitle"
-                        android:paddingHorizontal="10dp"
-                        android:background="@drawable/gray_rounded_bg"
-                        android:visibility="gone"
-                        android:text="@string/no_results_found"
-                        android:textColor="@color/white"
-                        android:textSize="18sp" />
-
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAnimes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/etTitle"
+                    android:paddingHorizontal="5dp"
+                    android:paddingBottom="5dp"
+                    android:background="@drawable/gray_rounded_bg"
+                    android:visibility="gone"/>
             </RelativeLayout>
 
             <RelativeLayout

@@ -68,8 +68,9 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         this.gridView = gridView;
     }
 
-    public void updateList(List<Entry> updatedEntries){
-        entries = updatedEntries;
+    public void updateEntries(List<Entry> updatedEntries){
+        entries.clear();
+        entries.addAll(updatedEntries);
         notifyDataSetChanged();
     }
 
