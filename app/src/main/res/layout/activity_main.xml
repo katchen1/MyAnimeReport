@@ -46,7 +46,7 @@
                 android:id="@+id/rlAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="expandOnClick"
+                android:onClick="accountOnClick"
                 android:paddingVertical="5dp">
 
                 <ImageButton
@@ -54,7 +54,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_centerVertical="true"
-                    android:onClick="expandOnClick"
+                    android:onClick="accountOnClick"
                     android:backgroundTint="@color/white"
                     android:background="@drawable/ic_baseline_account_circle_24"/>
 
@@ -86,7 +86,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@color/dark_gray"
-                    android:onClick="expandOnClick"
+                    android:onClick="accountOnClick"
                     android:src="@drawable/ic_baseline_keyboard_arrow_down_24"
                     app:tint="@color/white"/>
             </RelativeLayout>
@@ -297,17 +297,17 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/btnSortAnimeTitle"
+                android:id="@+id/btnSortTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
                 android:layout_marginStart="10dp"
-                android:onClick="btnSortAnimeTitleOnClick"
+                android:onClick="btnSortTitleOnClick"
                 android:visibility="gone"
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/ivSortAnimeTitle"
+                    android:id="@+id/ivSortTitle"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
@@ -317,11 +317,11 @@
                     app:tint="@color/light_gray" />
 
                 <TextView
-                    android:id="@+id/tvSortAnimeTitle"
+                    android:id="@+id/tvSortTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/anime_title"
+                    android:text="@string/title"
                     android:textSize="16sp"
                     android:textColor="@color/light_gray"/>
             </LinearLayout>
@@ -409,7 +409,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/delete_all_backlog_items"
+                    android:text="@string/clear_to_watch_list"
                     android:textSize="16sp"
                     android:textColor="@color/white"/>
             </LinearLayout>

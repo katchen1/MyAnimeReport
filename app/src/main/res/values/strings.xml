@@ -66,4 +66,6 @@
     <string name="rewind">Rewind</string>
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
+    <string name="delete_to_watch_list">Delete To-Watch List</string>
+    <string name="clear_to_watch_list">Clear To-Watch List</string>
 </resources>

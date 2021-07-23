@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.myanimereport.activities.EntryActivity;
-import com.example.myanimereport.activities.LoginActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
 import com.example.myanimereport.databinding.FragmentHomeBinding;

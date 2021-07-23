@@ -1,7 +1,5 @@
 package com.example.myanimereport.fragments;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myanimereport.R;
-import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
@@ -33,8 +29,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class BacklogFragment extends Fragment {
-
-    public static final int VIEW_BACKLOG_ITEM_REQUEST_CODE = 5;
 
     private final String TAG = "BacklogFragment";
     private FragmentBacklogBinding binding;

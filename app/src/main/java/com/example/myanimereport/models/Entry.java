@@ -5,17 +5,13 @@ import androidx.annotation.NonNull;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
-import com.example.MediaAllQuery;
 import com.example.MediaDetailsByIdListQuery;
 import com.example.MediaDetailsByIdQuery;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /* Entry (Parse model). */

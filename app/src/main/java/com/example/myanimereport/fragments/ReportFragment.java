@@ -38,14 +38,12 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /* Charts included:
  * 1. Overview [Score Cards]
@@ -281,8 +279,9 @@ public class ReportFragment extends Fragment {
                 int genreCount = 0;
                 if (yearToList.containsKey(year)) {
                     for (Entry entry: yearToList.get(year)) {
-                        if (entry.getAnime() != null && entry.getAnime().getGenres().contains(genre))
+                        if (entry.getAnime() != null && entry.getAnime().getGenres().contains(genre)) {
                             genreCount++;
+                        }
                     }
                 }
                 genreCounts[i++] = genreCount;
