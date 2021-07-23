@@ -4,7 +4,10 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+    android:fitsSystemWindows="false"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    android:focusable="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -37,6 +40,7 @@
                     app:tint="@color/white" />
 
                 <TextView
+                    android:id="@+id/tvWatched"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@id/btnMenu"
@@ -48,10 +52,16 @@
 
                 <SearchView
                     android:id="@+id/searchView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/tvWatched"
                     android:layout_alignParentEnd="true"
-                    android:background="@color/light_gray"/>
+                    android:background="@drawable/white_border_rounded_bg"
+                    android:layout_marginHorizontal="15dp"
+                    android:paddingHorizontal="0dp"
+                    android:queryBackground="@color/dark_gray"
+                    android:searchHintIcon="@color/dark_gray"
+                    android:layout_marginVertical="8dp"/>
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
