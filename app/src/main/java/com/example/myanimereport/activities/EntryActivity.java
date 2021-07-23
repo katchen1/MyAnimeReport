@@ -42,9 +42,6 @@ public class EntryActivity extends AppCompatActivity {
         binding = ActivityEntryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Hide status bar
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 

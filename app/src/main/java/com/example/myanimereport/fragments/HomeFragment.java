@@ -9,13 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.example.myanimereport.activities.EntryActivity;
-import com.example.myanimereport.activities.LoginActivity;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.EntriesAdapter;
+import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentHomeBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
@@ -33,6 +35,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private List<Entry> entries;
     private EntriesAdapter adapter;
+    private GridLayoutManager layoutManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -47,7 +50,7 @@ public class HomeFragment extends Fragment {
 
         // Set up adapter and layout of recycler view
         entries = ParseApplication.entries;
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        layoutManager = new GridLayoutManager(getContext(), 2);
         adapter = new EntriesAdapter(this, entries, true);
         binding.rvEntries.setLayoutManager(layoutManager);
         binding.rvEntries.setAdapter(adapter);
@@ -57,8 +60,9 @@ public class HomeFragment extends Fragment {
         if (animator != null) animator.setSupportsChangeAnimations(false);
 
         // Button listeners
-        binding.btnLogOut.setOnClickListener(this::logOutOnClick);
         binding.btnCreate.setOnClickListener(this::createOnClick);
+        binding.tvCreate.setOnClickListener(this::createOnClick);
+        binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
         // Add entries to the recycler view
         queryEntries(0);
@@ -70,6 +74,20 @@ public class HomeFragment extends Fragment {
                 queryEntries(entries.size());
             }
         });
+    }
+
+    /* Opens the navigation drawer. */
+    private void openNavDrawer(View view) {
+        ActivityMainBinding binding = MainActivity.binding;
+        binding.btnLayout.setVisibility(View.VISIBLE);
+        binding.btnSort.setVisibility(View.VISIBLE);
+        binding.btnSortCreationDate.setVisibility(View.GONE);
+        binding.btnSortTitle.setVisibility(View.GONE);
+        binding.btnSortWatchDate.setVisibility(View.GONE);
+        binding.btnSortRating.setVisibility(View.GONE);
+        binding.btnDeleteAllEntries.setVisibility(View.VISIBLE);
+        binding.btnDeleteBacklog.setVisibility(View.GONE);
+        binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
     /* Queries the entries 10 at a time. Skips the first skip items. */
@@ -90,24 +108,41 @@ public class HomeFragment extends Fragment {
             Entry.setAnimes(entriesFound);
             entries.addAll(entriesFound);
             adapter.notifyDataSetChanged();
+            checkEntriesExist();
         });
     }
 
-    /* Logs out and returns to the login page. */
-    private void logOutOnClick(View view) {
-        ParseUser.logOut();
-        Intent i = new Intent(getContext(), LoginActivity.class);
-        startActivity(i);
-        entries.clear();
-        ParseApplication.backlogItems.clear();
-        ParseApplication.seenMediaIds.clear();
-        if (getActivity() != null) getActivity().finish();
+    /* Toggles between list and grid layouts. */
+    public void switchLayout() {
+        if (layoutManager.getSpanCount() == 1) {
+            layoutManager.setSpanCount(2);
+            adapter.setGridView(true);
+        } else {
+            layoutManager.setSpanCount(1);
+            adapter.setGridView(false);
+        }
+        adapter.notifyItemRangeChanged(0, entries.size());
     }
 
     /* Creates an entry and adds it to the beginning of the list. */
     private void createOnClick(View view) {
         Intent i = new Intent(getContext(), EntryActivity.class);
         startActivityForResult(i, NEW_ENTRY_REQUEST_CODE);
+    }
+
+    /* Shows a message if user has no entries. */
+    public void checkEntriesExist() {
+        if (entries.isEmpty()) {
+            binding.rvEntries.setVisibility(View.INVISIBLE);
+            binding.rlMessage.setVisibility(View.VISIBLE);
+        } else {
+            binding.rvEntries.setVisibility(View.VISIBLE);
+            binding.rlMessage.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public EntriesAdapter getAdapter() {
+        return adapter;
     }
 
     /* After returning from a entry activity, update the entry at its position. */
@@ -134,6 +169,7 @@ public class HomeFragment extends Fragment {
                 entries.remove(position);
                 adapter.notifyItemRemoved(position);
             }
+            checkEntriesExist();
         }
     }
 

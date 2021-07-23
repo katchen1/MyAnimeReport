@@ -33,6 +33,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     private final Context context;
     private final List<Entry> entries;
     private final boolean editable;
+    private boolean gridView;
 
     /* Constructor takes the fragment and the list of entries in the recycler view. */
     public EntriesAdapter(Fragment fragment, List<Entry> entries, boolean editable) {
@@ -40,6 +41,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         this.context = fragment.getContext();
         this.entries = entries;
         this.editable = editable;
+        this.gridView = true;
     }
 
     /* Creates a view holder for the entry. */
@@ -62,6 +64,10 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         return entries.size();
     }
 
+    public void setGridView(boolean gridView) {
+        this.gridView = gridView;
+    }
+
     /* Defines the view holder for a entry. */
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -76,15 +82,9 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's data to the view's components. */
         public void bind(Entry entry) {
-            if (entry == null) return;
-
             // Set data unrelated to the anime
-            if (entry.getYearWatched() != null) {
-                binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
-            }
-            if (entry.getRating() != null) {
-                binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
-            }
+            binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
+            binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
 
             // Use pre-queried anime to prevent excessive network requests
             if (entry.getAnime() != null) {
@@ -116,8 +116,16 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
 
         /* Binds the entry's anime-relevant data to the view's components. */
         public void loadAnimeData(Anime anime) {
-            if (anime.getBannerImage() != null) Glide.with(context).load(anime.getBannerImage()).into(binding.ivImage);
-            if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
+            if (gridView) {
+                binding.ivImageTop.setVisibility(View.VISIBLE);
+                binding.ivImageStart.setVisibility(View.GONE);
+                Glide.with(context).load(anime.getBannerImage()).into(binding.ivImageTop);
+            } else {
+                binding.ivImageTop.setVisibility(View.GONE);
+                binding.ivImageStart.setVisibility(View.VISIBLE);
+                Glide.with(context).load(anime.getCoverImage()).into(binding.ivImageStart);
+            }
+            binding.tvTitle.setText(anime.getTitleEnglish());
         }
 
         /* When the entry card is clicked, expand it to show its full information. */

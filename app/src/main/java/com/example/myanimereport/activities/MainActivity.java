@@ -1,34 +1,46 @@
 package com.example.myanimereport.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
+import android.widget.ImageButton;
+import android.widget.Toast;
 import com.example.myanimereport.R;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.example.myanimereport.databinding.ActivityMainBinding;
+import com.example.myanimereport.databinding.EditNameBinding;
+import com.example.myanimereport.databinding.EditPasswordBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.fragments.MatchFragment;
 import com.example.myanimereport.fragments.ReportFragment;
+import com.example.myanimereport.models.BacklogItem;
+import com.example.myanimereport.models.Entry;
+import com.example.myanimereport.models.ParseApplication;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.parse.ParseUser;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static ActivityMainBinding binding;
+    private FragmentManager manager;
+    private String sortedBy = "Entry Creation Date Descending";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // Hide status bar
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
         // Set up fragments
-        final FragmentManager manager = getSupportFragmentManager();
+        manager = getSupportFragmentManager();
         final Fragment homeFragment = new HomeFragment();
         final Fragment reportFragment = new ReportFragment();
         final Fragment matchFragment = new MatchFragment();
@@ -69,5 +81,244 @@ public class MainActivity extends AppCompatActivity {
             activeFragment[0] = fragment;
             return true;
         });
+
+        // Set up drawer view
+        ParseUser user = ParseUser.getCurrentUser();
+        String name = user.has("name")? user.getString("name"): user.getUsername();
+        binding.tvName.setText(name);
+        binding.tvUsername.setText(user.getUsername());
+    }
+
+    /* Logs out and returns to the login page. */
+    public void logOutOnClick(View view) {
+        ParseUser.logOut();
+        Intent i = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(i);
+        ParseApplication.entries.clear();
+        ParseApplication.backlogItems.clear();
+        ParseApplication.seenMediaIds.clear();
+        finish();
+    }
+
+    /* Shows or hides buttons related to the user's account. */
+    public void accountOnClick(View view) {
+        int targetVisibility = View.VISIBLE;
+        int targetBtnResource = R.drawable.ic_baseline_keyboard_arrow_up_24;
+
+        /* If it's already showing, hide it. */
+        if (binding.btnEditName.getVisibility() == View.VISIBLE) {
+            targetVisibility = View.GONE;
+            targetBtnResource = R.drawable.ic_baseline_keyboard_arrow_down_24;
+        }
+
+        binding.btnEditName.setVisibility(targetVisibility);
+        binding.btnEditPassword.setVisibility(targetVisibility);
+        binding.btnLogOut.setVisibility(targetVisibility);
+        binding.btnExpand.setImageResource(targetBtnResource);
+    }
+
+    /* Toggles between grid and list layouts for entries. */
+    public void btnLayoutOnClick(View view) {
+        // Change layout in the home fragment
+        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+        if (homeFragment != null) homeFragment.switchLayout();
+
+        // Update UI
+        String targetText = "Grid Layout";
+        int targetResource = R.drawable.ic_baseline_grid_on_24;
+        if (binding.tvLayoutType.getText().equals("Grid Layout")) {
+            targetText = "List Layout";
+            targetResource = R.drawable.ic_baseline_list_alt_24;
+        }
+        binding.tvLayoutType.setText(targetText);
+        binding.ivLayoutType.setImageResource(targetResource);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /* Shows or hides the sort options. */
+    public void btnSortOnClick(View view) {
+        int targetVisibility = binding.btnSortRating.getVisibility() == View.VISIBLE? View.GONE: View.VISIBLE;
+        setSortVisibility(targetVisibility);
+    }
+
+    /* Sets the visibility of the sort options. */
+    public void setSortVisibility(int visibility) {
+        binding.btnSortCreationDate.setVisibility(visibility);
+        binding.btnSortTitle.setVisibility(visibility);
+        binding.btnSortRating.setVisibility(visibility);
+        binding.btnSortWatchDate.setVisibility(visibility);
+    }
+
+    /* Restore default order for all sort options in the UI. */
+    public void restoreDefaultOrder() {
+        binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        binding.ivSortTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        binding.ivSortWatchDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+    }
+
+    /* Sorts the entries. sortBy is one of "Entry Creation Date", "Rating", Title", or "Watch Date",
+     * and iv is the corresponding image button in the UI. */
+    public void sort(String sortBy, ImageButton ib) {
+        // Determine the default/non-default orders and corresponding icons
+        String defaultOrder = sortBy.equals("Title")? "Ascending": "Descending";
+        boolean inDefaultOrder = sortedBy.equals(sortBy + " " + defaultOrder);
+        String nonDefaultOrder = defaultOrder.equals("Descending")? "Ascending": "Descending";
+        int defaultIcon = defaultOrder.equals("Descending")?
+                R.drawable.ic_baseline_arrow_downward_24:
+                R.drawable.ic_baseline_arrow_upward_24;
+        int nonDefaultIcon = defaultOrder.equals("Descending")?
+                R.drawable.ic_baseline_arrow_upward_24:
+                R.drawable.ic_baseline_arrow_downward_24;
+        restoreDefaultOrder();
+
+        // If already in default order, sort in the non-default order. Otherwise sort in default order.
+        List<Entry> entries = ParseApplication.entries;
+        int sign = inDefaultOrder? -1: 1;
+        switch (sortBy) {
+            case "Entry Creation Date":
+                entries.sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
+                break;
+            case "Rating":
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getRating().compareTo(e1.getRating()));
+                break;
+            case "Title":
+                ParseApplication.entries.sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
+                break;
+            case "Watch Date":
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
+                break;
+        }
+
+        // Update UI
+        sortedBy = sortBy + " " + (inDefaultOrder? nonDefaultOrder: defaultOrder);
+        binding.ivSort.setImageResource(inDefaultOrder? nonDefaultIcon: defaultIcon);
+        ib.setImageResource(inDefaultOrder? defaultIcon: nonDefaultIcon);
+        binding.tvSort.setText(sortBy);
+
+        // Notify adapter and close the drawer
+        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+        if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+        setSortVisibility(View.GONE);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    /* Sorts by creation date. */
+    public void btnSortCreationDateOnClick(View view) {
+        sort("Entry Creation Date", binding.ivSortCreationDate);
+    }
+
+    /* Sorts by anime title. */
+    public void btnSortTitleOnClick(View view) {
+        sort("Title", binding.ivSortTitle);
+    }
+
+    /* Sorts by rating. */
+    public void btnSortRatingOnClick(View view) {
+        sort("Rating", binding.ivSortRating);
+    }
+
+    /* Sorts by watch date. */
+    public void btnSortWatchDateOnClick(View view) {
+        sort("Watch Date", binding.ivSortWatchDate);
+    }
+
+    /* Allows the user to edit their name. */
+    public void editNameOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        EditNameBinding dialogBinding = EditNameBinding.inflate(getLayoutInflater());
+        new MaterialAlertDialogBuilder(this)
+            .setView(dialogBinding.getRoot())
+            .setPositiveButton("Save", (dialog, which) -> {
+                // Update the user's name
+                ParseUser.getCurrentUser().put("name", dialogBinding.etName.getText().toString());
+                ParseUser.getCurrentUser().saveInBackground();
+                Toast.makeText(MainActivity.this, "Name saved.", Toast.LENGTH_SHORT).show();
+                binding.tvName.setText(dialogBinding.etName.getText().toString());
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .show();
+    }
+
+    /* Allows the user to edit their password. */
+    public void editPasswordOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        EditPasswordBinding dialogBinding = EditPasswordBinding.inflate(getLayoutInflater());
+        new MaterialAlertDialogBuilder(this)
+            .setView(dialogBinding.getRoot())
+            .setPositiveButton("Save", (dialog, which) -> {
+                String oldPassword = dialogBinding.etOldPassword.getText().toString();
+                String password = dialogBinding.etPassword.getText().toString();
+                String confirmPassword = dialogBinding.etConfirmPassword.getText().toString();
+                ParseUser user = ParseUser.getCurrentUser();
+
+                // Check if old password is entered correctly
+                ParseUser.logInInBackground(user.getUsername(), oldPassword, (u, e) -> {
+                    if (u != null) {
+                        // If old password is correct, update their password
+                        if (!password.equals(confirmPassword)) {
+                            Toast.makeText(MainActivity.this, "New passwords do not match.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        user.setPassword(password);
+                        user.saveInBackground();
+                        Toast.makeText(MainActivity.this, "Password updated.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Old password is incorrect.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .create()
+            .show();
+    }
+
+    /* Deletes all entries of the current user. */
+    public void deleteAllEntriesOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        new MaterialAlertDialogBuilder(this)
+            .setTitle("Delete All Entries")
+            .setMessage("Are you sure?")
+            .setPositiveButton("Delete All", (dialog, which) -> {
+                // Delete all entries in Parse
+                for (Entry entry: ParseApplication.entries) entry.deleteInBackground();
+                ParseApplication.entries.clear();
+                Toast.makeText(MainActivity.this, "Entries deleted.", Toast.LENGTH_SHORT).show();
+
+                // Update UI
+                HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
+                if (homeFragment != null) {
+                    homeFragment.getAdapter().notifyDataSetChanged();
+                    homeFragment.checkEntriesExist();
+                }
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .create()
+            .show();
+    }
+
+    /* Deletes all backlog items of the current user. */
+    public void deleteBacklogOnClick(View view) {
+        // Using a Material Dialog with layout defined in res/values/themes.xml
+        new MaterialAlertDialogBuilder(this)
+            .setTitle("Clear To-Watch List")
+            .setMessage("Are you sure?")
+            .setPositiveButton("Clear", (dialog, which) -> {
+                // Delete all backlog items
+                for (BacklogItem item: ParseApplication.backlogItems) item.deleteInBackground();
+                ParseApplication.backlogItems.clear();
+                Toast.makeText(MainActivity.this, "Backlog deleted.", Toast.LENGTH_SHORT).show();
+
+                // Update UI
+                BacklogFragment backlogFragment = (BacklogFragment) manager.findFragmentByTag("backlog");
+                if (backlogFragment != null) {
+                    backlogFragment.getAdapter().notifyDataSetChanged();
+                    backlogFragment.checkItemsExist();
+                }
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .create().show();
     }
 }
