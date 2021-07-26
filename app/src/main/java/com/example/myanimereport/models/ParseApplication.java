@@ -9,7 +9,9 @@ import com.apollographql.apollo.ApolloClient;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ParseApplication extends Application {
 
@@ -18,6 +20,7 @@ public class ParseApplication extends Application {
     public static List<Entry> entries;
     public static List<BacklogItem> backlogItems;
     public static List<Integer> seenMediaIds;
+    public static Set<String> genres;
 
     @Override
     public void onCreate() {
@@ -42,6 +45,7 @@ public class ParseApplication extends Application {
         entries = new ArrayList<>();
         backlogItems = new ArrayList<>();
         seenMediaIds = new ArrayList<>();
+        genres = new HashSet<>();
 
         // Register callback to keep the current activity updated
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

@@ -9,8 +9,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myanimereport.activities.AnimeDetailsActivity;
+import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
+import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import org.parceler.Parcels;
@@ -64,6 +66,14 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         Toast.makeText(context, "Item deleted.", Toast.LENGTH_SHORT).show();
     }
 
+    /* When user checks a backlog item off the list, add an entry for it. */
+    public void addItemAsEntry(int position) {
+        Intent intent = new Intent(context, EntryActivity.class);
+        intent.putExtra("anime", Parcels.wrap(items.get(position).getAnime()));
+        intent.putExtra("position", position);
+        fragment.startActivityForResult(intent, HomeFragment.NEW_ENTRY_REQUEST_CODE);
+    }
+
     /* Defines the view holder for an item. */
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -83,7 +93,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
             if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
 
             // If no rating info, hide the rating component
-            if (anime.getAverageScore() != -1) {
+            if (anime.getAverageScore() != null && anime.getAverageScore() != -1) {
                 binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
             } else {
                 binding.tvRating.setVisibility(View.INVISIBLE);

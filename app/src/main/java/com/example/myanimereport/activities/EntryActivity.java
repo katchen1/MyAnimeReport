@@ -3,6 +3,8 @@ package com.example.myanimereport.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,16 +16,18 @@ import android.widget.Toast;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
-import com.example.MediaDetailsByTitleQuery;
-import com.example.fragment.MediaFragment;
+import com.example.MediaPageByTitleQuery;
 import com.example.myanimereport.R;
+import com.example.myanimereport.adapters.AnimesAdapter;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import org.parceler.Parcels;
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -35,6 +39,9 @@ public class EntryActivity extends AppCompatActivity {
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
     private Entry entry; // The entry being edited
+    private Integer position; // Position of the anime in the backlog recycler view
+    private List<Anime> queriedAnimes; // Suggested animes based on title search
+    private AnimesAdapter adapter; // Adapter for recycler view for queriedAnimes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +52,19 @@ public class EntryActivity extends AppCompatActivity {
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
 
+        // Set up recycler view for queried animes
+        queriedAnimes = new ArrayList<>();
+        adapter = new AnimesAdapter(this, binding.etTitle, queriedAnimes);
+        binding.rvAnimes.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvAnimes.setAdapter(adapter);
+        DividerItemDecoration divider = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.item_divider)));
+        binding.rvAnimes.addItemDecoration(divider);
+
         // Set up focus change and click listeners
         binding.etTitle.setOnFocusChangeListener(this::etOnChangeFocus);
         binding.etNote.setOnFocusChangeListener(this::etOnChangeFocus);
         binding.etRating.setOnFocusChangeListener(this::etOnChangeFocus);
-        binding.tvTitle.setOnClickListener(this::tvTitleOnClick);
 
         // Set up number pickers for month and year
         setUpNumberPickers();
@@ -60,6 +75,14 @@ public class EntryActivity extends AppCompatActivity {
             mode = 0;
             binding.tvToolbar.setText(R.string.add_entry);
             mediaId = -1;
+
+            // Creating a new entry from a backlog anime
+            if (getIntent().hasExtra("anime")) {
+                Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
+                binding.etTitle.setText(anime.getTitleEnglish());
+                mediaId = anime.getMediaId();
+                position = getIntent().getIntExtra("position", -1);
+            }
         } else {
             // Editing an existing entry, set the entry to be the one passed in
             mode = 1;
@@ -94,13 +117,6 @@ public class EntryActivity extends AppCompatActivity {
         });
     }
 
-    /* When user clicks the suggested title, set the title to the suggested title. */
-    private void tvTitleOnClick(View view) {
-        binding.etTitle.setText(binding.tvTitle.getText().toString());
-        hideTitleSuggestion();
-        hideFocus(binding.etTitle);
-    }
-
     /* When user clicks outside of the edit texts, hide the soft keyboard. */
     private void etOnChangeFocus(View view, boolean hasFocus) {
         if (!hasFocus) hideFocus(view);
@@ -117,11 +133,12 @@ public class EntryActivity extends AppCompatActivity {
     public void handleTextChange() {
         // If the typed title matches the suggested title, remember the anime
         String search = binding.etTitle.getText().toString();
-        String suggested = binding.tvTitle.getText().toString();
-        if (search.equals(suggested)) {
-            binding.etTitle.setTextColor(ContextCompat.getColor(this, R.color.white));
-            mediaId = searchMediaId;
-            return;
+        for (Anime anime: queriedAnimes) {
+            if (anime.getTitleEnglish().equals(search)) {
+                binding.etTitle.setTextColor(ContextCompat.getColor(this, R.color.white));
+                mediaId = anime.getMediaId();
+                return;
+            }
         }
 
         // If haven't found a match, continue to search for a match
@@ -132,27 +149,19 @@ public class EntryActivity extends AppCompatActivity {
 
     /* Searches for an anime by title via AniList GraphQL. */
     public void queryTitle(String search) {
-        ParseApplication.apolloClient.query(new MediaDetailsByTitleQuery(search)).enqueue(
-            new ApolloCall.Callback<MediaDetailsByTitleQuery.Data>() {
+        ParseApplication.apolloClient.query(new MediaPageByTitleQuery(search)).enqueue(
+            new ApolloCall.Callback<MediaPageByTitleQuery.Data>() {
                 @Override
-                public void onResponse(@NonNull Response<MediaDetailsByTitleQuery.Data> response) {
-                    // View editing needs to happen on the main thread, not the background thread
+                public void onResponse(@NonNull Response<MediaPageByTitleQuery.Data> response) {
+                    if (response.getData().Page() == null) return;
+                    if (response.getData().Page().media() == null) return;
                     runOnUiThread(() -> {
-                        // Try to find the English or Romaji title (with null checking)
-                        MediaFragment media = Objects.requireNonNull(Objects.requireNonNull(
-                                response.getData()).Media()).fragments().mediaFragment();
-                        String title = media.title().english();
-                        if (title == null) title = media.title().romaji();
-
-                        // Exit early if can't find either
-                        if (title == null){
-                            hideTitleSuggestion();
-                            return;
+                        // Add the animes to the list
+                        queriedAnimes.clear();
+                        for (MediaPageByTitleQuery.Medium m : response.getData().Page().media()) {
+                            queriedAnimes.add(new Anime(m.fragments().mediaFragment()));
                         }
-
-                        // Show the suggestion and remember the Anime's id
-                        binding.tvTitle.setText(title);
-                        searchMediaId = media.id();
+                        adapter.notifyDataSetChanged();
                         showTitleSuggestion();
                     });
                 }
@@ -167,12 +176,12 @@ public class EntryActivity extends AppCompatActivity {
 
     /* Shows the title suggestion below the search bar. */
     public void showTitleSuggestion() {
-        binding.tvTitle.setVisibility(View.VISIBLE);
+        binding.rvAnimes.setVisibility(View.VISIBLE);
     }
 
     /* Hides the title suggestion below the search bar. */
     public void hideTitleSuggestion() {
-        binding.tvTitle.setVisibility(View.GONE);
+        binding.rvAnimes.setVisibility(View.GONE);
     }
 
     /* Sets up the number pickers for month and year. */
@@ -204,6 +213,14 @@ public class EntryActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if user already has an entry for this anime
+        for (Entry entry: ParseApplication.entries) {
+            if (entry.getMediaId().equals(mediaId)) {
+                Toast.makeText(EntryActivity.this, "Already have an entry for this anime.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         // Check if rating is valid
         if (rating.isEmpty() || Double.parseDouble(rating) > 10 || Double.parseDouble(rating) < 0) {
             binding.etRating.setText("");
@@ -225,6 +242,7 @@ public class EntryActivity extends AppCompatActivity {
                 Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("entry", entry);
+                intent.putExtra("position", position);
                 setResult(RESULT_OK, intent);
                 finish();
             } else {
