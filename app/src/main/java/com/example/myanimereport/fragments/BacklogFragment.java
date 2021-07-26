@@ -1,5 +1,7 @@
 package com.example.myanimereport.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import com.example.myanimereport.adapters.BacklogItemsAdapter;
 import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
+import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.EndlessRecyclerViewScrollListener;
 import com.example.myanimereport.utils.SwipeToDeleteCallback;
@@ -66,15 +69,7 @@ public class BacklogFragment extends Fragment {
         DividerItemDecoration divider = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
         binding.rvBacklogItems.addItemDecoration(divider);
-        queryBacklogItems(0);
-
-        // Endless scrolling
-        binding.rvBacklogItems.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                queryBacklogItems(items.size());
-            }
-        });
+        queryBacklogItems();
     }
 
     /* Opens the navigation drawer. */
@@ -88,6 +83,7 @@ public class BacklogFragment extends Fragment {
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.GONE);
         binding.btnDeleteBacklog.setVisibility(View.VISIBLE);
+        binding.btnFilter.setVisibility(View.GONE);
         binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
@@ -96,11 +92,9 @@ public class BacklogFragment extends Fragment {
         return adapter;
     }
 
-    /* Queries the items 10 at a time. Skips the first skip items. */
-    public void queryBacklogItems(int skip) {
+    /* Queries all backlog items. */
+    public void queryBacklogItems() {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
-        query.setSkip(skip); // Skip the first skip items
-        query.setLimit(50); // Limit query to 50 items
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
         query.addAscendingOrder("createdAt"); // Order by creation date
         query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
@@ -132,12 +126,28 @@ public class BacklogFragment extends Fragment {
 
     /* Navigates to the match tab. */
     public void goMatch(View view) {
-        FragmentManager manager = getFragmentManager();
-        if (manager == null) return;
-        Fragment matchFragment = manager.findFragmentByTag("match");
-        if (matchFragment == null) return;
-        manager.beginTransaction().hide(this).show(matchFragment).commit();
+        MainActivity.manager.beginTransaction().hide(this).show(MainActivity.matchFragment).commit();
         MainActivity.binding.navView.setSelectedItemId(R.id.navigation_match);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == HomeFragment.NEW_ENTRY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // A new entry was created, added it to the home list
+            Entry entry = data.getParcelableExtra("entry");
+            int position = data.getIntExtra("position", -1);
+            MainActivity.homeFragment.insertEntryAtFront(entry);
+
+            // Remove the anime from the backlog
+            items.get(position).deleteInBackground();
+            items.remove(position);
+            adapter.notifyItemRemoved(position);
+            checkItemsExist();
+
+            // Navigate to the home tab
+            MainActivity.manager.beginTransaction().hide(this).show(MainActivity.homeFragment).commit();
+            MainActivity.binding.navView.setSelectedItemId(R.id.navigation_home);
+        }
     }
 
     @Override

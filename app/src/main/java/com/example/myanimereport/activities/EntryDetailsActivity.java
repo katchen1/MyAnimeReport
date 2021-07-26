@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.databinding.ActivityEntryDetailsBinding;
@@ -28,15 +27,13 @@ public class EntryDetailsActivity extends AppCompatActivity {
     private Integer position; // The position of the entry in the adapter
     private Anime anime; // The anime of the entry
     private boolean editable; // Whether or not the user is allowed to edit the entry
+    private Integer allPosition; // The position of the entry in the allEntries list
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityEntryDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // Hide status bar
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
@@ -46,6 +43,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
         position = getIntent().getIntExtra("position", -1);
         anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
         editable = getIntent().getBooleanExtra("editable", true);
+        allPosition = getIntent().getIntExtra("allPosition", -1);
 
         // Show the entry's information
         populateEntryView();
@@ -114,6 +112,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
                     Toast.makeText(EntryDetailsActivity.this, "Entry deleted.", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.putExtra("position", position);
+                    intent.putExtra("allPosition", allPosition);
                     setResult(RESULT_OK, intent);
                     finish();
                 } else {
@@ -143,6 +142,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra("entry", entry);
         intent.putExtra("position", position);
+        intent.putExtra("allPosition", allPosition);
         intent.putExtra("anime", Parcels.wrap(anime));
         setResult(RESULT_OK, intent);
         finish();

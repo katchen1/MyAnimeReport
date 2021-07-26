@@ -31,7 +31,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     private final String TAG = "EntriesAdapter";
     private final Fragment fragment;
     private final Context context;
-    private final List<Entry> entries;
+    private List<Entry> entries;
     private final boolean editable;
     private boolean gridView;
 
@@ -68,6 +68,12 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         this.gridView = gridView;
     }
 
+    public void updateEntries(List<Entry> updatedEntries){
+        entries.clear();
+        entries.addAll(updatedEntries);
+        notifyDataSetChanged();
+    }
+
     /* Defines the view holder for a entry. */
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -83,6 +89,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         /* Binds the entry's data to the view's components. */
         public void bind(Entry entry) {
             // Set data unrelated to the anime
+            if (entry == null) return;
             binding.tvYearWatched.setText(String.format(Locale.getDefault(), "%d", entry.getYearWatched()));
             binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
 
@@ -142,6 +149,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
             Intent intent = new Intent(context, EntryDetailsActivity.class);
             intent.putExtra("entry", entry); // Pass in the entry
             intent.putExtra("position", getAdapterPosition()); // Pass in its position in the list
+            intent.putExtra("allPosition", ParseApplication.entries.indexOf(entry));
             intent.putExtra("anime", Parcels.wrap(entry.getAnime())); // Pass in the entry's anime
             intent.putExtra("editable", editable);
 

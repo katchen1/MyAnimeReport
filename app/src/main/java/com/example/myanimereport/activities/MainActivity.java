@@ -27,7 +27,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static ActivityMainBinding binding;
-    private FragmentManager manager;
+    public static HomeFragment homeFragment;
+    public static ReportFragment reportFragment;
+    public static MatchFragment matchFragment;
+    public static BacklogFragment backlogFragment;
+    public static  FragmentManager manager;
+
     private String sortedBy = "Entry Creation Date Descending";
 
     @Override
@@ -41,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up fragments
         manager = getSupportFragmentManager();
-        final Fragment homeFragment = new HomeFragment();
-        final Fragment reportFragment = new ReportFragment();
-        final Fragment matchFragment = new MatchFragment();
-        final Fragment backlogFragment = new BacklogFragment();
+        homeFragment = new HomeFragment();
+        reportFragment = new ReportFragment();
+        matchFragment = new MatchFragment();
+        backlogFragment = new BacklogFragment();
 
         // Use a one-element array to store the active fragment to make it effectively final
         final Fragment[] activeFragment = { homeFragment };
@@ -97,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         ParseApplication.entries.clear();
         ParseApplication.backlogItems.clear();
         ParseApplication.seenMediaIds.clear();
+        ParseApplication.genres.clear();
         finish();
     }
 
@@ -120,8 +126,7 @@ public class MainActivity extends AppCompatActivity {
     /* Toggles between grid and list layouts for entries. */
     public void btnLayoutOnClick(View view) {
         // Change layout in the home fragment
-        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
-        if (homeFragment != null) homeFragment.switchLayout();
+        homeFragment.switchLayout();
 
         // Update UI
         String targetText = "Grid Layout";
@@ -177,16 +182,16 @@ public class MainActivity extends AppCompatActivity {
         int sign = inDefaultOrder? -1: 1;
         switch (sortBy) {
             case "Entry Creation Date":
-                entries.sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
                 break;
             case "Rating":
-                ParseApplication.entries.sort((e1, e2) -> sign * e2.getRating().compareTo(e1.getRating()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e2.getRating().compareTo(e1.getRating()));
                 break;
             case "Title":
-                ParseApplication.entries.sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
                 break;
             case "Watch Date":
-                ParseApplication.entries.sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
                 break;
         }
 
@@ -197,8 +202,7 @@ public class MainActivity extends AppCompatActivity {
         binding.tvSort.setText(sortBy);
 
         // Notify adapter and close the drawer
-        HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
-        if (homeFragment != null) homeFragment.getAdapter().notifyDataSetChanged();
+        homeFragment.getAdapter().notifyDataSetChanged();
         setSortVisibility(View.GONE);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
@@ -221,6 +225,11 @@ public class MainActivity extends AppCompatActivity {
     /* Sorts by watch date. */
     public void btnSortWatchDateOnClick(View view) {
         sort("Watch Date", binding.ivSortWatchDate);
+    }
+
+    /* Allows the user to filter anime genres. */
+    public void filterOnClick(View view) {
+        homeFragment.filterGenres();
     }
 
     /* Allows the user to edit their name. */
@@ -286,11 +295,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Entries deleted.", Toast.LENGTH_SHORT).show();
 
                 // Update UI
-                HomeFragment homeFragment = (HomeFragment) manager.findFragmentByTag("home");
-                if (homeFragment != null) {
-                    homeFragment.getAdapter().notifyDataSetChanged();
-                    homeFragment.checkEntriesExist();
-                }
+                homeFragment.getAdapter().notifyDataSetChanged();
+                homeFragment.checkEntriesExist();
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
