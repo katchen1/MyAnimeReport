@@ -41,7 +41,8 @@ public class AnimeDetailsActivity extends AppCompatActivity {
         else binding.tvYear.setText(String.format(Locale.getDefault(), "%d", anime.getSeasonYear()));
         if (anime.getEpisodes() == null) binding.llEpisodes.setVisibility(View.GONE);
         else binding.tvEpisodes.setText(String.format(Locale.getDefault(), "%d Episodes", anime.getEpisodes()));
-        if (anime.getAverageScore() == null) binding.llRating.setVisibility(View.GONE);
+        Double rating = anime.getAverageScore();
+        if (rating == null || rating == -1.0) binding.llRating.setVisibility(View.GONE);
         else binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
 
         // Scroll down a bit so that the poster doesn't take up the whole card view

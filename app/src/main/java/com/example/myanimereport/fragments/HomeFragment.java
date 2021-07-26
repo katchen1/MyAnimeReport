@@ -85,6 +85,7 @@ public class HomeFragment extends Fragment {
 
         // Search view
         EditText searchEditText = binding.searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchEditText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white));
         searchEditText.setTextCursorDrawable(null);
 
         // Handle text change in search bar
