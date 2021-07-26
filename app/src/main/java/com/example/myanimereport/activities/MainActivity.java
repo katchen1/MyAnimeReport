@@ -182,16 +182,16 @@ public class MainActivity extends AppCompatActivity {
         int sign = inDefaultOrder? -1: 1;
         switch (sortBy) {
             case "Entry Creation Date":
-                entries.sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
                 break;
             case "Rating":
-                ParseApplication.entries.sort((e1, e2) -> sign * e2.getRating().compareTo(e1.getRating()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e2.getRating().compareTo(e1.getRating()));
                 break;
             case "Title":
-                ParseApplication.entries.sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
                 break;
             case "Watch Date":
-                ParseApplication.entries.sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
+                homeFragment.getEntries().sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
                 break;
         }
 

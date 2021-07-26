@@ -43,7 +43,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
         position = getIntent().getIntExtra("position", -1);
         anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
         editable = getIntent().getBooleanExtra("editable", true);
-        allPosition = getIntent().getIntExtra("position", -1);
+        allPosition = getIntent().getIntExtra("allPosition", -1);
 
         // Show the entry's information
         populateEntryView();
