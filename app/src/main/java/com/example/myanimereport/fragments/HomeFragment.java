@@ -12,7 +12,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import androidx.appcompat.widget.SearchView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -21,8 +20,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.example.myanimereport.R;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
@@ -86,7 +83,7 @@ public class HomeFragment extends Fragment {
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
         // Search view
-        EditText searchEditText = binding.searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        EditText searchEditText = binding.searchView.findViewById(R.id.search_src_text);
         searchEditText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white));
         searchEditText.setTextCursorDrawable(null);
 
@@ -124,16 +121,11 @@ public class HomeFragment extends Fragment {
         });
 
         // Pull to refresh
-        // Setup refresh listener which triggers new data loading
-        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                entries.clear();
-                allEntries.clear();
-                queryEntries(0);
-            }
+        binding.swipeContainer.setOnRefreshListener(() -> {
+            entries.clear();
+            allEntries.clear();
+            queryEntries(0);
         });
-        // Configure the refreshing colors
         binding.swipeContainer.setColorSchemeResources(R.color.theme);
 
         // Add entries to the recycler view
@@ -207,14 +199,14 @@ public class HomeFragment extends Fragment {
         genres.sort(String::compareTo);
         genres.add(0, "All");
 
-        // Add a checkbox for each genre
+        // Add a checkbox for each genre to the linear layout
         List<CheckBox> cbs = new ArrayList<>();
         for (String genre: genres) {
             CheckBox cb = new CheckBox(getContext());
             cb.setText(genre);
             cb.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
             if ((selectedGenres.isEmpty() && !entries.isEmpty()) || selectedGenres.contains(genre)) cb.setChecked(true);
-            dialogBinding.llGenres.addView(cb);
+            dialogBinding.linearLayoutGenres.addView(cb);
             cbs.add(cb);
         }
 
