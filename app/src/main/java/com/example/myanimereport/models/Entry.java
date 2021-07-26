@@ -64,18 +64,32 @@ public class Entry extends ParseObject {
     public static void setAnimes(List<Entry> entries) {
         List<Integer> ids = new ArrayList<>();
         for (Entry entry: entries) ids.add(entry.getMediaId());
-        ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(1, ids)).enqueue(
+        queryAnimes(1, ids, entries);
+    }
+
+    public static void queryAnimes(int page, List<Integer> ids, List<Entry> entries) {
+        ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(page, ids)).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
                 @Override
                 public void onResponse(@NonNull Response<MediaDetailsByIdListQuery.Data> response) {
+                    // Null checking
                     if (response.getData().Page() == null) return;
                     if (response.getData().Page().media() == null) return;
+                    if (response.getData().Page().pageInfo() == null) return;
+                    if (response.getData().Page().pageInfo().hasNextPage() == null) return;
+
+                    // Set animes for the page
                     for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
                         Anime anime = new Anime(m.fragments().mediaFragment());
                         ParseApplication.genres.addAll(anime.getGenres());
                         ParseApplication.seenMediaIds.add(anime.getMediaId());
                         int index = ids.indexOf(anime.getMediaId());
                         entries.get(index).setAnime(anime);
+                    }
+
+                    // Next page
+                    if (response.getData().Page().pageInfo().hasNextPage()) {
+                        queryAnimes(page + 1, ids, entries);
                     }
                 }
 
