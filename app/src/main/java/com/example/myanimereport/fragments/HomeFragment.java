@@ -21,6 +21,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.example.myanimereport.R;
 import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
@@ -101,7 +103,8 @@ public class HomeFragment extends Fragment {
                 // Update the entries list to show only matching titles
                 List<Entry> updatedEntries = new ArrayList<>();
                 for (Entry entry: allEntries) {
-                    if (entry.getAnime() != null) {
+                    if (newText.isEmpty()) updatedEntries.add(entry);
+                    else if (entry.getAnime() != null) {
                         String title = entry.getAnime().getTitleEnglish().toLowerCase();
                         if (title.contains(newText.toLowerCase())) updatedEntries.add(entry);
                     }
@@ -119,6 +122,19 @@ public class HomeFragment extends Fragment {
                 hideSoftKeyboard();
             }
         });
+
+        // Pull to refresh
+        // Setup refresh listener which triggers new data loading
+        binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                entries.clear();
+                allEntries.clear();
+                queryEntries(0);
+            }
+        });
+        // Configure the refreshing colors
+        binding.swipeContainer.setColorSchemeResources(R.color.theme);
 
         // Add entries to the recycler view
         queryEntries(0);
@@ -168,6 +184,7 @@ public class HomeFragment extends Fragment {
             entries.addAll(entriesFound);
             adapter.notifyDataSetChanged();
             checkEntriesExist();
+            binding.swipeContainer.setRefreshing(false);
         });
     }
 
@@ -250,6 +267,10 @@ public class HomeFragment extends Fragment {
 
     public EntriesAdapter getAdapter() {
         return adapter;
+    }
+
+    public List<Entry> getEntries() {
+        return entries;
     }
 
     /* Inserts an entry at the very front of the list and resets all filters. */
