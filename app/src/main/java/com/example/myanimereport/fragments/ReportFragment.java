@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -239,6 +240,7 @@ public class ReportFragment extends Fragment {
         for (String genre: genreToList.keySet()) {
             pieEntries.add(new PieEntry(genreToList.get(genre).size(),  genre));
         }
+        pieEntries.sort((e1, e2) -> Float.compare(e2.getY(), e1.getY())); // Descending order
 
         // Create data set
         PieDataSet dataSet = new PieDataSet(pieEntries,"Genre");
@@ -258,11 +260,17 @@ public class ReportFragment extends Fragment {
         BarChart chart = binding.chartGenrePref;
 
         // Create data points for average genre ratings
+        ArrayList<Pair<String, Float>> pairs = new ArrayList<>();
         ArrayList<BarEntry> barEntries = new ArrayList<>();
+        ArrayList<String> genres = new ArrayList<>();
         int xValue = 0;
         for (String genre: genreToList.keySet()) {
-            double avgRating = getAverageRating(genreToList.get(genre));
-            barEntries.add(new BarEntry(xValue++, (float) avgRating, genre));
+            pairs.add(new Pair<>(genre, (float) getAverageRating(genreToList.get(genre))));
+        }
+        pairs.sort((p1, p2) -> Float.compare(p1.second, p2.second));
+        for (Pair<String, Float> p: pairs) {
+            genres.add(p.first);
+            barEntries.add(new BarEntry(xValue++, p.second, p.first));
         }
 
         // Create data set
@@ -275,7 +283,7 @@ public class ReportFragment extends Fragment {
         customizeXAxis(chart.getXAxis(), -1, -1, genreToList.keySet().size(), false, false);
         customizeYAxisMain(chart.getAxisRight(), -1, -1, -1);
         customizeYAxisSecondary(chart.getAxisLeft());
-        chart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(genreToList.keySet()));
+        chart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(genres));
         chart.setScaleEnabled(false);
         chart.highlightValue(null);
         chart.setFitBars(true);
