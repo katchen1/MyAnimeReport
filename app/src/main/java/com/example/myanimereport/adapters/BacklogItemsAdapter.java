@@ -93,7 +93,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
             if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
 
             // If no rating info, hide the rating component
-            if (anime.getAverageScore() != -1) {
+            if (anime.getAverageScore() != null && anime.getAverageScore() != -1) {
                 binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
             } else {
                 binding.tvRating.setVisibility(View.INVISIBLE);

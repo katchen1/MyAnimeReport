@@ -39,7 +39,7 @@ public class Anime {
         this.titleRomaji = Objects.requireNonNull(media.title()).romaji();
         this.titleNative = Objects.requireNonNull(media.title()).native_();
         this.description = media.description();
-        this.averageScore = Objects.requireNonNull(media.averageScore()) / 10.0;
+        this.averageScore = media.averageScore() != null? media.averageScore() / 10.0: -1.0;
         this.seasonYear = media.seasonYear();
         this.coverImage = Objects.requireNonNull(media.coverImage()).extraLarge();
         this.bannerImage = media.bannerImage();
