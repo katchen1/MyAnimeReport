@@ -160,7 +160,7 @@ public class HomeFragment extends Fragment {
     public void queryEntries(int skip) {
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
         query.setSkip(skip); // Skip the first skip items
-        query.setLimit(50); // Limit query to 50 items
+        //query.setLimit(50); // Limit query to 50 items
         query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
         query.addDescendingOrder("createdAt"); // Order posts by creation date
         query.findInBackground((entriesFound, e) -> { // Start async query for entries

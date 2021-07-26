@@ -69,15 +69,7 @@ public class BacklogFragment extends Fragment {
         DividerItemDecoration divider = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
         binding.rvBacklogItems.addItemDecoration(divider);
-        queryBacklogItems(0);
-
-        // Endless scrolling
-        binding.rvBacklogItems.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                queryBacklogItems(items.size());
-            }
-        });
+        queryBacklogItems();
     }
 
     /* Opens the navigation drawer. */
@@ -100,11 +92,9 @@ public class BacklogFragment extends Fragment {
         return adapter;
     }
 
-    /* Queries the items 10 at a time. Skips the first skip items. */
-    public void queryBacklogItems(int skip) {
+    /* Queries all backlog items. */
+    public void queryBacklogItems() {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
-        query.setSkip(skip); // Skip the first skip items
-        query.setLimit(50); // Limit query to 50 items
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
         query.addAscendingOrder("createdAt"); // Order by creation date
         query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
