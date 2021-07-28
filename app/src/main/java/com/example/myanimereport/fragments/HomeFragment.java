@@ -125,12 +125,12 @@ public class HomeFragment extends Fragment {
         binding.swipeContainer.setOnRefreshListener(() -> {
             entries.clear();
             allEntries.clear();
-            queryEntries(0);
+            queryEntries(false);
         });
         binding.swipeContainer.setColorSchemeResources(R.color.theme);
 
         // Add entries to the recycler view
-        queryEntries(0);
+        queryEntries(true);
     }
 
     /* Hides the soft keyboard. */
@@ -157,11 +157,10 @@ public class HomeFragment extends Fragment {
         binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
-    /* Queries the entries 50 at a time. Skips the first skip items. */
-    public void queryEntries(int skip) {
+    /* Queries the entries all at once. */
+    public void queryEntries(boolean firstQuery) {
+        if (firstQuery) showProgressBar();
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
-        query.setSkip(skip); // Skip the first skip items
-        //query.setLimit(50); // Limit query to 50 items
         query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
         query.addDescendingOrder("createdAt"); // Order posts by creation date
         query.findInBackground((entriesFound, e) -> { // Start async query for entries
@@ -179,6 +178,21 @@ public class HomeFragment extends Fragment {
             checkEntriesExist();
             binding.swipeContainer.setRefreshing(false);
         });
+    }
+
+    /* Shows the progress bar. */
+    public void showProgressBar() {
+        binding.pbProgressAction.setVisibility(View.VISIBLE);
+        binding.rvEntries.setVisibility(View.INVISIBLE);
+        binding.rlMessage.setVisibility(View.INVISIBLE);
+    }
+
+    /* Hides the progress bar. */
+    public void hideProgressBar() {
+        binding.pbProgressAction.setVisibility(View.INVISIBLE);
+        binding.rvEntries.setVisibility(View.VISIBLE);
+        binding.rlMessage.setVisibility(View.VISIBLE);
+        checkEntriesExist();
     }
 
     /* Toggles between list and grid layouts. */

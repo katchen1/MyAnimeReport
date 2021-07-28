@@ -16,6 +16,7 @@ import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.bumptech.glide.Glide;
 import com.example.MediaDetailsByIdQuery;
+import com.example.myanimereport.R;
 import com.example.myanimereport.activities.EntryDetailsActivity;
 import com.example.myanimereport.databinding.ItemEntryBinding;
 import com.example.myanimereport.fragments.HomeFragment;
@@ -126,11 +127,11 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
             if (gridView) {
                 binding.ivImageTop.setVisibility(View.VISIBLE);
                 binding.ivImageStart.setVisibility(View.GONE);
-                Glide.with(context).load(anime.getBannerImage()).into(binding.ivImageTop);
+                Glide.with(context).load(anime.getBannerImage()).placeholder(R.drawable.placeholder).into(binding.ivImageTop);
             } else {
                 binding.ivImageTop.setVisibility(View.GONE);
                 binding.ivImageStart.setVisibility(View.VISIBLE);
-                Glide.with(context).load(anime.getCoverImage()).into(binding.ivImageStart);
+                Glide.with(context).load(anime.getCoverImage()).placeholder(R.drawable.placeholder).into(binding.ivImageStart);
             }
             binding.tvTitle.setText(anime.getTitleEnglish());
         }

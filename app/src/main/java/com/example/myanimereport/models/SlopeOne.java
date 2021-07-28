@@ -31,8 +31,10 @@ public class SlopeOne {
     double[][] ratings;
     List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
     final Set<Integer> allAnimes = new HashSet<>();
+    List<Anime> shownAnimes;
 
-    public SlopeOne() {
+    public SlopeOne(List<Anime> shownAnimes) {
+        this.shownAnimes = shownAnimes;
         getInputData();
     }
 
@@ -50,17 +52,15 @@ public class SlopeOne {
             // Extract user ratings from entries and add to input data
             for (Entry entry: entriesFound) {
                 String username = entry.getUsername();
-                if (username.equals("bob") || username.equals("alice") || username.equals("nathan")) {
-                    if (!inputData.containsKey(username)) {
-                        inputData.put(username, new HashMap<>());
-                    }
-                    Map<Integer, Double> userRatings = inputData.get(username);
-                    if (userRatings != null) userRatings.put(entry.getMediaId(), entry.getRating());
-                    allAnimes.add(entry.getMediaId());
+                if (!inputData.containsKey(username)) {
+                    inputData.put(username, new HashMap<>());
                 }
+                Map<Integer, Double> userRatings = inputData.get(username);
+                if (userRatings != null) userRatings.put(entry.getMediaId(), entry.getRating());
+                allAnimes.add(entry.getMediaId());
             }
 
-            // Create the dataframe
+            // Create the dataframe of user ratings
             userList = new ArrayList<>(inputData.keySet());
             animeList = new ArrayList<>(allAnimes);
             numUsers = userList.size();
@@ -74,9 +74,7 @@ public class SlopeOne {
                     Map<Integer, Double> userData = inputData.get(username);
                     if (userData != null) {
                         Double rating = userData.get(anime);
-                        if (rating != null) {
-                            ratings[i][j] = rating;
-                        }
+                        if (rating != null) ratings[i][j] = rating;
                     }
                 }
             }
@@ -91,7 +89,7 @@ public class SlopeOne {
         List<Integer> basedOnIndices = new ArrayList<>();
 
         // Separate the animes that have been rated by the user from those that have not
-        for (int j = 0; j < animeList.size(); j++) {
+        for (int j = 0; j < numAnimes; j++) {
             if (ratings[currUserIndex][j] < 0) predictIndices.add(j);
             else basedOnIndices.add(j);
         }
@@ -106,7 +104,7 @@ public class SlopeOne {
                 double otherUserRatingDiffSum = 0.0;
 
                 // Find other users who rated both animes
-                for (int i = 0; i < userList.size(); i++) {
+                for (int i = 0; i < numUsers; i++) {
                     if (ratings[i][j1] >= 0 && ratings[i][j2] >= 0) {
                         otherUserCount++;
                         otherUserRatingDiffSum += ratings[i][j1] - ratings[i][j2];
@@ -134,10 +132,9 @@ public class SlopeOne {
 
         // Added animes to the recommendation list in the match tab
         predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
-        List<Anime> shownAnimes = MainActivity.matchFragment.getAnimes();
-        shownAnimes.clear();
         List<Integer> ids = new ArrayList<>();
         for (Pair<Integer, Double> p: predictedRatings) ids.add(p.first);
+        shownAnimes.clear();
         queryAnimes(1, ids, shownAnimes);
     }
 
@@ -152,10 +149,9 @@ public class SlopeOne {
                     if (response.getData().Page().pageInfo() == null) return;
                     if (response.getData().Page().pageInfo().hasNextPage() == null) return;
 
-                    // Set animes for the page
+                    // Current page
                     for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
-                        Anime anime = new Anime(m.fragments().mediaFragment());
-                        animes.add(anime);
+                        animes.add(new Anime(m.fragments().mediaFragment()));
                     }
 
                     // Next page
@@ -165,6 +161,7 @@ public class SlopeOne {
                         animes.sort((a1, a2) -> ids.indexOf(a1.getMediaId()) - ids.indexOf(a2.getMediaId()));
                         ParseApplication.currentActivity.runOnUiThread(() -> {
                             MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
+                            MainActivity.homeFragment.hideProgressBar();
                         });
                     }
                 }
