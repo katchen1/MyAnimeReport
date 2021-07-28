@@ -2,7 +2,14 @@ package com.example.myanimereport.models;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
+
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+import com.example.MediaDetailsByIdListQuery;
+import com.example.myanimereport.activities.MainActivity;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
@@ -22,7 +29,7 @@ public class SlopeOne {
     int numUsers;
     int numAnimes;
     double[][] ratings;
-    Map<Integer, Double> predictedRatings = new HashMap<>();
+    List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
     final Set<Integer> allAnimes = new HashSet<>();
 
     public SlopeOne() {
@@ -82,6 +89,8 @@ public class SlopeOne {
         int currUserIndex = userList.indexOf(currUser);
         List<Integer> predictIndices = new ArrayList<>();
         List<Integer> basedOnIndices = new ArrayList<>();
+
+        // Separate the animes that have been rated by the user from those that have not
         for (int j = 0; j < animeList.size(); j++) {
             if (ratings[currUserIndex][j] < 0) predictIndices.add(j);
             else basedOnIndices.add(j);
@@ -119,13 +128,53 @@ public class SlopeOne {
                 num += p.first * p.second;
                 den += p.second;
             }
-            if (den > 0) predictedRatings.put(animeList.get(j1), num / den);
-            else predictedRatings.put(animeList.get(j1), -1.0);
+            if (den > 0) predictedRatings.add(new Pair<>(animeList.get(j1), num / den));
+            else predictedRatings.add(new Pair<>(animeList.get(j1), -1.0));
         }
+
+        // Added animes to the recommendation list in the match tab
+        predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
+        List<Anime> shownAnimes = MainActivity.matchFragment.getAnimes();
+        shownAnimes.clear();
+        List<Integer> ids = new ArrayList<>();
+        for (Pair<Integer, Double> p: predictedRatings) ids.add(p.first);
+        queryAnimes(1, ids, shownAnimes);
     }
 
-    public Map<Integer, Double> getPredictedRatings() {
-        return predictedRatings;
+    public void queryAnimes(int page, List<Integer> ids, List<Anime> animes) {
+        ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(page, ids)).enqueue(
+            new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
+                @Override
+                public void onResponse(@NonNull Response<MediaDetailsByIdListQuery.Data> response) {
+                    // Null checking
+                    if (response.getData().Page() == null) return;
+                    if (response.getData().Page().media() == null) return;
+                    if (response.getData().Page().pageInfo() == null) return;
+                    if (response.getData().Page().pageInfo().hasNextPage() == null) return;
+
+                    // Set animes for the page
+                    for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
+                        Anime anime = new Anime(m.fragments().mediaFragment());
+                        animes.add(anime);
+                    }
+
+                    // Next page
+                    if (response.getData().Page().pageInfo().hasNextPage()) {
+                        queryAnimes(page + 1, ids, animes);
+                    } else {
+                        animes.sort((a1, a2) -> ids.indexOf(a1.getMediaId()) - ids.indexOf(a2.getMediaId()));
+                        ParseApplication.currentActivity.runOnUiThread(() -> {
+                            MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull ApolloException e) {
+                    Log.e("Apollo", e.getMessage() + e.getCause());
+                }
+            }
+        );
     }
 
     public static void print(double[][] matrix) {
