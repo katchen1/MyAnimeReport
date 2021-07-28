@@ -26,6 +26,12 @@ public class Anime {
     String color; // Primary color of the cover image
     Integer episodes; // Number of episodes
 
+//    String country;
+//    Boolean isLicensed;
+//    String source;
+//    List<Integer> studios;
+//    List<Integer> tags;
+
     /* Default constructor. */
     public Anime() {}
 
@@ -46,6 +52,16 @@ public class Anime {
         this.genres = media.genres();
         this.color = Objects.requireNonNull(media.coverImage()).color();
         this.episodes = media.episodes();
+
+//        this.country = media.countryOfOrigin().toString();
+//        this.isLicensed = media.isLicensed();
+//        this.source = media.source().toString();
+//        List<MediaFragment.Node> nodes = media.studios().nodes();
+//        this.studios = new ArrayList<>();
+//        for (MediaFragment.Node n: nodes) this.studios.add(n.id());
+//        List<MediaFragment.Tag> tags = media.tags();
+//        this.tags = new ArrayList<>();
+//        for (MediaFragment.Tag t: tags) this.tags.add(t.id());
     }
 
     /* Alternative constructor (from MediaFragment). */
@@ -62,6 +78,16 @@ public class Anime {
         this.genres = media.genres();
         this.color = Objects.requireNonNull(media.coverImage()).color();
         this.episodes = media.episodes();
+
+//        this.country = media.countryOfOrigin().toString();
+//        this.isLicensed = media.isLicensed();
+//        this.source = media.source().toString();
+//        List<MediaFragment.Node> nodes = media.studios().nodes();
+//        this.studios = new ArrayList<>();
+//        if (nodes != null) for (MediaFragment.Node n: nodes) this.studios.add(n.id());
+//        List<MediaFragment.Tag> tags = media.tags();
+//        this.tags = new ArrayList<>();
+//        if (tags != null) for (MediaFragment.Tag t: tags) this.tags.add(t.id());
     }
 
     /* Getters. */
