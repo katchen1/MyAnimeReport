@@ -57,7 +57,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         allAnime = new ArrayList<>();
-        slopeOne = new SlopeOne();
 
         // Set the button listeners
         binding.btnAccept.setOnClickListener(this::accept);
@@ -73,7 +72,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
         layoutManager.setCanScrollVertical(false);
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
-        queryAnimePage(1);
+
+
+        slopeOne = new SlopeOne();
+        //queryAnimePage(1);
     }
 
     /* Opens the navigation drawer. */
@@ -120,39 +122,19 @@ public class MatchFragment extends Fragment implements CardStackListener {
         );
     }
 
+    public List<Anime> getAnimes() {
+        return allAnime;
+    }
+
+    public CardStackAdapter getAdapter() {
+        return adapter;
+    }
+
     /* When the match tab is clicked, remove all the seen animes from the card stack. */
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) return;
-
-        // Get slope one recommendations
-        Map<Integer, Double> ratingPredictions = slopeOne.getPredictedRatings();
-
-        List<Pair<Anime, Double>> slopeOneRecs = new ArrayList<>();
-
-        // Filter out animes from the mega list
-        for (int i = allAnime.size() - 1; i >= 0; i--) {
-            Anime anime = allAnime.get(i);
-            Integer mediaId = anime.getMediaId();
-            if (ParseApplication.seenMediaIds.contains(mediaId)) {
-                allAnime.remove(i);
-                adapter.notifyItemRemoved(i);
-            } else if (ratingPredictions.containsKey(mediaId)) {
-                slopeOneRecs.add(new Pair<>(anime, ratingPredictions.get(mediaId)));
-                allAnime.remove(i);
-                adapter.notifyItemRemoved(i);
-            }
-        }
-
-        slopeOneRecs.sort((p1, p2) -> p2.second.compareTo(p1.second));
-
-        // Insert slope one recs once in every 3 animes
-        System.out.println(slopeOneRecs.size() + " out of " + ratingPredictions.keySet().size());
-        for (int i = 0; i < slopeOneRecs.size(); i++) {
-            allAnime.add(i * 3, slopeOneRecs.get(i).first);
-            adapter.notifyItemInserted(i * 3);
-        }
     }
 
     @Override
