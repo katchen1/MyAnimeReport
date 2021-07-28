@@ -26,7 +26,7 @@ public class Anime {
     String color; // Primary color of the cover image
     Integer episodes; // Number of episodes
 
-    public Double predictedRating;
+    public Double predictedRating = -1.0;
 
     /* Default constructor. */
     public Anime() {}

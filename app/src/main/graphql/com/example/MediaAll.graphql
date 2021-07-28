@@ -7,7 +7,7 @@ query MediaAll($page:Int!) {
           hasNextPage
         }
 
-        media (type: ANIME, popularity_greater: 30000) {
+        media (type: ANIME, popularity_greater: 30000, sort: [POPULARITY_DESC]) {
             ...mediaFragment
         }
     }
