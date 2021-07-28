@@ -70,8 +70,4 @@ dependencies {
 
     // Coordinator layout
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
-
-    // Dataframe
-    implementation "tech.tablesaw:tablesaw-core:0.38.3"
-    implementation "com.zavtech:morpheus-core:0.9.1"
 }

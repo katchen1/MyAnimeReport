@@ -29,7 +29,6 @@ import com.example.myanimereport.databinding.FragmentHomeBinding;
 import com.example.myanimereport.databinding.GenreFilterBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
-import com.example.myanimereport.models.SlopeOne;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -177,6 +176,7 @@ public class HomeFragment extends Fragment {
             adapter.notifyDataSetChanged();
             checkEntriesExist();
             binding.swipeContainer.setRefreshing(false);
+            if (firstQuery) MainActivity.homeFragment.hideProgressBar();
         });
     }
 
