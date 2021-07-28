@@ -1,4 +1,4 @@
-query MediaAll($page:Int!) {
+query MediaAll($page:Int!, $id_not_in:[Int]!) {
     Page (page: $page, perPage: 50) {
         pageInfo {
           total
@@ -7,7 +7,7 @@ query MediaAll($page:Int!) {
           hasNextPage
         }
 
-        media (type: ANIME, popularity_greater: 30000, sort: [POPULARITY_DESC]) {
+        media (type: ANIME, popularity_greater: 30000, id_not_in: $id_not_in, sort: [POPULARITY_DESC]) {
           ...mediaFragment
         }
     }
