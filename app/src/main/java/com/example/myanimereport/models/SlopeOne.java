@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/* SlopeOne algorithm implementation. */
+/* Slope One algorithm implementation. */
 public class SlopeOne {
 
     private List<String> userList; // List of all users
@@ -163,8 +163,9 @@ public class SlopeOne {
                 if (count + 1 >= 3) rejections.add(id);
             }
 
-            // Remove recommendations with 3 or more rejections
+            // Remove seen animes or recommendations with 3 or more rejections
             predictedRatings.removeIf((p) -> rejections.contains(p.first));
+            predictedRatings.removeIf((p) -> ParseApplication.seenMediaIds.contains(p.first));
 
             // Query anime details
             shownAnimes.clear();
@@ -217,7 +218,7 @@ public class SlopeOne {
 
     public void weaveInRandomAnimes() {
         // Weave in random animes
-        ParseApplication.apolloClient.query(new MediaAllQuery(1)).enqueue(
+        ParseApplication.apolloClient.query(new MediaAllQuery(1, ParseApplication.seenMediaIds)).enqueue(
             new ApolloCall.Callback<MediaAllQuery.Data>() {
                 @Override
                 public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
