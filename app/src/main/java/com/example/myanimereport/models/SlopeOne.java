@@ -13,6 +13,9 @@ import com.example.myanimereport.activities.MainActivity;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,20 +27,21 @@ import java.util.Set;
  */
 public class SlopeOne {
 
-    List<String> userList;
-    List<Integer> animeList;
-    int numUsers;
-    int numAnimes;
-    double[][] ratings;
-    List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
-    final Set<Integer> allAnimes = new HashSet<>();
-    List<Anime> shownAnimes;
+    private List<String> userList;
+    private List<Integer> animeList;
+    private int numUsers;
+    private int numAnimes;
+    private double[][] ratings;
+    private final List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
+    private final Set<Integer> allAnimes = new HashSet<>();
+    private final List<Anime> shownAnimes;
 
     public SlopeOne(List<Anime> shownAnimes) {
         this.shownAnimes = shownAnimes;
         getInputData();
     }
 
+    /* Fetches all user's ratings on all animes from Parse. */
     public void getInputData() {
         Map<String, HashMap<Integer, Double>> inputData = new HashMap<>();
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
@@ -49,7 +53,7 @@ public class SlopeOne {
                 return;
             }
 
-            // Extract user ratings from entries and add to input data
+            // Extract rating from entry
             for (Entry entry: entriesFound) {
                 String username = entry.getUsername();
                 if (!inputData.containsKey(username)) {
@@ -82,6 +86,7 @@ public class SlopeOne {
         });
     }
 
+    /* Predicts the current user's ratings on unseen animes. */
     public void predict() {
         String currUser = ParseUser.getCurrentUser().getUsername();
         int currUserIndex = userList.indexOf(currUser);
@@ -132,13 +137,44 @@ public class SlopeOne {
 
         // Added animes to the recommendation list in the match tab
         predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
-        List<Integer> ids = new ArrayList<>();
-        for (Pair<Integer, Double> p: predictedRatings) ids.add(p.first);
-        shownAnimes.clear();
-        queryAnimes(1, ids, shownAnimes);
+
+        // Remove animes that user has rejected over 3 times within the past week
+        Calendar cal = new GregorianCalendar();
+        cal.add(Calendar.DAY_OF_MONTH, -7);
+        Date sevenDaysAgo = cal.getTime();
+        ParseQuery<Rejection> query = ParseQuery.getQuery(Rejection.class); // Specify type of data
+        query.whereEqualTo(Rejection.KEY_USER, ParseUser.getCurrentUser()); // Limit to current user
+        query.whereGreaterThan(Rejection.KEY_UPDATED_AT, sevenDaysAgo); // Within the past week
+        query.findInBackground((rejectionsFound, e) -> { // Start async query for rejections
+            // Check for errors
+            if (e != null) {
+                Log.e("SlopeOne", "Error when getting rejections.", e);
+                return;
+            }
+            Map<Integer, Integer> rejectionCount = new HashMap<>();
+            for (Rejection r: rejectionsFound) {
+                Integer id = r.getMediaId();
+                if (!rejectionCount.containsKey(id)) rejectionCount.put(id, 0);
+                rejectionCount.put(id, rejectionCount.get(id) + 1);
+            }
+            List<Integer> rejections = new ArrayList<>();
+            for (Integer id: rejectionCount.keySet()) if (rejectionCount.get(id) >= 3) rejections.add(id);
+            predictedRatings.removeIf((p) -> rejections.contains(p.first));
+
+            List<Integer> ids = new ArrayList<>();
+            List<Double> ratings = new ArrayList<>();
+            for (Pair<Integer, Double> p: predictedRatings) {
+                ids.add(p.first);
+                ratings.add(p.second);
+            }
+
+            shownAnimes.clear();
+            queryAnimes(1, ids, ratings, shownAnimes);
+        });
     }
 
-    public void queryAnimes(int page, List<Integer> ids, List<Anime> animes) {
+    /* Query animes of a list of anime ids. */
+    public void queryAnimes(int page, List<Integer> ids, List<Double> ratings, List<Anime> animes) {
         ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(page, ids)).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
                 @Override
@@ -151,12 +187,14 @@ public class SlopeOne {
 
                     // Current page
                     for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
-                        animes.add(new Anime(m.fragments().mediaFragment()));
+                        Anime anime = new Anime(m.fragments().mediaFragment());
+                        animes.add(anime);
+                        anime.predictedRating = ratings.get(ids.indexOf(anime.getMediaId()));
                     }
 
                     // Next page
                     if (response.getData().Page().pageInfo().hasNextPage()) {
-                        queryAnimes(page + 1, ids, animes);
+                        queryAnimes(page + 1, ids, ratings, animes);
                     } else {
                         animes.sort((a1, a2) -> ids.indexOf(a1.getMediaId()) - ids.indexOf(a2.getMediaId()));
                         ParseApplication.currentActivity.runOnUiThread(() -> {
@@ -172,16 +210,5 @@ public class SlopeOne {
                 }
             }
         );
-    }
-
-    public static void print(double[][] matrix) {
-        String output = "";
-        for (int r = 0; r < matrix.length; r++) {
-            for (int c = 0; c < matrix[0].length; c++) {
-                output += matrix[r][c] + " ";
-            }
-            output += "\n";
-        }
-        System.out.println(output);
     }
 }

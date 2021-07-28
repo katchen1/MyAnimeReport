@@ -24,6 +24,7 @@ import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.models.Rejection;
 import com.example.myanimereport.models.SlopeOne;
 import com.parse.ParseUser;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
@@ -135,10 +136,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
+        int position = layoutManager.getTopPosition() - 1;
+        Anime anime = animes.get(position);
         if (direction == Direction.Right) {
             // Remove the anime from the recycler view
-            int position = layoutManager.getTopPosition() - 1;
-            Anime anime = animes.get(position);
             animes.remove(anime);
             adapter.notifyItemRemoved(position);
 
@@ -158,6 +159,13 @@ public class MatchFragment extends Fragment implements CardStackListener {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+        } else if (direction == Direction.Left) {
+            // Create a rejection
+            Rejection rejection = new Rejection();
+            rejection.setMediaId(anime.getMediaId());
+            rejection.setUser(ParseUser.getCurrentUser());
+            rejection.saveInBackground();
+            Toast.makeText(getContext(), "Predicted rating: " + anime.predictedRating, Toast.LENGTH_SHORT).show();
         }
     }
 
