@@ -8,12 +8,14 @@ import androidx.core.util.Pair;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
+import com.example.MediaAllQuery;
 import com.example.MediaDetailsByIdListQuery;
 import com.example.myanimereport.activities.MainActivity;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -197,10 +199,42 @@ public class SlopeOne {
                         queryAnimes(page + 1, ids, ratings, animes);
                     } else {
                         animes.sort((a1, a2) -> ids.indexOf(a1.getMediaId()) - ids.indexOf(a2.getMediaId()));
-                        ParseApplication.currentActivity.runOnUiThread(() -> {
-                            MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
-                            MainActivity.homeFragment.hideProgressBar();
-                        });
+
+                        // Weave in random animes
+                        ParseApplication.apolloClient.query(new MediaAllQuery(1)).enqueue(
+                            new ApolloCall.Callback<MediaAllQuery.Data>() {
+                                @Override
+                                public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
+                                    // Null checking
+                                    if (response.getData().Page() == null) return;
+                                    if (response.getData().Page().media() == null) return;
+                                    if (response.getData().Page().pageInfo() == null) return;
+                                    if (response.getData().Page().pageInfo().hasNextPage() == null) return;
+
+                                    List<Anime> randomAnimes = new ArrayList<>();
+                                    for (MediaAllQuery.Medium m: response.getData().Page().media()) {
+                                        Anime anime = new Anime(m.fragments().mediaFragment());
+                                        randomAnimes.add(anime);
+                                    }
+                                    Collections.shuffle(randomAnimes);
+                                    for (int i = 0; i < randomAnimes.size(); i++) {
+                                        if (animes.size() > i * 5 + 4)
+                                        animes.add(i * 5 + 4, randomAnimes.get(i));
+                                        else animes.add(randomAnimes.get(i));
+                                    }
+
+                                    ParseApplication.currentActivity.runOnUiThread(() -> {
+                                        MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
+                                        MainActivity.homeFragment.hideProgressBar();
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull ApolloException e) {
+                                    Log.e("Apollo", e.getMessage() + e.getCause());
+                                }
+                            }
+                        );
                     }
                 }
 
