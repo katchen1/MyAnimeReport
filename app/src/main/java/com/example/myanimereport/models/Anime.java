@@ -13,20 +13,19 @@ import java.util.Objects;
 /* A media object from the AniList API. */
 @Parcel
 public class Anime {
-    Integer mediaId; // Unique id for the anime in the AniList database
-    String titleEnglish; // The official English title
-    String titleRomaji; // Romanization of the native language title
-    String titleNative; // Official title in its native language
-    String description; // Short description of the media’s story and characters
-    Double averageScore; // A weighted average score of all the user’s scores of the media
-    Integer seasonYear; // The season year the media was initially released in
-    String coverImage; // URL of the cover image of the media
-    String bannerImage; // URL of the banner image of the media
-    List<String> genres; // List of genres of the media
-    String color; // Primary color of the cover image
-    Integer episodes; // Number of episodes
-
-    public Double predictedRating = -1.0;
+    protected Integer mediaId; // Unique id for the anime in the AniList database
+    protected String titleEnglish; // The official English title
+    protected String titleRomaji; // Romanization of the native language title
+    protected String titleNative; // Official title in its native language
+    protected String description; // Short description of the media’s story and characters
+    protected Double averageScore; // A weighted average score of all the user’s scores of the media
+    protected Integer seasonYear; // The season year the media was initially released in
+    protected String coverImage; // URL of the cover image of the media
+    protected String bannerImage; // URL of the banner image of the media
+    protected List<String> genres; // List of genres of the media
+    protected String color; // Primary color of the cover image
+    protected Integer episodes; // Number of episodes
+    protected  Double predictedRating = -1.0;
 
     /* Default constructor. */
     public Anime() {}
@@ -105,5 +104,13 @@ public class Anime {
 
     public Integer getEpisodes() {
         return episodes;
+    }
+
+    public void setPredictedRating(Double predictedRating) {
+        this.predictedRating = predictedRating;
+    }
+
+    public Double getPredictedRating() {
+        return predictedRating;
     }
 }

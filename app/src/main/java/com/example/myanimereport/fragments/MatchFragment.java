@@ -9,14 +9,8 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
-import com.example.MediaAllQuery;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.CardStackAdapter;
 import com.example.myanimereport.databinding.ActivityMainBinding;
@@ -34,10 +28,7 @@ import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class MatchFragment extends Fragment implements CardStackListener {
 
@@ -45,6 +36,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     private List<Anime> animes;
     private CardStackLayoutManager layoutManager;
     private CardStackAdapter adapter;
+    private SlopeOne slopeOne;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -72,9 +64,28 @@ public class MatchFragment extends Fragment implements CardStackListener {
         layoutManager.setCanScrollVertical(false);
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
+    }
 
-        // Generate recommendations
-        new SlopeOne(animes);
+    /* Generate recommendations when the tab is clicked for the first time. */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) return;
+        if (slopeOne == null) slopeOne = new SlopeOne(animes);
+    }
+
+    /* Shows the progress bar. */
+    public void showProgressBar() {
+        binding.pbProgressAction.setVisibility(View.VISIBLE);
+        binding.cardStack.setVisibility(View.INVISIBLE);
+        binding.rlButtons.setVisibility(View.INVISIBLE);
+    }
+
+    /* Hides the progress bar. */
+    public void hideProgressBar() {
+        binding.pbProgressAction.setVisibility(View.INVISIBLE);
+        binding.cardStack.setVisibility(View.VISIBLE);
+        binding.rlButtons.setVisibility(View.VISIBLE);
     }
 
     /* Opens the navigation drawer. */
@@ -165,7 +176,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
             rejection.setMediaId(anime.getMediaId());
             rejection.setUser(ParseUser.getCurrentUser());
             rejection.saveInBackground();
-            Toast.makeText(getContext(), "Predicted rating: " + anime.predictedRating, Toast.LENGTH_SHORT).show();
+            Log.i("MatchFragment", "Predicted rating: " + anime.getPredictedRating());
         }
     }
 

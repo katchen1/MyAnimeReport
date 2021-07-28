@@ -127,11 +127,11 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
             if (gridView) {
                 binding.ivImageTop.setVisibility(View.VISIBLE);
                 binding.ivImageStart.setVisibility(View.GONE);
-                Glide.with(context).load(anime.getBannerImage()).placeholder(R.drawable.logo).into(binding.ivImageTop);
+                Glide.with(context).load(anime.getBannerImage()).placeholder(R.drawable.placeholder).into(binding.ivImageTop);
             } else {
                 binding.ivImageTop.setVisibility(View.GONE);
                 binding.ivImageStart.setVisibility(View.VISIBLE);
-                Glide.with(context).load(anime.getCoverImage()).placeholder(R.drawable.logo).into(binding.ivImageStart);
+                Glide.with(context).load(anime.getCoverImage()).placeholder(R.drawable.placeholder).into(binding.ivImageStart);
             }
             binding.tvTitle.setText(anime.getTitleEnglish());
         }

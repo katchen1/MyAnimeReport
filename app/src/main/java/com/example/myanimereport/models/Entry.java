@@ -169,7 +169,7 @@ public class Entry extends ParseObject {
         try {
             username = getUser().fetchIfNeeded().getUsername();
         } catch (ParseException e) {
-            System.out.println("parse exception");
+            Log.e("Entry", e.getMessage());
         }
         return username;
     }
