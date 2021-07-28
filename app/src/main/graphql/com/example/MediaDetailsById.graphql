@@ -16,6 +16,16 @@ fragment mediaFragment on Media {
     bannerImage
     genres
     episodes
+    isLicensed
+    source
+    studios {
+        nodes {
+            id
+        }
+    }
+    tags {
+        id
+    }
 }
 
 query MediaDetailsById($id:Int!) {
