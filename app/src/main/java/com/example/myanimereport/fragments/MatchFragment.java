@@ -1,7 +1,6 @@
 package com.example.myanimereport.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import com.apollographql.apollo.ApolloCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
-import com.example.MediaAllQuery;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.CardStackAdapter;
 import com.example.myanimereport.databinding.ActivityMainBinding;
@@ -23,6 +17,8 @@ import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.models.Rejection;
+import com.example.myanimereport.models.SlopeOne;
 import com.parse.ParseUser;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
@@ -31,16 +27,15 @@ import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class MatchFragment extends Fragment implements CardStackListener {
 
     private FragmentMatchBinding binding;
-    private List<Anime> allAnime;
+    private List<Anime> animes;
     private CardStackLayoutManager layoutManager;
     private CardStackAdapter adapter;
+    private SlopeOne slopeOne;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -52,7 +47,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        allAnime = new ArrayList<>();
+        animes = new ArrayList<>();
 
         // Set the button listeners
         binding.btnAccept.setOnClickListener(this::accept);
@@ -62,13 +57,34 @@ public class MatchFragment extends Fragment implements CardStackListener {
 
         // Set up the card stack
         layoutManager = new CardStackLayoutManager(getContext(), this);
-        adapter = new CardStackAdapter(getContext(), allAnime);
+        adapter = new CardStackAdapter(getContext(), animes);
         layoutManager.setStackFrom(StackFrom.Top);
         layoutManager.setVisibleCount(3);
         layoutManager.setCanScrollVertical(false);
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
-        queryAnimePage(1);
+    }
+
+    /* Generate recommendations when the tab is clicked for the first time. */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) return;
+        if (slopeOne == null) slopeOne = new SlopeOne(animes);
+    }
+
+    /* Shows the progress bar. */
+    public void showProgressBar() {
+        binding.pbProgressAction.setVisibility(View.VISIBLE);
+        binding.cardStack.setVisibility(View.INVISIBLE);
+        binding.rlButtons.setVisibility(View.INVISIBLE);
+    }
+
+    /* Hides the progress bar. */
+    public void hideProgressBar() {
+        binding.pbProgressAction.setVisibility(View.INVISIBLE);
+        binding.cardStack.setVisibility(View.VISIBLE);
+        binding.rlButtons.setVisibility(View.VISIBLE);
     }
 
     /* Opens the navigation drawer. */
@@ -86,46 +102,9 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.drawerLayout.openDrawer(GravityCompat.START);
     }
 
-    /* Recursive function for pagination. Fetches all the anime with popularity > 30000. */
-    public void queryAnimePage(int page) {
-        ParseApplication.apolloClient.query(new MediaAllQuery(page)).enqueue(
-            new ApolloCall.Callback<MediaAllQuery.Data>() {
-                @Override
-                public void onResponse(@NonNull Response<MediaAllQuery.Data> response) {
-                    // Null checking
-                    if (response.getData().Page() == null) return;
-                    if (response.getData().Page().media() == null) return;
-                    if (response.getData().Page().pageInfo() == null) return;
-                    if (response.getData().Page().pageInfo().hasNextPage() == null) return;
-
-                    // Add the animes to the list
-                    for (MediaAllQuery.Medium m: Objects.requireNonNull(response.getData().Page().media())) {
-                        Anime anime = new Anime(m.fragments().mediaFragment());
-                        allAnime.add(anime);
-                    }
-                    Collections.shuffle(allAnime);
-                    if (response.getData().Page().pageInfo().hasNextPage()) queryAnimePage(page + 1);
-                }
-
-                @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e("Apollo", e.getMessage() + e.getCause());
-                }
-            }
-        );
-    }
-
-    /* When the match tab is clicked, remove all the seen animes from the card stack. */
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) return;
-        for (int i = allAnime.size() - 1; i >= 0; i--) {
-            if (ParseApplication.seenMediaIds.contains(allAnime.get(i).getMediaId())) {
-                allAnime.remove(i);
-                adapter.notifyItemRemoved(i);
-            }
-        }
+    /* Returns the adapter of the card stack recycler view. */
+    public CardStackAdapter getAdapter() {
+        return adapter;
     }
 
     @Override
@@ -167,11 +146,11 @@ public class MatchFragment extends Fragment implements CardStackListener {
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
+        int position = layoutManager.getTopPosition() - 1;
+        Anime anime = animes.get(position);
         if (direction == Direction.Right) {
             // Remove the anime from the recycler view
-            int position = layoutManager.getTopPosition() - 1;
-            Anime anime = allAnime.get(position);
-            allAnime.remove(anime);
+            animes.remove(anime);
             adapter.notifyItemRemoved(position);
 
             // Create a backlog item
@@ -184,15 +163,21 @@ public class MatchFragment extends Fragment implements CardStackListener {
                     // Add the item to the backlog and notify its adapter
                     ParseApplication.backlogItems.add(item);
                     Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
-                    FragmentManager manager = getFragmentManager();
-                    if (manager == null) return;
-                    BacklogFragment backlog = (BacklogFragment) manager.findFragmentByTag("backlog");
-                    if (backlog == null) return;
-                    backlog.getAdapter().notifyItemInserted(ParseApplication.backlogItems.size() - 1);
+                    MainActivity.backlogFragment.getAdapter().notifyItemInserted(ParseApplication.backlogItems.size() - 1);
+                    MainActivity.backlogFragment.checkItemsExist();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+        } else if (direction == Direction.Left) {
+            // Create a rejection
+            Rejection rejection = new Rejection();
+            rejection.setMediaId(anime.getMediaId());
+            rejection.setUser(ParseUser.getCurrentUser());
+            rejection.saveInBackground();
+
+            // Todo: remove this line
+            Toast.makeText(getContext(), "Predicted rating: " + anime.getPredictedRating(), Toast.LENGTH_SHORT).show();
         }
     }
 
