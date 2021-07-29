@@ -176,7 +176,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
             rejection.setMediaId(anime.getMediaId());
             rejection.setUser(ParseUser.getCurrentUser());
             rejection.saveInBackground();
-            Log.i("MatchFragment", "Predicted rating: " + anime.getPredictedRating());
+            Toast.makeText(getContext(), "Predicted rating: " + anime.getPredictedRating(), Toast.LENGTH_SHORT).show();
         }
     }
 

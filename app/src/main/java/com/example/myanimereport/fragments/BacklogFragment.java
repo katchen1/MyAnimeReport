@@ -25,6 +25,7 @@ import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.models.SlopeOne;
 import com.example.myanimereport.utils.EndlessRecyclerViewScrollListener;
 import com.example.myanimereport.utils.SwipeToDeleteCallback;
 import com.parse.ParseQuery;
