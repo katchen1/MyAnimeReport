@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
     android:focusableInTouchMode="true"
+    android:background="@color/dark_gray"
     android:clickable="true"
     android:focusable="true">
 
@@ -65,6 +66,13 @@
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
+    <ProgressBar
+        android:id="@+id/pbProgressAction"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeContainer"

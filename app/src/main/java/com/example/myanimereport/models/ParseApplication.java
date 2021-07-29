@@ -29,6 +29,7 @@ public class ParseApplication extends Application {
         // Register the parse models
         ParseObject.registerSubclass(Entry.class);
         ParseObject.registerSubclass(BacklogItem.class);
+        ParseObject.registerSubclass(Rejection.class);
 
         // Initialize the parse application
         Parse.initialize(new Parse.Configuration.Builder(this)

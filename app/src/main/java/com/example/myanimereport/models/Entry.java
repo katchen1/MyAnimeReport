@@ -7,7 +7,9 @@ import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaDetailsByIdListQuery;
 import com.example.MediaDetailsByIdQuery;
+import com.example.myanimereport.activities.MainActivity;
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import java.time.YearMonth;
@@ -160,5 +162,15 @@ public class Entry extends ParseObject {
     public boolean equals(Object object) {
         if (getClass() != object.getClass()) return false;
         return ((Entry) object).getMediaId().equals(getMediaId());
+    }
+
+    public String getUsername() {
+        String username = "";
+        try {
+            username = getUser().fetchIfNeeded().getUsername();
+        } catch (ParseException e) {
+            Log.e("Entry", e.getMessage());
+        }
+        return username;
     }
 }
