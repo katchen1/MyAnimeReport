@@ -216,8 +216,8 @@ public class SlopeOne {
         );
     }
 
+    /* Weaves in random animes (once in 5 recommendations). */
     public void weaveInRandomAnimes() {
-        // Weave in random animes
         ParseApplication.apolloClient.query(new MediaAllQuery(1, ParseApplication.seenMediaIds)).enqueue(
             new ApolloCall.Callback<MediaAllQuery.Data>() {
                 @Override

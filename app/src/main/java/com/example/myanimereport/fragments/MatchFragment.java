@@ -1,7 +1,6 @@
 package com.example.myanimereport.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,6 +175,8 @@ public class MatchFragment extends Fragment implements CardStackListener {
             rejection.setMediaId(anime.getMediaId());
             rejection.setUser(ParseUser.getCurrentUser());
             rejection.saveInBackground();
+
+            // Todo: remove this line
             Toast.makeText(getContext(), "Predicted rating: " + anime.getPredictedRating(), Toast.LENGTH_SHORT).show();
         }
     }
