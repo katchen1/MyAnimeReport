@@ -273,4 +273,11 @@ public class EntryActivity extends AppCompatActivity {
             }
         });
     }
+
+    /* Returns to the home list and passes back the updated entry so it can be redrawn. */
+    @Override
+    public void onBackPressed() {
+        MainActivity.backlogFragment.getAdapter().notifyDataSetChanged();
+        finish();
+    }
 }
