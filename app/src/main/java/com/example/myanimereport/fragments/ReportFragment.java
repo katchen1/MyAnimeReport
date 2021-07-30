@@ -114,7 +114,7 @@ public class ReportFragment extends Fragment {
         binding.btnShare.setOnClickListener(this::shareOnClick);
     }
 
-    /* Allows user to share their report to social media. */
+    /* Allows user to share their report. */
     private void shareOnClick(View view) {
         NestedScrollView scrollView = binding.scrollView;
         Bitmap screenshot = getScreenshot(scrollView,
@@ -148,10 +148,13 @@ public class ReportFragment extends Fragment {
         }
     }
 
-    /* Shares report as an image. */
+    /* Shares report as an image using FileProvider. */
     private void shareImage(File file){
-        Uri uri = FileProvider.getUriForFile(requireContext(), requireContext().getApplicationContext().getPackageName() + ".provider", file);
-        System.out.println("URI: " + uri.toString());
+        Context context = requireContext();
+        Uri uri = FileProvider.getUriForFile(context,
+                context.getApplicationContext().getPackageName() + ".provider", file);
+
+        // Create a share intent
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
         intent.setType("image/*");
