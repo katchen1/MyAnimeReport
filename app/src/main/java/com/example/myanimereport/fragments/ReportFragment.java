@@ -4,6 +4,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.NestedScrollView;
@@ -113,7 +116,6 @@ public class ReportFragment extends Fragment {
 
     /* Allows user to share their report to social media. */
     private void shareOnClick(View view) {
-        Toast.makeText(getContext(), "Not implemented yet.", Toast.LENGTH_SHORT).show();
         NestedScrollView scrollView = binding.scrollView;
         Bitmap screenshot = getScreenshot(scrollView,
                 scrollView.getChildAt(0).getHeight(),
@@ -133,14 +135,14 @@ public class ReportFragment extends Fragment {
     /* Saves the screenshot. */
     public void saveScreenshot(Bitmap bm, String fileName){
         ContextWrapper cw = new ContextWrapper(getContext());
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File directory = cw.getFilesDir();
         File file = new File(directory,"report.png");
         try {
             FileOutputStream fOut = new FileOutputStream(file);
             bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            shareImage(file);
             fOut.flush();
             fOut.close();
-            // shareImage(file);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,13 +150,15 @@ public class ReportFragment extends Fragment {
 
     /* Shares report as an image. */
     private void shareImage(File file){
-        Uri uri = Uri.fromFile(file);
+        Uri uri = FileProvider.getUriForFile(requireContext(), requireContext().getApplicationContext().getPackageName() + ".provider", file);
+        System.out.println("URI: " + uri.toString());
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
         intent.setType("image/*");
         intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
         intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             startActivity(Intent.createChooser(intent, "Share Screenshot"));
         } catch (ActivityNotFoundException e) {
