@@ -109,7 +109,7 @@ public class ReportFragment extends Fragment {
         Bitmap screenshot = getScreenshot(scrollView,
                 scrollView.getChildAt(0).getHeight(),
                 scrollView.getChildAt(0).getWidth());
-        saveScreenshot(screenshot, "report");
+        saveScreenshot(screenshot, "report.png");
     }
 
     /* Returns a screenshot bitmap of a view. */
@@ -122,10 +122,10 @@ public class ReportFragment extends Fragment {
     }
 
     /* Saves the screenshot. */
-    public void saveScreenshot(Bitmap bm, String fileName){
+    public void saveScreenshot(Bitmap bm, String filename){
         ContextWrapper cw = new ContextWrapper(getContext());
         File directory = cw.getFilesDir();
-        File file = new File(directory,"report.png");
+        File file = new File(directory, filename);
         try {
             FileOutputStream fOut = new FileOutputStream(file);
             bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
