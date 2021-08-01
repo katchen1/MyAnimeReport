@@ -1,16 +1,25 @@
 package com.example.myanimereport.fragments;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,8 +47,9 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.renderer.PieChartRenderer;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -90,6 +100,62 @@ public class ReportFragment extends Fragment {
 
         // Button listeners
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
+        binding.btnShare.setOnClickListener(this::shareOnClick);
+    }
+
+    /* Allows user to share their report. */
+    private void shareOnClick(View view) {
+        NestedScrollView scrollView = binding.scrollView;
+        Bitmap screenshot = getScreenshot(scrollView,
+                scrollView.getChildAt(0).getHeight(),
+                scrollView.getChildAt(0).getWidth());
+        saveScreenshot(screenshot, "report.png");
+    }
+
+    /* Returns a screenshot bitmap of a view. */
+    private Bitmap getScreenshot(View view, int height, int width) {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.dark_gray));
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    /* Saves the screenshot. */
+    public void saveScreenshot(Bitmap bm, String filename){
+        ContextWrapper cw = new ContextWrapper(getContext());
+        File directory = cw.getFilesDir();
+        File file = new File(directory, filename);
+        try {
+            FileOutputStream fOut = new FileOutputStream(file);
+            bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            shareImage(file);
+            fOut.flush();
+            fOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /* Shares report as an image using FileProvider. */
+    private void shareImage(File file){
+        Context context = requireContext();
+        Uri uri = FileProvider.getUriForFile(context,
+                context.getApplicationContext().getPackageName() + ".provider", file);
+
+        // Create a share intent
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "");
+        intent.putExtra(android.content.Intent.EXTRA_TEXT, "");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            startActivity(Intent.createChooser(intent, "Share Screenshot"));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getContext(), "No App Available", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /* Opens the navigation drawer. */
