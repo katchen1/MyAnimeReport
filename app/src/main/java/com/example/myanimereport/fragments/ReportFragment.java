@@ -105,6 +105,13 @@ public class ReportFragment extends Fragment {
 
     /* Allows user to share their report. */
     private void shareOnClick(View view) {
+        // Edge case: user has no entries
+        if (entries.size() == 0) {
+            Toast.makeText(getContext(), "No data to share.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Take screenshot, save, and share the report
         NestedScrollView scrollView = binding.scrollView;
         Bitmap screenshot = getScreenshot(scrollView,
                 scrollView.getChildAt(0).getHeight(),
@@ -154,7 +161,7 @@ public class ReportFragment extends Fragment {
         try {
             startActivity(Intent.createChooser(intent, "Share Screenshot"));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(getContext(), "No App Available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No app available.", Toast.LENGTH_SHORT).show();
         }
     }
 
