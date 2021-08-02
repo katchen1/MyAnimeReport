@@ -123,6 +123,7 @@ public class BacklogFragment extends Fragment {
         items.clear();
         items.addAll(allItems);
         adapter.notifyDataSetChanged();
+        checkItemsExist();
         binding.searchView.setQuery("", false);
         binding.searchView.clearFocus();
     }
