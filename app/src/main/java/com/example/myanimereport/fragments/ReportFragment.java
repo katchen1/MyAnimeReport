@@ -51,8 +51,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.parse.ParseUser;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -336,6 +334,7 @@ public class ReportFragment extends Fragment {
 
         // Customize the chart
         customizeChart(chart, 1);
+        chart.setRotationAngle(180);
         chart.getLegend().setEnabled(false);
         chart.setHoleColor(darkGray);
         chart.highlightValue(null);
