@@ -127,6 +127,8 @@ public class BacklogFragment extends Fragment {
         items.clear();
         items.addAll(allItems);
         adapter.notifyDataSetChanged();
+        binding.searchView.setQuery("", false);
+        binding.searchView.clearFocus();
     }
 
     /* Hides the soft keyboard. */
@@ -161,7 +163,7 @@ public class BacklogFragment extends Fragment {
     public void queryBacklogItems() {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
-        query.addAscendingOrder("createdAt"); // Order by creation date
+        query.addDescendingOrder("createdAt"); // Order by creation date
         query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
             // Check for errors
             if (e != null) {

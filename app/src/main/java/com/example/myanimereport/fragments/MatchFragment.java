@@ -189,7 +189,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
             item.saveInBackground(e -> {
                 if (e == null) {
                     // Add the item to the backlog and notify its adapter
-                    ParseApplication.backlogItems.add(item);
+                    ParseApplication.backlogItems.add(0, item);
                     Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
