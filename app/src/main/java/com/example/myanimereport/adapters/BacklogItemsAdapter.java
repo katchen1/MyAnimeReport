@@ -15,9 +15,7 @@ import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
-import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
-
 import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
