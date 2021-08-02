@@ -86,6 +86,7 @@ public class HomeFragment extends Fragment {
         EditText searchEditText = binding.searchView.findViewById(R.id.search_src_text);
         searchEditText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white));
         searchEditText.setTextCursorDrawable(null);
+        binding.searchView.setOnClickListener(v -> binding.searchView.setIconified(false));
 
         // Handle text change in search bar
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
