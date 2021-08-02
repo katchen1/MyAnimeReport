@@ -1,8 +1,10 @@
 package com.example.myanimereport.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
@@ -20,6 +22,10 @@ public class LoginActivity extends AppCompatActivity {
 
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
+
+        // Set up focus change and click listeners
+        binding.etUsername.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.etPassword.setOnFocusChangeListener(this::etOnChangeFocus);
 
         // Check if user is already logged in
         if (ParseUser.getCurrentUser() != null) goMainActivity();
@@ -54,5 +60,16 @@ public class LoginActivity extends AppCompatActivity {
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i);
         finish();
+    }
+
+    /* When user clicks outside of the edit texts, hide the soft keyboard. */
+    private void etOnChangeFocus(View view, boolean hasFocus) {
+        if (!hasFocus) hideFocus(view);
+    }
+
+    /* Hides the soft keyboard. */
+    public void hideFocus(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
