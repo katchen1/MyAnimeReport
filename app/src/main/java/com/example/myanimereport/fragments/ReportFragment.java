@@ -6,11 +6,14 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -48,6 +51,8 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.parse.ParseUser;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -112,19 +117,24 @@ public class ReportFragment extends Fragment {
         }
 
         // Take screenshot, save, and share the report
-        NestedScrollView scrollView = binding.scrollView;
-        Bitmap screenshot = getScreenshot(scrollView,
-                scrollView.getChildAt(0).getHeight(),
-                scrollView.getChildAt(0).getWidth());
+        Bitmap screenshot = getScreenshot();
         saveScreenshot(screenshot, "report.png");
     }
 
     /* Returns a screenshot bitmap of a view. */
-    private Bitmap getScreenshot(View view, int height, int width) {
+    private Bitmap getScreenshot() {
+        int width = binding.scrollView.getChildAt(0).getWidth() * 2;
+        int height = binding.scrollView.getChildAt(0).getHeight() / 2 + 100;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.dark_gray));
-        view.draw(canvas);
+
+        // Draw the formatted report on the canvas
+        Matrix m = canvas.getMatrix();
+        binding.llLeft.draw(canvas);
+        m.preTranslate(width, 100);
+        canvas.setMatrix(m);
+        binding.llRight.draw(canvas);
         return bitmap;
     }
 
@@ -191,11 +201,13 @@ public class ReportFragment extends Fragment {
         if (entries.isEmpty()) {
             binding.scrollView.setVisibility(View.INVISIBLE);
             binding.rlMessage.setVisibility(View.VISIBLE);
+            binding.tvReportTitle.setVisibility(View.INVISIBLE);
             binding.tvCreate.setOnClickListener(this::createOnClick);
             return;
         } else {
             binding.scrollView.setVisibility(View.VISIBLE);
             binding.rlMessage.setVisibility(View.INVISIBLE);
+            binding.tvReportTitle.setVisibility(View.VISIBLE);
         }
 
         // Generate the maps
@@ -224,6 +236,7 @@ public class ReportFragment extends Fragment {
         maxYear = years.get(years.size() - 1);
 
         // Generate the charts
+        binding.tvReportTitle.setText("My Anime Report");
         setOverview();
         setChartActivity();
         setChartGenre();
