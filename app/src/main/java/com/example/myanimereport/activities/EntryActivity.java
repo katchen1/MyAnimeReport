@@ -176,7 +176,8 @@ public class EntryActivity extends AppCompatActivity {
 
     /* Shows the title suggestion below the search bar. */
     public void showTitleSuggestion() {
-        binding.rvAnimes.setVisibility(View.VISIBLE);
+        if (queriedAnimes.size() > 0) binding.rvAnimes.setVisibility(View.VISIBLE);
+        else hideTitleSuggestion();
     }
 
     /* Hides the title suggestion below the search bar. */
