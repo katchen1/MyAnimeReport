@@ -45,8 +45,8 @@ public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
-    private List<Entry> entries; // Shown in the recycler veiw
-    private List<Entry> allEntries;
+    private List<Entry> entries; // Shown in the recycler view
+    private List<Entry> allEntries; // All entries that the user has
     private EntriesAdapter adapter;
     private GridLayoutManager layoutManager;
     private Set<String> allGenres;

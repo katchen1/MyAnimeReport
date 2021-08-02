@@ -191,8 +191,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
                     // Add the item to the backlog and notify its adapter
                     ParseApplication.backlogItems.add(item);
                     Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
-                    MainActivity.backlogFragment.getAdapter().notifyItemInserted(ParseApplication.backlogItems.size() - 1);
-                    MainActivity.backlogFragment.checkItemsExist();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
