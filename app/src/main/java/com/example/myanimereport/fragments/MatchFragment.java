@@ -29,9 +29,7 @@ import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MatchFragment extends Fragment implements CardStackListener {
 

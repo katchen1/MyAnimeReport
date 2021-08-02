@@ -8,16 +8,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
-import com.example.myanimereport.databinding.EditNameBinding;
 import com.example.myanimereport.databinding.ForgotPasswordBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.RequestPasswordResetCallback;
-
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 

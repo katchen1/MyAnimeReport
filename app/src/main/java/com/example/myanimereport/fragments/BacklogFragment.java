@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -21,7 +20,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myanimereport.R;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
@@ -30,11 +28,9 @@ import com.example.myanimereport.databinding.FragmentBacklogBinding;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
-import com.example.myanimereport.models.SlopeOne;
 import com.example.myanimereport.utils.SwipeToDeleteCallback;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
