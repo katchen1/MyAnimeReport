@@ -53,6 +53,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
         binding.btnRewind.setOnClickListener(this::rewind);
+        binding.btnSkip.setOnClickListener(this::skip);
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
         // Set up the card stack
@@ -140,19 +141,29 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.cardStack.rewind();
     }
 
+    /* Skips an anime. */
+    private void skip(View view) {
+        SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
+                .setDirection(Direction.Bottom)
+                .setDuration(Duration.Normal.duration)
+                .setInterpolator(new AccelerateInterpolator())
+                .build();
+        layoutManager.setSwipeAnimationSetting(setting);
+        binding.cardStack.swipe();
+    }
+
     @Override
     public void onCardDragging(Direction direction, float ratio) { }
 
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
+        // Remove the anime from the recycler view
         int position = layoutManager.getTopPosition() - 1;
         Anime anime = animes.get(position);
+        animes.remove(anime);
+        adapter.notifyItemRemoved(position);
         if (direction == Direction.Right) {
-            // Remove the anime from the recycler view
-            animes.remove(anime);
-            adapter.notifyItemRemoved(position);
-
             // Create a backlog item
             BacklogItem item = new BacklogItem();
             item.setMediaId(anime.getMediaId());
