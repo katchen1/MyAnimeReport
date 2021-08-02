@@ -158,12 +158,13 @@ public class MatchFragment extends Fragment implements CardStackListener {
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
-        // Remove the anime from the recycler view
         int position = layoutManager.getTopPosition() - 1;
         Anime anime = animes.get(position);
-        animes.remove(anime);
-        adapter.notifyItemRemoved(position);
         if (direction == Direction.Right) {
+            // Remove the anime from the recycler view
+            animes.remove(anime);
+            adapter.notifyItemRemoved(position);
+
             // Create a backlog item
             BacklogItem item = new BacklogItem();
             item.setMediaId(anime.getMediaId());
@@ -181,6 +182,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
                 }
             });
         } else if (direction == Direction.Left) {
+            // Remove the anime from the recycler view
+            animes.remove(anime);
+            adapter.notifyItemRemoved(position);
+
             // Create a rejection
             Rejection rejection = new Rejection();
             rejection.setMediaId(anime.getMediaId());
