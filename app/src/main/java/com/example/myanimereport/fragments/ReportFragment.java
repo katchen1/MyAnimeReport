@@ -124,10 +124,10 @@ public class ReportFragment extends Fragment {
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.dark_gray));
 
-        // Draw the formatted report on the canvas
+        // Split the scrollview vertically in half and put them side by side
         Matrix m = canvas.getMatrix();
         binding.llLeft.draw(canvas);
-        m.preTranslate(width, 100);
+        m.preTranslate((int) (width / 2), 100);
         canvas.setMatrix(m);
         binding.llRight.draw(canvas);
         return bitmap;
