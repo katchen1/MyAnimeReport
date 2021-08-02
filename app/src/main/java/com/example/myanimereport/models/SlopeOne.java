@@ -86,7 +86,10 @@ public class SlopeOne {
         int currUserIndex = userList.indexOf(currUser);
         List<Integer> predictIndices = new ArrayList<>();
         List<Integer> basedOnIndices = new ArrayList<>();
-        if (currUserIndex == -1) return;
+        if (currUserIndex == -1) {
+            weaveInRandomAnimes();
+            return;
+        }
 
         // Separate the animes that have been rated by the user from those that have not
         for (int j = 0; j < animeList.size(); j++) {
