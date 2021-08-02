@@ -26,6 +26,7 @@ public class SignupActivity extends AppCompatActivity {
 
         // Set up focus change and click listeners
         binding.etUsername.setOnFocusChangeListener(this::etOnChangeFocus);
+        binding.etEmail.setOnFocusChangeListener(this::etOnChangeFocus);
         binding.etPassword.setOnFocusChangeListener(this::etOnChangeFocus);
         binding.etConfirmPassword.setOnFocusChangeListener(this::etOnChangeFocus);
     }
@@ -40,6 +41,7 @@ public class SignupActivity extends AppCompatActivity {
     /* Signs up with the provided username and password. */
     public void signUpOnClick(View view) {
         String username = binding.etUsername.getText().toString();
+        String email = binding.etEmail.getText().toString();
         String password = binding.etPassword.getText().toString();
         String confirmPassword = binding.etConfirmPassword.getText().toString();
 
@@ -50,34 +52,37 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         // Check for empty inputs
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Username and password cannot be empty.", Toast.LENGTH_SHORT).show();
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Field cannot be empty.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        signUpUser(username, password);
+        signUpUser(username, email, password);
     }
 
     /* Tries to sign up in the parse database. Navigates to the main activity on success. */
-    public void signUpUser(String username, String password) {
+    public void signUpUser(String username, String email, String password) {
         // Create the ParseUser
         ParseUser user = new ParseUser();
         user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(password);
 
         // Invoke signUpInBackground
         user.signUpInBackground(e -> {
             if (e == null) {
-                goMainActivity();
+                Toast.makeText(this, "Account created! Please verify email before logging in.", Toast.LENGTH_SHORT).show();
+                ParseUser.logOut();
+                goLoginActivity();
             } else {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    /* Navigates to the main activity. */
-    private void goMainActivity() {
-        Intent i = new Intent(SignupActivity.this, MainActivity.class);
+    /* Navigates to the login activity. */
+    private void goLoginActivity() {
+        Intent i = new Intent(SignupActivity.this, LoginActivity.class);
         startActivity(i);
         finish();
     }

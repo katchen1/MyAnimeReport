@@ -27,7 +27,7 @@
         android:minHeight="50dp"
         android:textSize="18sp"
         android:textColor="@color/white"
-        android:hint="@string/username"
+        android:hint="@string/username_or_email"
         android:textColorHint="@color/light_gray"
         android:textCursorDrawable="@null" />
 

@@ -8,7 +8,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
+import com.example.myanimereport.databinding.EditNameBinding;
+import com.example.myanimereport.databinding.ForgotPasswordBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.RequestPasswordResetCallback;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -29,6 +38,31 @@ public class LoginActivity extends AppCompatActivity {
 
         // Check if user is already logged in
         if (ParseUser.getCurrentUser() != null) goMainActivity();
+
+        // Forgot password
+        binding.tvForgotPassword.setOnClickListener(this::forgotPasswordOnClick);
+    }
+
+    private void forgotPasswordOnClick(View view) {
+        ForgotPasswordBinding dialogBinding = ForgotPasswordBinding.inflate(getLayoutInflater());
+        new MaterialAlertDialogBuilder(this)
+            .setView(dialogBinding.getRoot())
+            .setPositiveButton("Send", (dialog, which) -> {
+                String email = dialogBinding.etEmail.getText().toString();
+                sendPasswordResetEmail(email);
+            })
+            .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+            .show();
+    }
+
+    private void sendPasswordResetEmail(String email) {
+        ParseUser.requestPasswordResetInBackground(email, e -> {
+            if (e == null) {
+                Toast.makeText(this, "Password reset email sent.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /* Logs in with the provided username and password. */
@@ -42,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loginUser(String username, String password) {
         ParseUser.logInInBackground(username, password, (user, e) -> {
             if (e != null) {
-                Toast.makeText(this, "Username or password is incorrect.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 return;
             }
             goMainActivity();
