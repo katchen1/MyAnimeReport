@@ -40,6 +40,7 @@ public class EntryActivity extends AppCompatActivity {
     private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
     private Entry entry; // The entry being edited
     private Integer position; // Position of the anime in the backlog recycler view
+    private Integer allPosition; // Position of the anime in the real backlog
     private List<Anime> queriedAnimes; // Suggested animes based on title search
     private AnimesAdapter adapter; // Adapter for recycler view for queriedAnimes
 
@@ -82,6 +83,7 @@ public class EntryActivity extends AppCompatActivity {
                 binding.etTitle.setText(anime.getTitleEnglish());
                 mediaId = anime.getMediaId();
                 position = getIntent().getIntExtra("position", -1);
+                allPosition = getIntent().getIntExtra("allPosition", -1);
             }
         } else {
             // Editing an existing entry, set the entry to be the one passed in
@@ -244,6 +246,7 @@ public class EntryActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.putExtra("entry", entry);
                 intent.putExtra("position", position);
+                intent.putExtra("allPosition", allPosition);
                 setResult(RESULT_OK, intent);
                 finish();
             } else {

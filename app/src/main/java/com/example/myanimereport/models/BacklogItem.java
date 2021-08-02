@@ -103,4 +103,9 @@ public class BacklogItem extends ParseObject {
     public void setMediaId(Integer mediaId) {
         put(KEY_MEDIA_ID, mediaId);
     }
+
+    public boolean equals(Object object) {
+        if (getClass() != object.getClass()) return false;
+        return ((BacklogItem) object).getMediaId().equals(getMediaId());
+    }
 }
