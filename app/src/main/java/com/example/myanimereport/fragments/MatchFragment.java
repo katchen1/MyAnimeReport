@@ -1,6 +1,7 @@
 package com.example.myanimereport.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.models.Rejection;
 import com.example.myanimereport.models.SlopeOne;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
@@ -27,7 +29,9 @@ import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MatchFragment extends Fragment implements CardStackListener {
 
@@ -53,7 +57,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.btnAccept.setOnClickListener(this::accept);
         binding.btnReject.setOnClickListener(this::reject);
         binding.btnRewind.setOnClickListener(this::rewind);
-        binding.btnSkip.setOnClickListener(this::skip);
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
         // Set up the card stack
@@ -138,18 +141,31 @@ public class MatchFragment extends Fragment implements CardStackListener {
 
     /* Rewinds an anime. */
     private void rewind(View view) {
+        int posBefore = layoutManager.getTopPosition();
         binding.cardStack.rewind();
-    }
+        int posAfter = layoutManager.getTopPosition();
+        if (posBefore == posAfter) return;
 
-    /* Skips an anime. */
-    private void skip(View view) {
-        SwipeAnimationSetting setting = new SwipeAnimationSetting.Builder()
-                .setDirection(Direction.Bottom)
-                .setDuration(Duration.Normal.duration)
-                .setInterpolator(new AccelerateInterpolator())
-                .build();
-        layoutManager.setSwipeAnimationSetting(setting);
-        binding.cardStack.swipe();
+        // Query anime to un-reject
+        Anime anime = animes.get(layoutManager.getTopPosition());
+        ParseQuery<Rejection> query = ParseQuery.getQuery(Rejection.class); // Specify type of data
+        query.whereEqualTo(Rejection.KEY_USER, ParseUser.getCurrentUser()); // Limit to current user
+        query.whereEqualTo(Rejection.KEY_MEDIA_ID, anime.getMediaId()); // The anime to un-reject
+        query.orderByDescending(Rejection.KEY_CREATED_AT);
+        query.findInBackground((rejectionsFound, e) -> { // Start async query for rejections
+            // Check for errors
+            if (e != null) {
+                Log.e("MatchFragment", "Error when getting rejections.", e);
+                return;
+            }
+
+            // Un-reject the anime
+            if (rejectionsFound.size() > 0) {
+                Rejection r = rejectionsFound.get(0);
+                r.deleteInBackground();
+                Toast.makeText(getContext(), "Un-rejected anime.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -182,10 +198,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
                 }
             });
         } else if (direction == Direction.Left) {
-            // Remove the anime from the recycler view
-            animes.remove(anime);
-            adapter.notifyItemRemoved(position);
-
             // Create a rejection
             Rejection rejection = new Rejection();
             rejection.setMediaId(anime.getMediaId());
