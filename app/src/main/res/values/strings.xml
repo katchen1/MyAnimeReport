@@ -72,4 +72,6 @@
     <string name="all">All</string>
     <string name="rewind">Rewind</string>
     <string name="skip">Skip</string>
+    <string name="email">Email</string>
+    <string name="username_or_email">Username or email</string>
 </resources>
