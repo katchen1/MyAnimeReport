@@ -170,6 +170,7 @@ public class HomeFragment extends Fragment {
                 return;
             }
 
+            // Keep track of seen anime ids of all users (for Slope One)
             List<Entry> userEntries = new ArrayList<>();
             for (Entry entry: entriesFound) {
                 ParseApplication.entryMediaIdAllUsers.add(entry.getMediaId());

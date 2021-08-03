@@ -4,7 +4,7 @@ import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-/* PairCount (Parse model). */
+/* PairCount (Parse model). For storing intermediate data for Slope One. */
 @ParseClassName("AnimePair")
 public class AnimePair extends ParseObject {
     public static final String KEY_MEDIA_ID1 = "mediaId1";
