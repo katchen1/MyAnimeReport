@@ -78,4 +78,6 @@
     <string name="email_associated_with_your_account">Email associated with your account</string>
     <string name="confirm_password">Confirm password</string>
     <string name="date_added">Date Added</string>
+    <string name="newest">Newest</string>
+    <string name="oldest">Oldest</string>
 </resources>

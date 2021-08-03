@@ -22,7 +22,6 @@ import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseUser;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -229,11 +228,8 @@ public class MainActivity extends AppCompatActivity {
     /* Sorts backlog items by date added. */
     public void btnSortDateAddedOnClick(View view) {
         backlogFragment.flipOrder();
-        if (backlogFragment.getDescending()) {
-            binding.ivSortDateAdded.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
-        } else {
-            binding.ivSortDateAdded.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
-        }
+        if (backlogFragment.getDescending()) binding.tvSortDateAdded.setText(R.string.newest);
+        else binding.tvSortDateAdded.setText(R.string.oldest);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 

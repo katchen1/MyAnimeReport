@@ -49,7 +49,6 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.parse.ParseUser;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
