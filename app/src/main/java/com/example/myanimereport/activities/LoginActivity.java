@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         ForgotPasswordBinding dialogBinding = ForgotPasswordBinding.inflate(getLayoutInflater());
         new MaterialAlertDialogBuilder(this)
             .setView(dialogBinding.getRoot())
+            .setTitle("Forgot Password?")
             .setPositiveButton("Send", (dialog, which) -> {
                 String email = dialogBinding.etEmail.getText().toString();
                 sendPasswordResetEmail(email);
