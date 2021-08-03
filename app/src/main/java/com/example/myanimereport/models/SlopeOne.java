@@ -1,9 +1,6 @@
 package com.example.myanimereport.models;
 
-import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import com.apollographql.apollo.ApolloCall;
@@ -11,7 +8,6 @@ import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaAllQuery;
 import com.example.MediaDetailsByIdListQuery;
-import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -21,32 +17,43 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 /* Slope One algorithm implementation. */
 public class SlopeOne {
 
-    private List<String> userList; // List of all users
-    private List<Integer> animeList; // List of all animes rated by users
-    private double[][] ratings; // ratings[i][j] = user i's rating of anime j
     private final List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
     private final List<Anime> shownAnimes;
+    private final List<AnimePair> animePairs;
 
+    // Todo: delete this line
     long start;
 
     public SlopeOne(List<Anime> shownAnimes) {
         this.shownAnimes = shownAnimes;
+        animePairs = new ArrayList<>();
         MainActivity.matchFragment.showProgressBar();
         start = System.currentTimeMillis();
-        System.out.println("getting input data... " + (System.currentTimeMillis() - start));
+
+        // Todo: delete this line
+        System.out.println("getting precalculated data... " + (System.currentTimeMillis() - start));
+
         getInputData();
     }
 
-    /* Fetches all user's ratings on all animes from Parse. */
+    /* Gets the precalculated data. */
     public void getInputData() {
-        predict();
+        ParseQuery<AnimePair> query = ParseQuery.getQuery(AnimePair.class);
+        query.findInBackground((pairs, e) -> {
+            // Check for errors
+            if (e != null) {
+                Log.e("SlopeOne", "Error when getting anime pairs.", e);
+                return;
+            }
+            animePairs.addAll(pairs);
+            predict();
+        });
     }
 
     /* Predicts the current user's ratings on unseen animes. */
@@ -56,46 +63,22 @@ public class SlopeOne {
             return;
         }
 
-        System.out.println("Predicting!");
-        addPrediction(0);
-    }
+        // Todo: delete this line
+        System.out.println("predicting... " + (System.currentTimeMillis() - start));
 
-    public void addPrediction(int index) {
-        if (index == ParseApplication.entryMediaIdAllUsers.size()) {
-            // Sort by predicted rating (descending)
-            predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
-            System.out.println("removing rejections: " + (System.currentTimeMillis() - start));
-            removeRejections();
-            return;
-        }
-
-        List<Integer> toPredicts = new ArrayList<>(ParseApplication.entryMediaIdAllUsers);
-        Integer toPredict = toPredicts.get(index);
-        if (!ParseApplication.seenMediaIds.contains(toPredict)) {
-            ParseQuery<AnimePair> query1 = ParseQuery.getQuery(AnimePair.class);
-            query1.whereEqualTo("mediaId1", toPredict);
-            ParseQuery<AnimePair> query2 = ParseQuery.getQuery(AnimePair.class);
-            query2.whereEqualTo("mediaId2", toPredict);
-            List<ParseQuery<AnimePair>> list = new ArrayList<>();
-            list.add(query1);
-            list.add(query2);
-            ParseQuery<AnimePair> query = ParseQuery.or(list);
-            query.findInBackground((pairs, e) -> {
-                // Check for errors
-                if (e != null) {
-                    Log.e("SlopeOne", "Error when getting anime pairs.", e);
-                    return;
-                }
-
+        for (Integer toPredict: ParseApplication.entryMediaIdAllUsers) {
+            if (!ParseApplication.seenMediaIds.contains(toPredict)) {
                 List<Pair<Double, Integer>> ratingWeightPairs = new ArrayList<>();
-                for (AnimePair pair : pairs) {
-                    int sign = pair.getMediaId1().equals(toPredict) ? 1 : -1;
-                    Integer basedOn = sign == 1 ? pair.getMediaId2() : pair.getMediaId1();
-                    for (Entry entry : ParseApplication.entries) {
-                        if (entry.getMediaId().equals(basedOn)) {
-                            double diffAvg = pair.getDiffSum() / pair.getCount();
-                            Double predictedRating = entry.getRating() + sign * diffAvg;
-                            ratingWeightPairs.add(new Pair<>(predictedRating, pair.getCount()));
+                for (AnimePair pair: animePairs) {
+                    if (pair.getMediaId1().equals(toPredict) || pair.getMediaId2().equals(toPredict)) {
+                        int sign = pair.getMediaId1().equals(toPredict) ? 1 : -1;
+                        Integer basedOn = sign == 1 ? pair.getMediaId2() : pair.getMediaId1();
+                        for (Entry entry : ParseApplication.entries) {
+                            if (entry.getMediaId().equals(basedOn)) {
+                                double diffAvg = pair.getDiffSum() / pair.getCount();
+                                Double predictedRating = entry.getRating() + sign * diffAvg;
+                                ratingWeightPairs.add(new Pair<>(predictedRating, pair.getCount()));
+                            }
                         }
                     }
                 }
@@ -109,11 +92,14 @@ public class SlopeOne {
                 }
                 if (den > 0) predictedRatings.add(new Pair<>(toPredict, num / den));
                 else predictedRatings.add(new Pair<>(toPredict, -1.0));
-                addPrediction(index + 1);
-            });
-        } else {
-            addPrediction(index + 1);
+            }
         }
+        predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
+
+        // Todo: delete this line
+        System.out.println("removing rejections... " + (System.currentTimeMillis() - start));
+
+        removeRejections();
     }
 
     /* Removes animes that user has rejected over 3 times within the past week. */
@@ -149,10 +135,10 @@ public class SlopeOne {
             predictedRatings.removeIf((p) -> rejections.contains(p.first));
             predictedRatings.removeIf((p) -> ParseApplication.seenMediaIds.contains(p.first));
 
+            // Todo: delete this line
+            System.out.println("querying animes: " + (System.currentTimeMillis() - start));
 
             shownAnimes.clear();
-
-            System.out.println("querying animes: " + (System.currentTimeMillis() - start));
             queryAnimes(1);
         });
     }
@@ -161,7 +147,6 @@ public class SlopeOne {
     public void queryAnimes(int page) {
         List<Integer> ids = new ArrayList<>();
         List<Double> ratings = new ArrayList<>();
-        System.out.println("predictedRatings size: " + predictedRatings.size());
         for (Pair<Integer, Double> p: predictedRatings) {
             ids.add(p.first);
             ratings.add(p.second);
