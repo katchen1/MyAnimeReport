@@ -73,6 +73,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         // Colors used by card dragging animation
         colorTheme = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme));
         colorRipple = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme_dark));
+        resetButtonColors();
     }
 
     /* Generate recommendations when the tab is clicked for the first time. */
@@ -192,12 +193,16 @@ public class MatchFragment extends Fragment implements CardStackListener {
         }
     }
 
+    /* Resets button colors. */
+    public void resetButtonColors() {
+        binding.btnReject.setBackgroundTintList(colorTheme);
+        binding.btnAccept.setBackgroundTintList(colorTheme);
+    }
+
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
-        // Reset button colors
-        binding.btnReject.setBackgroundTintList(colorTheme);
-        binding.btnAccept.setBackgroundTintList(colorTheme);
+        resetButtonColors();
 
         // Handle swipe
         int position = layoutManager.getTopPosition() - 1;
@@ -243,8 +248,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     /* Resets button colors. */
     @Override
     public void onCardCanceled() {
-        binding.btnReject.setBackgroundTintList(colorTheme);
-        binding.btnAccept.setBackgroundTintList(colorTheme);
+        resetButtonColors();
     }
 
     @Override
