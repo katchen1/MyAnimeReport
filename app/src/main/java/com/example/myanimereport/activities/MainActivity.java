@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
         restoreDefaultOrder();
 
         // If already in default order, sort in the non-default order. Otherwise sort in default order.
-        List<Entry> entries = ParseApplication.entries;
         int sign = inDefaultOrder? -1: 1;
         switch (sortBy) {
             case "Entry Creation Date":
@@ -225,6 +224,17 @@ public class MainActivity extends AppCompatActivity {
     /* Sorts by watch date. */
     public void btnSortWatchDateOnClick(View view) {
         sort("Watch Date", binding.ivSortWatchDate);
+    }
+
+    /* Sorts backlog items by date added. */
+    public void btnSortDateAddedOnClick(View view) {
+        backlogFragment.flipOrder();
+        if (backlogFragment.getDescending()) {
+            binding.ivSortDateAdded.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
+        } else {
+            binding.ivSortDateAdded.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
+        }
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     /* Allows the user to filter anime genres. */
