@@ -48,6 +48,8 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.parse.ParseUser;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -119,7 +121,7 @@ public class ReportFragment extends Fragment {
     /* Returns a screenshot bitmap of a view. */
     private Bitmap getScreenshot() {
         int width = binding.scrollView.getChildAt(0).getWidth() * 2;
-        int height = binding.scrollView.getChildAt(0).getHeight() / 2 + 100;
+        int height = binding.scrollView.getChildAt(0).getHeight() / 2 + 180;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.dark_gray));
@@ -127,7 +129,7 @@ public class ReportFragment extends Fragment {
         // Split the scrollview vertically in half and put them side by side
         Matrix m = canvas.getMatrix();
         binding.llLeft.draw(canvas);
-        m.preTranslate((int) (width / 2), 100);
+        m.preTranslate((float) Math.ceil(width / 2.0f), 100);
         canvas.setMatrix(m);
         binding.llRight.draw(canvas);
         return bitmap;
@@ -231,7 +233,6 @@ public class ReportFragment extends Fragment {
         maxYear = years.get(years.size() - 1);
 
         // Generate the charts
-        binding.tvReportTitle.setText("My Anime Report");
         setOverview();
         setChartActivity();
         setChartGenre();
@@ -242,6 +243,10 @@ public class ReportFragment extends Fragment {
 
     /* Overview [Score Cards] */
     public void setOverview() {
+        // Report title
+        String name = ParseUser.getCurrentUser().getString("name");
+        binding.tvReportTitle.setText(String.format(Locale.getDefault(), "%s's Anime Report", name));
+
         // Total animes watched
         binding.tvCount.setText(String.format(Locale.getDefault(), "%d", entries.size()));
 
