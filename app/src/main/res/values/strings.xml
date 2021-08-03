@@ -63,7 +63,6 @@
     <string name="watch_date">Watch Date</string>
     <string name="delete_all_entries">Delete All Entries</string>
     <string name="delete_all_backlog_items">Delete All Backlog Items</string>
-    <string name="rewind">Rewind</string>
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
     <string name="delete_to_watch_list">Delete To-Watch List</string>
@@ -71,4 +70,14 @@
     <string name="filter">Filter</string>
     <string name="genre_filter">Genre Filter</string>
     <string name="all">All</string>
+    <string name="rewind">Rewind</string>
+    <string name="skip">Skip</string>
+    <string name="email">Email</string>
+    <string name="username_or_email">Username or email</string>
+    <string name="my_anime_report">My Anime Report</string>
+    <string name="email_associated_with_your_account">Email associated with your account</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="date_added">Date Added</string>
+    <string name="newest">Newest</string>
+    <string name="oldest">Oldest</string>
 </resources>

@@ -15,6 +15,7 @@ import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
+import com.example.myanimereport.models.ParseApplication;
 import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
@@ -52,6 +53,13 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         return items.size();
     }
 
+    /* Updates the RV with a new list. */
+    public void updateItems(List<BacklogItem> updatedItems){
+        items.clear();
+        items.addAll(updatedItems);
+        notifyDataSetChanged();
+    }
+
     /* Returns the context of the adapter. */
     public Context getContext() {
         return context;
@@ -59,18 +67,27 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
 
     /* When user swipes to delete, remove the item and show a message. */
     public void deleteItem(int position) {
-        items.get(position).deleteInBackground();
+        BacklogItem item = items.get(position);
+        item.deleteInBackground();
         items.remove(position);
         notifyItemRemoved(position);
+
+        // Remove it from the real list as well
+        int allPosition = ParseApplication.backlogItems.indexOf(item);
+        ParseApplication.backlogItems.remove(allPosition);
         fragment.checkItemsExist();
         Toast.makeText(context, "Item deleted.", Toast.LENGTH_SHORT).show();
     }
 
     /* When user checks a backlog item off the list, add an entry for it. */
     public void addItemAsEntry(int position) {
+        BacklogItem item = items.get(position);
+        int allPosition = ParseApplication.backlogItems.indexOf(item);
+        System.out.println("allPosition: " + allPosition);
         Intent intent = new Intent(context, EntryActivity.class);
-        intent.putExtra("anime", Parcels.wrap(items.get(position).getAnime()));
+        intent.putExtra("anime", Parcels.wrap(item.getAnime()));
         intent.putExtra("position", position);
+        intent.putExtra("allPosition", allPosition);
         fragment.startActivityForResult(intent, HomeFragment.NEW_ENTRY_REQUEST_CODE);
     }
 

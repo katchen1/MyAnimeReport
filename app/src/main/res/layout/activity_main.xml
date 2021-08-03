@@ -415,6 +415,35 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/btnSortDateAdded"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:onClick="btnSortDateAddedOnClick"
+                android:visibility="visible"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ivSortDateAdded"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_baseline_arrow_downward_24"
+                    android:background="@color/dark_gray"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvSortDateAdded"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/newest"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnDeleteBacklog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

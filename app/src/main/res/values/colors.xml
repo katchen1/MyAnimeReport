@@ -14,4 +14,5 @@
     <color name="red">#ED4337</color>
     <color name="transparent">#00000000</color>
     <color name="green">#76BA1B</color>
+    <color name="theme_dark">#FF0078BD</color>
 </resources>

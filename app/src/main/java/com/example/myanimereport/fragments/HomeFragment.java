@@ -45,8 +45,8 @@ public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
-    private List<Entry> entries; // Shown in the recycler veiw
-    private List<Entry> allEntries;
+    private List<Entry> entries; // Shown in the recycler view
+    private List<Entry> allEntries; // All entries that the user has
     private EntriesAdapter adapter;
     private GridLayoutManager layoutManager;
     private Set<String> allGenres;
@@ -86,6 +86,7 @@ public class HomeFragment extends Fragment {
         EditText searchEditText = binding.searchView.findViewById(R.id.search_src_text);
         searchEditText.setHintTextColor(ContextCompat.getColor(requireContext(), R.color.white));
         searchEditText.setTextCursorDrawable(null);
+        binding.searchView.setOnClickListener(v -> binding.searchView.setIconified(false));
 
         // Handle text change in search bar
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -151,6 +152,7 @@ public class HomeFragment extends Fragment {
         binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.VISIBLE);
+        binding.btnSortDateAdded.setVisibility(View.GONE);
         binding.btnDeleteBacklog.setVisibility(View.GONE);
         binding.btnFilter.setVisibility(View.VISIBLE);
         binding.drawerLayout.openDrawer(GravityCompat.START);
@@ -178,6 +180,12 @@ public class HomeFragment extends Fragment {
             binding.swipeContainer.setRefreshing(false);
             if (firstQuery) MainActivity.homeFragment.hideProgressBar();
         });
+    }
+
+    /* Clears the search view. */
+    public void clearSearch() {
+        binding.searchView.setQuery("", false);
+        binding.searchView.clearFocus();
     }
 
     /* Shows the progress bar. */
@@ -250,6 +258,7 @@ public class HomeFragment extends Fragment {
                 // Update recycler view and close drawer
                 adapter.notifyDataSetChanged();
                 MainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START);
+                clearSearch();
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .show();

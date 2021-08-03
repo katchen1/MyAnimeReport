@@ -3,10 +3,13 @@ package com.example.myanimereport.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.example.myanimereport.R;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -22,7 +25,6 @@ import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseUser;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -92,6 +94,11 @@ public class MainActivity extends AppCompatActivity {
         String name = user.has("name")? user.getString("name"): user.getUsername();
         binding.tvName.setText(name);
         binding.tvUsername.setText(user.getUsername());
+
+        // Change status bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
     }
 
     /* Logs out and returns to the login page. */
@@ -178,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
         restoreDefaultOrder();
 
         // If already in default order, sort in the non-default order. Otherwise sort in default order.
-        List<Entry> entries = ParseApplication.entries;
         int sign = inDefaultOrder? -1: 1;
         switch (sortBy) {
             case "Entry Creation Date":
@@ -225,6 +231,14 @@ public class MainActivity extends AppCompatActivity {
     /* Sorts by watch date. */
     public void btnSortWatchDateOnClick(View view) {
         sort("Watch Date", binding.ivSortWatchDate);
+    }
+
+    /* Sorts backlog items by date added. */
+    public void btnSortDateAddedOnClick(View view) {
+        backlogFragment.flipOrder();
+        if (backlogFragment.getDescending()) binding.tvSortDateAdded.setText(R.string.newest);
+        else binding.tvSortDateAdded.setText(R.string.oldest);
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
     /* Allows the user to filter anime genres. */
