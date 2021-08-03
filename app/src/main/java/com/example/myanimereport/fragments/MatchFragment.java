@@ -1,5 +1,6 @@
 package com.example.myanimereport.fragments;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,8 +10,10 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
+import com.example.myanimereport.R;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.CardStackAdapter;
 import com.example.myanimereport.databinding.ActivityMainBinding;
@@ -38,6 +41,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     private CardStackLayoutManager layoutManager;
     private CardStackAdapter adapter;
     private SlopeOne slopeOne;
+    private ColorStateList colorTheme, colorRipple;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,6 +69,10 @@ public class MatchFragment extends Fragment implements CardStackListener {
         layoutManager.setCanScrollVertical(false);
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
+
+        // Colors used by card dragging animation
+        colorTheme = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme));
+        colorRipple = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme_dark));
     }
 
     /* Generate recommendations when the tab is clicked for the first time. */
@@ -170,12 +178,28 @@ public class MatchFragment extends Fragment implements CardStackListener {
         });
     }
 
+    /* Highlights button. */
     @Override
-    public void onCardDragging(Direction direction, float ratio) { }
+    public void onCardDragging(Direction direction, float ratio) {
+        if (direction == Direction.Left) {
+            // Highlight reject button
+            binding.btnReject.setBackgroundTintList(colorRipple);
+            binding.btnAccept.setBackgroundTintList(colorTheme);
+        } else if (direction == Direction.Right) {
+            // Highlight accept button
+            binding.btnReject.setBackgroundTintList(colorTheme);
+            binding.btnAccept.setBackgroundTintList(colorRipple);
+        }
+    }
 
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
+        // Reset button colors
+        binding.btnReject.setBackgroundTintList(colorTheme);
+        binding.btnAccept.setBackgroundTintList(colorTheme);
+
+        // Handle swipe
         int position = layoutManager.getTopPosition() - 1;
         Anime anime = animes.get(position);
         if (direction == Direction.Right) {
@@ -194,6 +218,8 @@ public class MatchFragment extends Fragment implements CardStackListener {
                     boolean descending = MainActivity.backlogFragment.getDescending();
                     if (descending) ParseApplication.backlogItems.add(0, item);
                     else ParseApplication.backlogItems.add(item);
+
+                    // Todo: remove this line
                     Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -214,8 +240,12 @@ public class MatchFragment extends Fragment implements CardStackListener {
     @Override
     public void onCardRewound() { }
 
+    /* Resets button colors. */
     @Override
-    public void onCardCanceled() { }
+    public void onCardCanceled() {
+        binding.btnReject.setBackgroundTintList(colorTheme);
+        binding.btnAccept.setBackgroundTintList(colorTheme);
+    }
 
     @Override
     public void onCardAppeared(View view, int position) { }
