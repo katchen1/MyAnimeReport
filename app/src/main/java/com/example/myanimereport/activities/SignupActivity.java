@@ -5,9 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivitySignupBinding;
 import com.parse.ParseUser;
 
@@ -96,5 +102,35 @@ public class SignupActivity extends AppCompatActivity {
     public void hideFocus(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    /* Shows or hides the password. */
+    public void togglePasswordVisibility1(View view) {
+        togglePasswordVisibility(binding.etPassword, binding.btnVisibility1);
+    }
+
+    /* Shows or hides the confirm password. */
+    public void togglePasswordVisibility2(View view) {
+        togglePasswordVisibility(binding.etConfirmPassword, binding.btnVisibility2);
+    }
+
+    /* Shows or hides a password. */
+    public void togglePasswordVisibility(EditText et, ImageButton imgBtn) {
+        // Get current visibility
+        PasswordTransformationMethod ptm = PasswordTransformationMethod.getInstance();
+        HideReturnsTransformationMethod hrtm = HideReturnsTransformationMethod.getInstance();
+        boolean invisible = et.getTransformationMethod() == ptm;
+
+        // Show or hide based on current visibility
+        if (invisible) {
+            imgBtn.setImageResource(R.drawable.ic_baseline_visibility_24);
+            et.setTransformationMethod(hrtm);
+        } else {
+            imgBtn.setImageResource(R.drawable.ic_baseline_visibility_off_24);
+            et.setTransformationMethod(ptm);
+        }
+
+        // Move cursor to end of text
+        et.setSelection(et.getText().length());
     }
 }
