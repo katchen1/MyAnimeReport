@@ -27,18 +27,10 @@ public class SlopeOne {
     private final List<Anime> shownAnimes;
     private final List<AnimePair> animePairs;
 
-    // Todo: delete this line
-    long start;
-
     public SlopeOne(List<Anime> shownAnimes) {
         this.shownAnimes = shownAnimes;
         animePairs = new ArrayList<>();
         MainActivity.matchFragment.showProgressBar();
-        start = System.currentTimeMillis();
-
-        // Todo: delete this line
-        System.out.println("getting precalculated data... " + (System.currentTimeMillis() - start));
-
         getInputData();
     }
 
@@ -63,16 +55,20 @@ public class SlopeOne {
             return;
         }
 
-        // Todo: delete this line
-        System.out.println("predicting... " + (System.currentTimeMillis() - start));
-
+        // For all unseen animes
         for (Integer toPredict: ParseApplication.entryMediaIdAllUsers) {
             if (!ParseApplication.seenMediaIds.contains(toPredict)) {
+
+                // Predict a rating based on each seen anime
                 List<Pair<Double, Integer>> ratingWeightPairs = new ArrayList<>();
                 for (AnimePair pair: animePairs) {
+
+                    // Retrieve precalculated count and diff for slope one
                     if (pair.getMediaId1().equals(toPredict) || pair.getMediaId2().equals(toPredict)) {
                         int sign = pair.getMediaId1().equals(toPredict) ? 1 : -1;
                         Integer basedOn = sign == 1 ? pair.getMediaId2() : pair.getMediaId1();
+
+                        // Generate the predicted rating based on a seen anime using average difference
                         for (Entry entry : ParseApplication.entries) {
                             if (entry.getMediaId().equals(basedOn)) {
                                 double diffAvg = pair.getDiffSum() / pair.getCount();
@@ -94,11 +90,9 @@ public class SlopeOne {
                 else predictedRatings.add(new Pair<>(toPredict, -1.0));
             }
         }
+
+        // Sort by predicted rating (descending)
         predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
-
-        // Todo: delete this line
-        System.out.println("removing rejections... " + (System.currentTimeMillis() - start));
-
         removeRejections();
     }
 
@@ -131,13 +125,8 @@ public class SlopeOne {
                 if (count + 1 >= 3) rejections.add(id);
             }
 
-            // Remove seen animes or recommendations with 3 or more rejections
+            // Remove recommendations with 3 or more rejections
             predictedRatings.removeIf((p) -> rejections.contains(p.first));
-            predictedRatings.removeIf((p) -> ParseApplication.seenMediaIds.contains(p.first));
-
-            // Todo: delete this line
-            System.out.println("querying animes: " + (System.currentTimeMillis() - start));
-
             shownAnimes.clear();
             queryAnimes(1);
         });
@@ -174,8 +163,6 @@ public class SlopeOne {
                         queryAnimes(page + 1);
                     } else {
                         shownAnimes.sort((a1, a2) -> ids.indexOf(a1.getMediaId()) - ids.indexOf(a2.getMediaId()));
-                        System.out.println("shownAnimes size (before weave): " + shownAnimes.size());
-                        System.out.println("weaving in random animes: " + (System.currentTimeMillis() - start));
                         weaveInRandomAnimes();
                     }
                 }
@@ -205,6 +192,7 @@ public class SlopeOne {
                     for (MediaAllQuery.Medium m: response.getData().Page().media()) {
                         randomAnimes.add(new Anime(m.fragments().mediaFragment()));
                     }
+                    randomAnimes.removeIf((a) -> ParseApplication.seenMediaIds.contains(a.getMediaId()));
                     Collections.shuffle(randomAnimes);
 
                     // Insert the random animes in the shown animes
