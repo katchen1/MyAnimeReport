@@ -39,12 +39,12 @@ public class EntryActivity extends AppCompatActivity {
     private ActivityEntryBinding binding;
     private Integer mode; // 0 for creating a new entry; 1 for editing an existing entry
     private Integer mediaId; // The mediaId of the entry's anime, -1 if not found
-    private Integer searchMediaId; // The mediaId of the closest anime returned by the GraphQL query
     private Entry entry; // The entry being edited
     private Integer position; // Position of the anime in the backlog recycler view
     private Integer allPosition; // Position of the anime in the real backlog
     private List<Anime> queriedAnimes; // Suggested animes based on title search
     private AnimesAdapter adapter; // Adapter for recycler view for queriedAnimes
+    private Integer originalMediaId; // Media id of the anime being edited
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +93,9 @@ public class EntryActivity extends AppCompatActivity {
             binding.tvToolbar.setText(R.string.edit_entry);
             entry = getIntent().getParcelableExtra("entry");
             mediaId = entry.getMediaId();
+            originalMediaId = entry.getMediaId();
 
             // Populate the views
-            // The anime of the entry
             Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
             if (anime == null) return;
             if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
@@ -224,10 +224,12 @@ public class EntryActivity extends AppCompatActivity {
         }
 
         // Check if user already has an entry for this anime
-        for (Entry entry: ParseApplication.entries) {
-            if (entry.getMediaId().equals(mediaId)) {
-                Toast.makeText(EntryActivity.this, "Already have an entry for this anime.", Toast.LENGTH_SHORT).show();
-                return;
+        if (mode == 0 || !originalMediaId.equals(mediaId)) {
+            for (Entry entry : ParseApplication.entries) {
+                if (entry.getMediaId().equals(mediaId)) {
+                    Toast.makeText(EntryActivity.this, "Already have an entry for this anime.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         }
 
