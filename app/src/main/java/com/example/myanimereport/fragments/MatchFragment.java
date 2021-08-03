@@ -140,6 +140,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
 
     /* Rewinds an anime. */
     private void rewind(View view) {
+        // If nothing to rewind, don't do anything
         int posBefore = layoutManager.getTopPosition();
         binding.cardStack.rewind();
         int posAfter = layoutManager.getTopPosition();
@@ -162,6 +163,8 @@ public class MatchFragment extends Fragment implements CardStackListener {
             if (rejectionsFound.size() > 0) {
                 Rejection r = rejectionsFound.get(0);
                 r.deleteInBackground();
+
+                // Todo: remove this line
                 Toast.makeText(getContext(), "Un-rejected anime.", Toast.LENGTH_SHORT).show();
             }
         });

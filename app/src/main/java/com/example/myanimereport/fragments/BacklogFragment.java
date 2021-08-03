@@ -88,7 +88,7 @@ public class BacklogFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Update the entries list to show only matching titles
+                // Update the backlog to show only matching titles
                 List<BacklogItem> updatedItems = new ArrayList<>();
                 for (BacklogItem item: allItems) {
                     if (newText.isEmpty()) updatedItems.add(item);

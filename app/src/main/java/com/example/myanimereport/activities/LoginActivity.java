@@ -5,13 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
 import com.example.myanimereport.databinding.ForgotPasswordBinding;
