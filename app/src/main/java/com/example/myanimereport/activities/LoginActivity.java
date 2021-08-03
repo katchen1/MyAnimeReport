@@ -3,10 +3,16 @@ package com.example.myanimereport.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
 import com.example.myanimereport.databinding.ForgotPasswordBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -36,6 +42,27 @@ public class LoginActivity extends AppCompatActivity {
         binding.tvForgotPassword.setOnClickListener(this::forgotPasswordOnClick);
     }
 
+    /* Shows or hides the password. */
+    public void togglePasswordVisibility(View view) {
+        // Get current visibility
+        PasswordTransformationMethod ptm = PasswordTransformationMethod.getInstance();
+        HideReturnsTransformationMethod hrtm = HideReturnsTransformationMethod.getInstance();
+        boolean invisible = binding.etPassword.getTransformationMethod() == ptm;
+
+        // Show or hide based on current visibility
+        if (invisible) {
+            binding.btnVisibility.setImageResource(R.drawable.ic_baseline_visibility_24);
+            binding.etPassword.setTransformationMethod(hrtm);
+        } else {
+            binding.btnVisibility.setImageResource(R.drawable.ic_baseline_visibility_off_24);
+            binding.etPassword.setTransformationMethod(ptm);
+        }
+
+        // Move cursor to end of text
+        binding.etPassword.setSelection(binding.etPassword.getText().length());
+    }
+
+    /* Allows the user to send themselves a password reset email. */
     private void forgotPasswordOnClick(View view) {
         ForgotPasswordBinding dialogBinding = ForgotPasswordBinding.inflate(getLayoutInflater());
         new MaterialAlertDialogBuilder(this)
@@ -49,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             .show();
     }
 
+    /* Sends a password reset email to the specified email address. */
     private void sendPasswordResetEmail(String email) {
         ParseUser.requestPasswordResetInBackground(email, e -> {
             if (e == null) {
