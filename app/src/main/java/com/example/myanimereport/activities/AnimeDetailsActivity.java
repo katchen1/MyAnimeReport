@@ -5,6 +5,9 @@ import androidx.core.content.ContextCompat;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityAnimeDetailsBinding;
@@ -26,6 +29,11 @@ public class AnimeDetailsActivity extends AppCompatActivity {
 
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
+
+        // Change status bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
 
         // Fill in anime's info
         Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));

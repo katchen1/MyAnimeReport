@@ -3,12 +3,17 @@ package com.example.myanimereport.activities;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityEntryDetailsBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.Entry;
@@ -47,6 +52,11 @@ public class EntryDetailsActivity extends AppCompatActivity {
 
         // Show the entry's information
         populateEntryView();
+
+        // Change status bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this , R.color.dark_gray));
     }
 
     /* Shows the entry's information. */

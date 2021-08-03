@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
 import com.example.myanimereport.databinding.ForgotPasswordBinding;
@@ -37,6 +41,11 @@ public class LoginActivity extends AppCompatActivity {
 
         // Forgot password
         binding.tvForgotPassword.setOnClickListener(this::forgotPasswordOnClick);
+
+        // Change status bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
     }
 
     /* Shows or hides the password. */

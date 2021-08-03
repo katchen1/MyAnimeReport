@@ -126,6 +126,11 @@ public class BacklogFragment extends Fragment {
         items.addAll(allItems);
         adapter.notifyDataSetChanged();
         checkItemsExist();
+        clearSearch();
+    }
+
+    /* Clears the search view. */
+    public void clearSearch() {
         binding.searchView.setQuery("", false);
         binding.searchView.clearFocus();
     }

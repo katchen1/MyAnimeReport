@@ -182,6 +182,12 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /* Clears the search view. */
+    public void clearSearch() {
+        binding.searchView.setQuery("", false);
+        binding.searchView.clearFocus();
+    }
+
     /* Shows the progress bar. */
     public void showProgressBar() {
         binding.pbProgressAction.setVisibility(View.VISIBLE);
@@ -252,6 +258,7 @@ public class HomeFragment extends Fragment {
                 // Update recycler view and close drawer
                 adapter.notifyDataSetChanged();
                 MainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START);
+                clearSearch();
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .show();

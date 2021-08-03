@@ -1,12 +1,16 @@
 package com.example.myanimereport.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -33,6 +37,11 @@ public class SignupActivity extends AppCompatActivity {
         binding.etEmail.setOnFocusChangeListener(this::etOnChangeFocus);
         binding.etPassword.setOnFocusChangeListener(this::etOnChangeFocus);
         binding.etConfirmPassword.setOnFocusChangeListener(this::etOnChangeFocus);
+
+        // Change status bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
     }
 
     /* Returns to the login page. */
