@@ -64,166 +64,172 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvOverview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginVertical="10dp"
-                android:text="@string/overview"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-
             <LinearLayout
-                android:id="@+id/llOverview1"
+                android:id="@+id/llLeft"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tvOverview"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/llCount"
+                <TextView
+                    android:id="@+id/tvReportTitle"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
+                    android:textColor="@color/white"
+                    android:text="@string/my_anime_report"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvOverview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
                     android:layout_marginVertical="10dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="@string/overview"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
 
-                    <TextView
-                        android:id="@+id/tvCount"
+                <LinearLayout
+                    android:id="@+id/llOverview1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tvOverview"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:id="@+id/llCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        tools:text="101"
-                        android:textColor="@color/white"
-                        android:textSize="36sp" />
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginVertical="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
+                        <TextView
+                            android:id="@+id/tvCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            tools:text="101"
+                            android:textColor="@color/white"
+                            android:textSize="36sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/animes_watched"
+                            android:textSize="14sp"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llRating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/animes_watched"
-                        android:textSize="14sp"
-                        android:textColor="@color/white" />
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginVertical="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvRating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            tools:text="7.6"
+                            android:textColor="@color/white"
+                            android:textSize="36sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/average_rating"
+                            android:textSize="14sp"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/llRating"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/llOverview2"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:layout_marginVertical="10dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
-                    <TextView
-                        android:id="@+id/tvRating"
+                    <LinearLayout
+                        android:id="@+id/llRecentCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        tools:text="7.6"
-                        android:textColor="@color/white"
-                        android:textSize="36sp" />
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginVertical="10dp"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
 
-                    <TextView
+                        <TextView
+                            android:id="@+id/tvRecentCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            tools:text="2"
+                            android:textColor="@color/white"
+                            android:textSize="36sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/animes_watched_this_year"
+                            android:textSize="14sp"
+                            android:textColor="@color/white" />
+
+                        <TextView
+                            android:id="@+id/tvCountCompare"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llRecentRating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/average_rating"
-                        android:textSize="14sp"
-                        android:textColor="@color/white" />
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginVertical="10dp"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/tvRecentRating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            tools:text="8.0"
+                            android:textColor="@color/white"
+                            android:textSize="36sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="@string/average_rating_this_year"
+                            android:textSize="14sp"
+                            android:textColor="@color/white" />
+
+                        <TextView
+                            android:id="@+id/tvRatingCompare"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:textSize="16sp" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llOverview2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <LinearLayout
-                    android:id="@+id/llRecentCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-
-                    <TextView
-                        android:id="@+id/tvRecentCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        tools:text="2"
-                        android:textColor="@color/white"
-                        android:textSize="36sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/animes_watched_this_year"
-                        android:textSize="14sp"
-                        android:textColor="@color/white" />
-
-                    <TextView
-                        android:id="@+id/tvCountCompare"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/llRecentRating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:layout_marginVertical="10dp"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-
-                    <TextView
-                        android:id="@+id/tvRecentRating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        tools:text="8.0"
-                        android:textColor="@color/white"
-                        android:textSize="36sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/average_rating_this_year"
-                        android:textSize="14sp"
-                        android:textColor="@color/white" />
-
-                    <TextView
-                        android:id="@+id/tvRatingCompare"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:textSize="16sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvActivity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginVertical="10dp"
-                android:text="@string/activity"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
 
                 <LinearLayout
                     android:id="@+id/llActivity"
@@ -231,102 +237,122 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/chartActivity"
+                    <TextView
+                        android:id="@+id/tvActivity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="10dp"
+                        android:text="@string/activity"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/chartActivity"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginHorizontal="20dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llGenre"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_marginHorizontal="20dp"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvGenre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="10dp"
+                        android:text="@string/genre"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/chartGenre"
+                        android:layout_width="match_parent"
+                        android:layout_height="230dp"
+                        android:layout_marginHorizontal="20dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llGenrePref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="10dp"
+                        android:text="@string/genre_preference"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+
+                    <com.github.mikephil.charting.charts.HorizontalBarChart
+                        android:id="@+id/chartGenrePref"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginHorizontal="20dp"/>
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/llGenre"
+                android:id="@+id/llRight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tvGenre"
-                    android:layout_width="wrap_content"
+
+                <LinearLayout
+                    android:id="@+id/llGenreBreakdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="10dp"
+                        android:text="@string/genre_breakdown_by_year"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/chartGenreBreakdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="400dp"
+                        android:layout_marginHorizontal="20dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llTop5"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
                     android:layout_marginVertical="10dp"
-                    android:text="@string/genre"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:orientation="vertical">
 
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/chartGenre"
-                    android:layout_width="match_parent"
-                    android:layout_height="230dp"
-                    android:layout_marginHorizontal="20dp"/>
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/top_5"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"/>
 
-            <LinearLayout
-                android:id="@+id/llGenrePref"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="10dp"
-                    android:text="@string/genre_preference"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-
-                <com.github.mikephil.charting.charts.HorizontalBarChart
-                    android:id="@+id/chartGenrePref"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_marginHorizontal="20dp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llGenreBreakdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="10dp"
-                    android:text="@string/genre_breakdown_by_year"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/chartGenreBreakdown"
-                    android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    android:layout_marginHorizontal="20dp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llTop5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginVertical="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/top_5"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvTop5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvTop5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

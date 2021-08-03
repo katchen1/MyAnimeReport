@@ -6,6 +6,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,7 +20,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,6 +48,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.parse.ParseUser;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -105,19 +106,31 @@ public class ReportFragment extends Fragment {
 
     /* Allows user to share their report. */
     private void shareOnClick(View view) {
-        NestedScrollView scrollView = binding.scrollView;
-        Bitmap screenshot = getScreenshot(scrollView,
-                scrollView.getChildAt(0).getHeight(),
-                scrollView.getChildAt(0).getWidth());
+        // Edge case: user has no entries
+        if (entries.size() == 0) {
+            Toast.makeText(getContext(), "No data to share.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Take screenshot, save, and share the report
+        Bitmap screenshot = getScreenshot();
         saveScreenshot(screenshot, "report.png");
     }
 
     /* Returns a screenshot bitmap of a view. */
-    private Bitmap getScreenshot(View view, int height, int width) {
+    private Bitmap getScreenshot() {
+        int width = binding.scrollView.getChildAt(0).getWidth() * 2;
+        int height = binding.scrollView.getChildAt(0).getHeight() / 2 + 180;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.dark_gray));
-        view.draw(canvas);
+
+        // Split the scrollview vertically in half and put them side by side
+        Matrix m = canvas.getMatrix();
+        binding.llLeft.draw(canvas);
+        m.preTranslate((float) Math.ceil(width / 2.0f), 100);
+        canvas.setMatrix(m);
+        binding.llRight.draw(canvas);
         return bitmap;
     }
 
@@ -154,7 +167,7 @@ public class ReportFragment extends Fragment {
         try {
             startActivity(Intent.createChooser(intent, "Share Screenshot"));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(getContext(), "No App Available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No app available.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -168,6 +181,7 @@ public class ReportFragment extends Fragment {
         binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnSortDateAdded.setVisibility(View.GONE);
         binding.btnDeleteBacklog.setVisibility(View.GONE);
         binding.btnFilter.setVisibility(View.GONE);
         binding.drawerLayout.openDrawer(GravityCompat.START);
@@ -184,11 +198,13 @@ public class ReportFragment extends Fragment {
         if (entries.isEmpty()) {
             binding.scrollView.setVisibility(View.INVISIBLE);
             binding.rlMessage.setVisibility(View.VISIBLE);
+            binding.tvReportTitle.setVisibility(View.INVISIBLE);
             binding.tvCreate.setOnClickListener(this::createOnClick);
             return;
         } else {
             binding.scrollView.setVisibility(View.VISIBLE);
             binding.rlMessage.setVisibility(View.INVISIBLE);
+            binding.tvReportTitle.setVisibility(View.VISIBLE);
         }
 
         // Generate the maps
@@ -227,6 +243,10 @@ public class ReportFragment extends Fragment {
 
     /* Overview [Score Cards] */
     public void setOverview() {
+        // Report title
+        String name = ParseUser.getCurrentUser().getString("name");
+        binding.tvReportTitle.setText(String.format(Locale.getDefault(), "%s's Anime Report", name));
+
         // Total animes watched
         binding.tvCount.setText(String.format(Locale.getDefault(), "%d", entries.size()));
 
@@ -316,6 +336,7 @@ public class ReportFragment extends Fragment {
 
         // Customize the chart
         customizeChart(chart, 1);
+        chart.setRotationAngle(180);
         chart.getLegend().setEnabled(false);
         chart.setHoleColor(darkGray);
         chart.highlightValue(null);

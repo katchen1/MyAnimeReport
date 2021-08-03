@@ -46,6 +46,27 @@
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRewind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:minHeight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:background="@drawable/theme_rounded_bg"
+                    android:text="@string/rewind"
+                    android:letterSpacing="0"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@color/dark_gray"
+                    app:backgroundTint="@null"
+                    tools:ignore="RelativeOverlap" />
             </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -78,21 +99,10 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="50dp"
             android:src="@drawable/ic_baseline_close_24"
-            android:backgroundTint="@color/theme"
+            android:backgroundTint="@null"
             app:maxImageSize="36dp"
             app:tint="@color/dark_gray"
             android:contentDescription="@string/reject" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnRewind"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_baseline_replay_24"
-            android:backgroundTint="@color/theme"
-            app:maxImageSize="36dp"
-            app:tint="@color/dark_gray"
-            android:contentDescription="@string/rewind" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnAccept"
@@ -101,7 +111,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="50dp"
             android:src="@drawable/ic_baseline_check_24"
-            android:backgroundTint="@color/theme"
+            android:backgroundTint="@null"
             app:maxImageSize="36dp"
             app:tint="@color/dark_gray"
             android:contentDescription="@string/accept" />
