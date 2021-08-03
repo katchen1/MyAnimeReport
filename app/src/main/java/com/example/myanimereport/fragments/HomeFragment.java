@@ -305,6 +305,7 @@ public class HomeFragment extends Fragment {
         selectedGenres.clear();
         adapter.notifyItemInserted(0);
         binding.rvEntries.smoothScrollToPosition(0);
+        checkEntriesExist();
     }
 
     /* After returning from a entry activity, update the entry at its position. */
