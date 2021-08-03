@@ -182,6 +182,7 @@ public class ReportFragment extends Fragment {
         binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnSortDateAdded.setVisibility(View.GONE);
         binding.btnDeleteBacklog.setVisibility(View.GONE);
         binding.btnFilter.setVisibility(View.GONE);
         binding.drawerLayout.openDrawer(GravityCompat.START);

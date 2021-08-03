@@ -77,4 +77,5 @@
     <string name="my_anime_report">My Anime Report</string>
     <string name="email_associated_with_your_account">Email associated with your account</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="date_added">Date Added</string>
 </resources>

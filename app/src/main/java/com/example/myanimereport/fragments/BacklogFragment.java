@@ -42,6 +42,7 @@ public class BacklogFragment extends Fragment {
     private List<BacklogItem> allItems;
     private List<BacklogItem> items;
     private BacklogItemsAdapter adapter;
+    private boolean descending;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -60,6 +61,7 @@ public class BacklogFragment extends Fragment {
         // Set up adapter and layout of recycler view
         allItems = ParseApplication.backlogItems;
         items = new ArrayList<>();
+        descending = true;
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         adapter = new BacklogItemsAdapter(this, items);
         binding.rvBacklogItems.setLayoutManager(layoutManager);
@@ -146,6 +148,7 @@ public class BacklogFragment extends Fragment {
         binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnSortDateAdded.setVisibility(View.VISIBLE);
         binding.btnDeleteBacklog.setVisibility(View.VISIBLE);
         binding.btnFilter.setVisibility(View.GONE);
         binding.drawerLayout.openDrawer(GravityCompat.START);
@@ -215,6 +218,20 @@ public class BacklogFragment extends Fragment {
             MainActivity.manager.beginTransaction().hide(this).show(MainActivity.homeFragment).commit();
             MainActivity.binding.navView.setSelectedItemId(R.id.navigation_home);
         }
+    }
+
+    /* Flips the sort order. */
+    public void flipOrder() {
+        descending = !descending;
+        int sign = descending? -1: 1;
+        items.sort((i1, i2) -> sign * i1.getCreatedAt().compareTo(i2.getCreatedAt()));
+        allItems.sort((i1, i2) -> sign * i1.getCreatedAt().compareTo(i2.getCreatedAt()));
+        adapter.notifyDataSetChanged();
+    }
+
+    /* Gets the sort order. */
+    public boolean getDescending() {
+        return descending;
     }
 
     @Override

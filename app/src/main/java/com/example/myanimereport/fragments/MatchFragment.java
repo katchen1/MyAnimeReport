@@ -99,6 +99,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.btnSortWatchDate.setVisibility(View.GONE);
         binding.btnSortRating.setVisibility(View.GONE);
         binding.btnDeleteAllEntries.setVisibility(View.GONE);
+        binding.btnSortDateAdded.setVisibility(View.GONE);
         binding.btnDeleteBacklog.setVisibility(View.GONE);
         binding.btnFilter.setVisibility(View.GONE);
         binding.drawerLayout.openDrawer(GravityCompat.START);
@@ -187,7 +188,9 @@ public class MatchFragment extends Fragment implements CardStackListener {
             item.saveInBackground(e -> {
                 if (e == null) {
                     // Add the item to the backlog and notify its adapter
-                    ParseApplication.backlogItems.add(0, item);
+                    boolean descending = MainActivity.backlogFragment.getDescending();
+                    if (descending) ParseApplication.backlogItems.add(0, item);
+                    else ParseApplication.backlogItems.add(item);
                     Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
