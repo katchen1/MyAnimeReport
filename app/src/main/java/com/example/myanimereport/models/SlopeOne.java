@@ -1,6 +1,9 @@
 package com.example.myanimereport.models;
 
+import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import com.apollographql.apollo.ApolloCall;
@@ -8,6 +11,7 @@ import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaAllQuery;
 import com.example.MediaDetailsByIdListQuery;
+import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -20,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /* Slope One algorithm implementation. */
 public class SlopeOne {
@@ -31,111 +34,86 @@ public class SlopeOne {
     private final List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
     private final List<Anime> shownAnimes;
 
+    long start;
+
     public SlopeOne(List<Anime> shownAnimes) {
         this.shownAnimes = shownAnimes;
         MainActivity.matchFragment.showProgressBar();
+        start = System.currentTimeMillis();
+        System.out.println("getting input data... " + (System.currentTimeMillis() - start));
         getInputData();
     }
 
     /* Fetches all user's ratings on all animes from Parse. */
     public void getInputData() {
-        Map<String, HashMap<Integer, Double>> inputData = new HashMap<>();
-        Set<Integer> allAnimes = new HashSet<>();
-        ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
-        query.findInBackground((entriesFound, e) -> { // Start async query for entries
-            // Check for errors
-            if (e != null) {
-                Log.e("SlopeOne", "Error when getting entries.", e);
-                return;
-            }
-
-            // Extract ratings from entries
-            for (Entry entry: entriesFound) {
-                String username = entry.getUsername();
-                if (!inputData.containsKey(username)) {
-                    inputData.put(username, new HashMap<>());
-                }
-                Map<Integer, Double> userRatings = inputData.get(username);
-                if (userRatings != null) userRatings.put(entry.getMediaId(), entry.getRating());
-                allAnimes.add(entry.getMediaId());
-            }
-
-            // Create the dataframe of user ratings
-            userList = new ArrayList<>(inputData.keySet());
-            animeList = new ArrayList<>(allAnimes);
-            ratings = new double[userList.size()][animeList.size()];
-            for (int i = 0; i < userList.size(); i++) {
-                for (int j = 0; j < animeList.size(); j++) {
-                    String username = userList.get(i);
-                    Integer anime = animeList.get(j);
-                    ratings[i][j] = -1.0;
-                    Map<Integer, Double> userData = inputData.get(username);
-                    if (userData != null) {
-                        Double rating = userData.get(anime);
-                        if (rating != null) ratings[i][j] = rating;
-                    }
-                }
-            }
-            predict();
-        });
+        predict();
     }
 
     /* Predicts the current user's ratings on unseen animes. */
     public void predict() {
-        String currUser = ParseUser.getCurrentUser().getUsername();
-        int currUserIndex = userList.indexOf(currUser);
-        List<Integer> predictIndices = new ArrayList<>();
-        List<Integer> basedOnIndices = new ArrayList<>();
-        if (currUserIndex == -1) {
+        if (ParseApplication.entries.isEmpty()) {
             weaveInRandomAnimes();
             return;
         }
 
-        // Separate the animes that have been rated by the user from those that have not
-        for (int j = 0; j < animeList.size(); j++) {
-            if (ratings[currUserIndex][j] < 0) predictIndices.add(j);
-            else basedOnIndices.add(j);
+        System.out.println("Predicting!");
+        addPrediction(0);
+    }
+
+    public void addPrediction(int index) {
+        if (index == ParseApplication.entryMediaIdAllUsers.size()) {
+            // Sort by predicted rating (descending)
+            predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
+            System.out.println("removing rejections: " + (System.currentTimeMillis() - start));
+            removeRejections();
+            return;
         }
 
-        // For each anime rating to predict
-        for (Integer j1: predictIndices) {
-            List<Pair<Double, Integer>> ratingWeightPairs = new ArrayList<>();
+        List<Integer> toPredicts = new ArrayList<>(ParseApplication.entryMediaIdAllUsers);
+        Integer toPredict = toPredicts.get(index);
+        if (!ParseApplication.seenMediaIds.contains(toPredict)) {
+            ParseQuery<AnimePair> query1 = ParseQuery.getQuery(AnimePair.class);
+            query1.whereEqualTo("mediaId1", toPredict);
+            ParseQuery<AnimePair> query2 = ParseQuery.getQuery(AnimePair.class);
+            query2.whereEqualTo("mediaId2", toPredict);
+            List<ParseQuery<AnimePair>> list = new ArrayList<>();
+            list.add(query1);
+            list.add(query2);
+            ParseQuery<AnimePair> query = ParseQuery.or(list);
+            query.findInBackground((pairs, e) -> {
+                // Check for errors
+                if (e != null) {
+                    Log.e("SlopeOne", "Error when getting anime pairs.", e);
+                    return;
+                }
 
-            // For each existing anime rating
-            for (Integer j2: basedOnIndices) {
-                int otherUserCount = 0;
-                double otherUserRatingDiffSum = 0.0;
-
-                // Find other users who rated both animes
-                for (int i = 0; i < userList.size(); i++) {
-                    if (ratings[i][j1] >= 0 && ratings[i][j2] >= 0) {
-                        otherUserCount++;
-                        otherUserRatingDiffSum += ratings[i][j1] - ratings[i][j2];
+                List<Pair<Double, Integer>> ratingWeightPairs = new ArrayList<>();
+                for (AnimePair pair : pairs) {
+                    int sign = pair.getMediaId1().equals(toPredict) ? 1 : -1;
+                    Integer basedOn = sign == 1 ? pair.getMediaId2() : pair.getMediaId1();
+                    for (Entry entry : ParseApplication.entries) {
+                        if (entry.getMediaId().equals(basedOn)) {
+                            double diffAvg = pair.getDiffSum() / pair.getCount();
+                            Double predictedRating = entry.getRating() + sign * diffAvg;
+                            ratingWeightPairs.add(new Pair<>(predictedRating, pair.getCount()));
+                        }
                     }
                 }
 
-                // Predict rating based on other users' ratings
-                if (otherUserCount > 0) {
-                    double otherUserRatingDiffAvg = otherUserRatingDiffSum / otherUserCount;
-                    double predictedRating = ratings[currUserIndex][j2] + otherUserRatingDiffAvg;
-                    ratingWeightPairs.add(new Pair<>(predictedRating, otherUserCount));
+                // Final prediction (weighted)
+                double num = 0.0;
+                double den = 0.0;
+                for (Pair<Double, Integer> p : ratingWeightPairs) {
+                    num += p.first * p.second;
+                    den += p.second;
                 }
-            }
-
-            // Final prediction (weighted)
-            double num = 0.0;
-            double den = 0.0;
-            for (Pair<Double, Integer> p: ratingWeightPairs) {
-                num += p.first * p.second;
-                den += p.second;
-            }
-            if (den > 0) predictedRatings.add(new Pair<>(animeList.get(j1), num / den));
-            else predictedRatings.add(new Pair<>(animeList.get(j1), -1.0));
+                if (den > 0) predictedRatings.add(new Pair<>(toPredict, num / den));
+                else predictedRatings.add(new Pair<>(toPredict, -1.0));
+                addPrediction(index + 1);
+            });
+        } else {
+            addPrediction(index + 1);
         }
-
-        // Sort by predicted rating (descending)
-        predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
-        removeRejections();
     }
 
     /* Removes animes that user has rejected over 3 times within the past week. */
@@ -152,7 +130,7 @@ public class SlopeOne {
         query.findInBackground((rejectionsFound, e) -> { // Start async query for rejections
             // Check for errors
             if (e != null) {
-                Log.e("SlopeOne", "Error when getting rejections.", e);
+                Log.e("SlopeOne", "Error when getting rejections. " + e.getMessage(), e);
                 return;
             }
 
@@ -171,8 +149,10 @@ public class SlopeOne {
             predictedRatings.removeIf((p) -> rejections.contains(p.first));
             predictedRatings.removeIf((p) -> ParseApplication.seenMediaIds.contains(p.first));
 
-            // Query anime details
+
             shownAnimes.clear();
+
+            System.out.println("querying animes: " + (System.currentTimeMillis() - start));
             queryAnimes(1);
         });
     }
@@ -181,6 +161,7 @@ public class SlopeOne {
     public void queryAnimes(int page) {
         List<Integer> ids = new ArrayList<>();
         List<Double> ratings = new ArrayList<>();
+        System.out.println("predictedRatings size: " + predictedRatings.size());
         for (Pair<Integer, Double> p: predictedRatings) {
             ids.add(p.first);
             ratings.add(p.second);
@@ -208,6 +189,8 @@ public class SlopeOne {
                         queryAnimes(page + 1);
                     } else {
                         shownAnimes.sort((a1, a2) -> ids.indexOf(a1.getMediaId()) - ids.indexOf(a2.getMediaId()));
+                        System.out.println("shownAnimes size (before weave): " + shownAnimes.size());
+                        System.out.println("weaving in random animes: " + (System.currentTimeMillis() - start));
                         weaveInRandomAnimes();
                     }
                 }

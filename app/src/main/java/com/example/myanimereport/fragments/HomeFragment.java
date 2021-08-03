@@ -162,7 +162,6 @@ public class HomeFragment extends Fragment {
     public void queryEntries(boolean firstQuery) {
         if (firstQuery) showProgressBar();
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
-        query.whereEqualTo(Entry.KEY_USER, ParseUser.getCurrentUser()); // Limit entries to current user's
         query.addDescendingOrder("createdAt"); // Order posts by creation date
         query.findInBackground((entriesFound, e) -> { // Start async query for entries
             // Check for errors
@@ -171,10 +170,18 @@ public class HomeFragment extends Fragment {
                 return;
             }
 
+            List<Entry> userEntries = new ArrayList<>();
+            for (Entry entry: entriesFound) {
+                ParseApplication.entryMediaIdAllUsers.add(entry.getMediaId());
+                if (entry.getUser().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                    userEntries.add(entry);
+                }
+            }
+
             // Add entries to the recycler view and notify its adapter of new data
-            Entry.setAnimes(entriesFound);
-            allEntries.addAll(entriesFound);
-            entries.addAll(entriesFound);
+            Entry.setAnimes(userEntries);
+            allEntries.addAll(userEntries);
+            entries.addAll(userEntries);
             adapter.notifyDataSetChanged();
             checkEntriesExist();
             binding.swipeContainer.setRefreshing(false);

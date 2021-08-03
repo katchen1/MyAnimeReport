@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,8 +24,12 @@ import com.example.myanimereport.R;
 import com.example.myanimereport.adapters.AnimesAdapter;
 import com.example.myanimereport.databinding.ActivityEntryBinding;
 import com.example.myanimereport.models.Anime;
+import com.example.myanimereport.models.AnimePair;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import org.parceler.Parcels;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -246,6 +251,42 @@ public class EntryActivity extends AppCompatActivity {
 
     /* Creates a new entry, saves it, and return to the home list. */
     public void createNewEntry(Integer month, Integer year, Double rating, String note) {
+        for (Entry otherEntry: ParseApplication.entries) {
+            ParseQuery<AnimePair> query1 = ParseQuery.getQuery(AnimePair.class);
+            query1.whereEqualTo("mediaId1", mediaId);
+            query1.whereEqualTo("mediaId2", otherEntry.getMediaId());
+            ParseQuery<AnimePair> query2 = ParseQuery.getQuery(AnimePair.class);
+            query2.whereEqualTo("mediaId2", mediaId);
+            query2.whereEqualTo("mediaId1", otherEntry.getMediaId());
+            List<ParseQuery<AnimePair>> list = new ArrayList<>();
+            list.add(query1);
+            list.add(query2);
+            ParseQuery<AnimePair> query = ParseQuery.or(list);
+            query.findInBackground((pairs, e) -> { // Start async query for entries
+                // Check for errors
+                if (e != null) {
+                    Log.e("EntryActivity", "Error when getting anime pairs.", e);
+                    return;
+                }
+
+                double diff = rating - otherEntry.getRating();
+                if (pairs.size() > 0) {
+                    AnimePair pair = pairs.get(0);
+                    int sign = pair.getMediaId1().equals(mediaId)? 1: -1;
+                    pair.setCount(pair.getCount() + 1);
+                    pair.setDiffSum(pair.getDiffSum() + sign * diff);
+                    pair.saveInBackground();
+                } else {
+                    AnimePair pair = new AnimePair();
+                    pair.setMediaId1(mediaId);
+                    pair.setMediaId2(otherEntry.getMediaId());
+                    pair.setCount(1);
+                    pair.setDiffSum(diff);
+                    pair.saveInBackground();
+                }
+            });
+        }
+
         entry = new Entry(mediaId, month, year, rating, note);
         entry.setAnime();
         entry.saveInBackground(e -> {

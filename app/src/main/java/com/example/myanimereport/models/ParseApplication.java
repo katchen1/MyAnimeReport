@@ -21,6 +21,7 @@ public class ParseApplication extends Application {
     public static List<BacklogItem> backlogItems;
     public static List<Integer> seenMediaIds;
     public static Set<String> genres;
+    public static Set<Integer> entryMediaIdAllUsers;
 
     @Override
     public void onCreate() {
@@ -30,6 +31,7 @@ public class ParseApplication extends Application {
         ParseObject.registerSubclass(Entry.class);
         ParseObject.registerSubclass(BacklogItem.class);
         ParseObject.registerSubclass(Rejection.class);
+        ParseObject.registerSubclass(AnimePair.class);
 
         // Initialize the parse application
         Parse.initialize(new Parse.Configuration.Builder(this)
@@ -47,6 +49,7 @@ public class ParseApplication extends Application {
         backlogItems = new ArrayList<>();
         seenMediaIds = new ArrayList<>();
         genres = new HashSet<>();
+        entryMediaIdAllUsers = new HashSet<>();
 
         // Register callback to keep the current activity updated
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
