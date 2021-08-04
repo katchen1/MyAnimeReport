@@ -30,7 +30,6 @@ import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.models.UserGenre;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
 import org.parceler.Parcels;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -321,12 +320,9 @@ public class EntryActivity extends AppCompatActivity {
         }
     }
 
+    /* Stores data used for calculating nearest neighbors in Parse. */
     public void updateKNNData(Double rating) {
-        if (entry.getAnime() == null) {
-            System.out.println("Anime is null.");
-            return;
-        }
-
+        if (entry.getAnime() == null) return;
         for (String genre: entry.getAnime().getGenres()) {
             UserGenre userGenre = new UserGenre();
             userGenre.setUser(ParseUser.getCurrentUser());
