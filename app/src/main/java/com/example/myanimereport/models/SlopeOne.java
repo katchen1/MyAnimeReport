@@ -271,6 +271,9 @@ public class SlopeOne {
                         if ((index + 1) % 3 == 0) index++;
                     }
 
+                    // Lightly shuffle the shown animes
+                    partialShuffle(shownAnimes);
+
                     // Notify the adapter
                     ParseApplication.currentActivity.runOnUiThread(() -> {
                         MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
@@ -284,5 +287,24 @@ public class SlopeOne {
                 }
             }
         );
+    }
+
+    /* Lightly shuffles a list by swapping random elements.
+     * Elements swapped must be close enough to each other (indices less than 3 apart). */
+    public void partialShuffle(List<Anime> animes) {
+        int n = animes.size();
+        int numSwaps = n / 2;
+        for (int i = 0; i < numSwaps; i++) {
+            // Indices of elements to swap
+            int index1 = (int) (Math.random() * n);
+            int dist = (int) (Math.random() * 7) - 3; // {-3, -2, 1, 0, 1, 2, 3}
+            int index2 = index1 + dist;
+            index2 = Math.max(0, Math.min(n - 1, index2)); // Validate index by clamping
+
+            // Swap
+            Anime temp = animes.get(index1);
+            animes.set(index1, animes.get(index2));
+            animes.set(index2, temp);
+        }
     }
 }
