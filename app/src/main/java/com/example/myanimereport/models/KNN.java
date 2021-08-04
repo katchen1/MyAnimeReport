@@ -133,7 +133,35 @@ public class KNN {
         return sum / list.size();
     }
 
-    public List<ParseUser> kNearestNeighbors(ParseUser user) {
-        return new ArrayList<>();
+    public List<String> kNearestNeighbors(String userId, int K) {
+        List<String> output = new ArrayList<>();
+        List<Pair<Integer, Double>> userDistancePairs = new ArrayList<>();
+        int userIndex = userIds.indexOf(userId);
+
+        for (int neighborIndex = 0; neighborIndex < userIds.size(); neighborIndex++) {
+            double d = getEuclideanDistance(userFeatures[userIndex], userFeatures[neighborIndex]);
+            userDistancePairs.add(new Pair<>(neighborIndex, d));
+        }
+
+        userDistancePairs.sort((p1, p2) -> p1.second.compareTo(p2.second));
+
+        for (int i = 0; i < userDistancePairs.size(); i++) {
+            int neighborIndex = userDistancePairs.get(i).first;
+            if (neighborIndex != userIndex) {
+                String neighborId = userIds.get(neighborIndex);
+                output.add(neighborId);
+                if (output.size() >= K) break;
+            }
+        }
+
+        return output;
+    }
+
+    public double getEuclideanDistance(double[] feature1, double[] feature2) {
+        double distance = 0.0;
+        for (int i = 0; i < feature1.length; i++) {
+            distance += Math.pow(feature1[i] - feature2[i], 2);
+        }
+        return Math.sqrt(distance);
     }
 }
