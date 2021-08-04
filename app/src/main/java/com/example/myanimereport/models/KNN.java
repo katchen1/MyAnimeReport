@@ -29,6 +29,7 @@ public class KNN {
 
     public KNN() {
         allGenres = new ArrayList<>();
+        userIds = new ArrayList<>();
         rawData = new HashMap<>();
         start = System.currentTimeMillis();
         queryRawData();
@@ -142,7 +143,7 @@ public class KNN {
 
         for (double[] userFeature : userFeatures) {
             for (double item: userFeature) {
-                System.out.printf("%.2f", item);
+                System.out.printf("%.2f ", item);
             }
             System.out.println();
         }

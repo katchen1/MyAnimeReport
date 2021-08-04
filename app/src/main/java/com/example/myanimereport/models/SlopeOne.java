@@ -207,8 +207,8 @@ public class SlopeOne {
                         MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
                         MainActivity.matchFragment.hideProgressBar();
 
-                        // Todo: delete this line:
-                        // new KNN();
+                        // Todo: delete this line
+                        new KNN();
                     });
                 }
 
