@@ -160,6 +160,7 @@ public class KNN {
         List<String> output = new ArrayList<>();
         List<Pair<Integer, Double>> userDistancePairs = new ArrayList<>();
         int userIndex = userIds.indexOf(userId);
+        if (userIndex == -1) return output;
 
         // Store the distance from each other user
         for (int neighborIndex = 0; neighborIndex < userIds.size(); neighborIndex++) {

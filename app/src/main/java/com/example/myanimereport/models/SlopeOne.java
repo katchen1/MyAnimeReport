@@ -27,13 +27,14 @@ public class SlopeOne {
     private final List<Anime> shownAnimes;
     private final List<AnimePair> animePairs;
     private final KNN knn;
-    private final Map<String, Map<Integer, Double>> nearestNeighborsData;
+    private final Integer knnWeight = 5;
+    private final Map<String, Map<Integer, Double>> neighborsData;
 
     public SlopeOne(List<Anime> shownAnimes, KNN knn) {
         this.knn = knn;
         this.shownAnimes = shownAnimes;
         animePairs = new ArrayList<>();
-        nearestNeighborsData = new HashMap<>();
+        neighborsData = new HashMap<>();
         MainActivity.matchFragment.showProgressBar();
         getInputData();
     }
@@ -54,9 +55,10 @@ public class SlopeOne {
 
     public void getNearestNeighborsData() {
         long start = System.currentTimeMillis();
-        System.out.println("getting neighbors data... " + (System.currentTimeMillis() - start));
+        System.out.println("getting neighbors... " + (System.currentTimeMillis() - start));
         List<String> neighborIds = knn.kNearestNeighbors(ParseUser.getCurrentUser().getObjectId(), 3);
         for (int i = 0; i < neighborIds.size(); i++) System.out.println(neighborIds.get(i));
+        System.out.println("querying neighbors data... " + (System.currentTimeMillis() - start));
 
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
         query.whereContainedIn("userId", neighborIds);
@@ -72,18 +74,18 @@ public class SlopeOne {
                 Integer mediaId = entry.getMediaId();
                 Double rating = entry.getRating();
 
-                Map<Integer, Double> userData = nearestNeighborsData.get(userId);
+                Map<Integer, Double> userData = neighborsData.get(userId);
                 if (userData == null) {
                     userData = new HashMap<>();
                     userData.put(mediaId, rating);
-                    nearestNeighborsData.put(userId, userData);
+                    neighborsData.put(userId, userData);
                 } else {
                     userData.put(mediaId, rating);
                 }
-
-                System.out.println("done! " + (System.currentTimeMillis() - start));
-                predict();
             }
+
+            System.out.println("done! " + (System.currentTimeMillis() - start));
+            predict();
         });
     }
 
@@ -113,6 +115,7 @@ public class SlopeOne {
                                 double diffAvg = pair.getDiffSum() / pair.getCount();
                                 Double predictedRating = entry.getRating() + sign * diffAvg;
                                 ratingWeightPairs.add(new Pair<>(predictedRating, pair.getCount()));
+                                incorporateKNN(toPredict, basedOn, entry, ratingWeightPairs);
                             }
                         }
                     }
@@ -133,6 +136,25 @@ public class SlopeOne {
         // Sort by predicted rating (descending)
         predictedRatings.sort((p1, p2) -> p2.second.compareTo(p1.second));
         removeRejections();
+    }
+
+    /* Increases weight of predicted ratings based on K nearest neighbors. */
+    private void incorporateKNN(Integer toPredict, Integer basedOn, Entry entry,
+                                List<Pair<Double, Integer>> ratingWeightPairs) {
+        for (String neighborId: neighborsData.keySet()) {
+            System.out.println("neighborId: " + neighborId);
+            Map<Integer, Double> neighborData = neighborsData.get(neighborId);
+            if (neighborData != null) {
+                Double toPredictRating = neighborData.get(toPredict);
+                Double basedOnRating = neighborData.get(basedOn);
+                if (toPredictRating != null && basedOnRating != null) {
+                    Double diff = toPredictRating - basedOnRating;
+                    Double predictedRating = entry.getRating() + diff;
+                    System.out.println(toPredict + " based on " + basedOn + ": " + predictedRating);
+                    ratingWeightPairs.add(new Pair<>(predictedRating, knnWeight));
+                }
+            }
+        }
     }
 
     /* Removes animes that user has rejected over 3 times within the past week. */
