@@ -1,6 +1,9 @@
 package com.example.myanimereport.models;
 
 import android.util.Log;
+
+import androidx.core.util.Pair;
+
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ public class KNN {
 
     public void queryRawData() {
         ParseQuery<UserGenre> query = ParseQuery.getQuery(UserGenre.class); // Specify type of data
-        query.findInBackground((rows, e) -> { // Start async query for entries
+        query.findInBackground((rows, e) -> { // Start async query
             // Check for errors
             if (e != null) {
                 Log.e("KNN", "Error when getting entries.", e);
@@ -97,7 +100,31 @@ public class KNN {
     }
 
     public void convertCountsToRank() {
+        for (int userIndex = 0; userIndex < userIds.size(); userIndex++) {
+            List<Double> counts = new ArrayList<>();
+            for (int genreIndex = 0; genreIndex < allGenres.size(); genreIndex++) {
+                counts.add(userFeatures[userIndex][genreIndex * 2 + 1]);
+            }
 
+            ArrayList<Double> sortedCounts = new ArrayList<>(counts);
+            sortedCounts.sort((c1, c2) -> c2.compareTo(c1));
+
+            for (int genreIndex = 0; genreIndex < allGenres.size(); genreIndex++) {
+                int rank = sortedCounts.indexOf(counts.get(genreIndex));
+                userFeatures[userIndex][genreIndex * 2 + 1] = rank;
+            }
+        }
+
+        printUserFeatures();
+    }
+
+    public void printUserFeatures() {
+        for (double[] userFeature : userFeatures) {
+            for (double item: userFeature) {
+                System.out.printf("%.2f", item);
+            }
+            System.out.println();
+        }
     }
 
     public double getAverage(List<Double> list) {
