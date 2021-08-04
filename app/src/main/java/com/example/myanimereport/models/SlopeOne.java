@@ -261,10 +261,14 @@ public class SlopeOne {
                     Collections.shuffle(randomAnimes);
 
                     // Insert the random animes in the shown animes
+                    int index = 0;
                     for (int i = 0; i < randomAnimes.size(); i++) {
-                        int index = i * 5 + 4;
                         if (shownAnimes.size() > index) shownAnimes.add(index, randomAnimes.get(i));
                         else shownAnimes.add(randomAnimes.get(i));
+
+                        // 2 random, 1 non-random, 2 random, 1 non-random, ...
+                        index++;
+                        if ((index + 1) % 3 == 0) index++;
                     }
 
                     // Notify the adapter
