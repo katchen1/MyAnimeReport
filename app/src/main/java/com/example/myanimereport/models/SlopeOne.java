@@ -206,6 +206,9 @@ public class SlopeOne {
                     ParseApplication.currentActivity.runOnUiThread(() -> {
                         MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
                         MainActivity.matchFragment.hideProgressBar();
+
+                        // Todo: delete this line:
+                        // new KNN();
                     });
                 }
 

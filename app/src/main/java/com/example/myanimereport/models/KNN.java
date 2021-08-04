@@ -3,6 +3,8 @@ package com.example.myanimereport.models;
 import android.util.Log;
 import androidx.core.util.Pair;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,14 +25,19 @@ public class KNN {
      * ...   | ...               | ...               | ...               | ...               | ...
      */
 
+    long start;
+
     public KNN() {
         allGenres = new ArrayList<>();
         rawData = new HashMap<>();
+        start = System.currentTimeMillis();
         queryRawData();
     }
 
     /* Gets the raw data for user genre info from Parse. */
     public void queryRawData() {
+        System.out.println("querying raw data... " + (System.currentTimeMillis() - start));
+
         ParseQuery<UserGenre> query = ParseQuery.getQuery(UserGenre.class); // Specify type of data
         query.findInBackground((rows, e) -> { // Start async query
             // Check for errors
@@ -75,6 +82,8 @@ public class KNN {
 
     /* Builds the user features based on the raw data. */
     public void buildUserFeatures() {
+        System.out.println("building user features... " + (System.currentTimeMillis() - start));
+
         // Each row represents a user. Each genre has 2 columns, one for avgRating, one for count.
         userFeatures = new double[userIds.size()][allGenres.size() * 2];
 
@@ -105,6 +114,8 @@ public class KNN {
     /* Feature engineering:
      * Instead of comparing genre counts, convert them to ranks and compare the ranks. */
     public void convertCountsToRank() {
+        System.out.println("converting counts to rank... " + (System.currentTimeMillis() - start));
+
         for (int userIndex = 0; userIndex < userIds.size(); userIndex++) {
             // Store the count of each genre
             List<Double> counts = new ArrayList<>();
@@ -127,12 +138,20 @@ public class KNN {
 
     /* Prints the user features matrix. */
     public void printUserFeatures() {
+        System.out.println("printing user features... " + (System.currentTimeMillis() - start));
+
         for (double[] userFeature : userFeatures) {
             for (double item: userFeature) {
                 System.out.printf("%.2f", item);
             }
             System.out.println();
         }
+
+        System.out.println("getting neighbors... " + (System.currentTimeMillis() - start));
+        List<String> neighbors = kNearestNeighbors(ParseUser.getCurrentUser().getObjectId(), 3);
+        for (int i = 0; i < neighbors.size(); i++) System.out.println(neighbors.get(i));
+
+        System.out.println("done! " + (System.currentTimeMillis() - start));
     }
 
     /* Returns the average of a list. */
