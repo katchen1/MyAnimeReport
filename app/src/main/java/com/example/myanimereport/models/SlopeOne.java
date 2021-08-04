@@ -26,10 +26,14 @@ public class SlopeOne {
     private final List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
     private final List<Anime> shownAnimes;
     private final List<AnimePair> animePairs;
+    private final KNN knn;
+    private final Map<String, Map<Integer, Double>> nearestNeighborsData;
 
-    public SlopeOne(List<Anime> shownAnimes) {
+    public SlopeOne(List<Anime> shownAnimes, KNN knn) {
+        this.knn = knn;
         this.shownAnimes = shownAnimes;
         animePairs = new ArrayList<>();
+        nearestNeighborsData = new HashMap<>();
         MainActivity.matchFragment.showProgressBar();
         getInputData();
     }
@@ -44,7 +48,42 @@ public class SlopeOne {
                 return;
             }
             animePairs.addAll(pairs);
-            predict();
+            getNearestNeighborsData();
+        });
+    }
+
+    public void getNearestNeighborsData() {
+        long start = System.currentTimeMillis();
+        System.out.println("getting neighbors data... " + (System.currentTimeMillis() - start));
+        List<String> neighborIds = knn.kNearestNeighbors(ParseUser.getCurrentUser().getObjectId(), 3);
+        for (int i = 0; i < neighborIds.size(); i++) System.out.println(neighborIds.get(i));
+
+        ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
+        query.whereContainedIn("userId", neighborIds);
+        query.findInBackground((entries, e) -> { // Start async query for entries
+            // Check for errors
+            if (e != null) {
+                Log.e("SlopeOne", "Error when getting entries.", e);
+                return;
+            }
+
+            for (Entry entry: entries) {
+                String userId = entry.getUserId();
+                Integer mediaId = entry.getMediaId();
+                Double rating = entry.getRating();
+
+                Map<Integer, Double> userData = nearestNeighborsData.get(userId);
+                if (userData == null) {
+                    userData = new HashMap<>();
+                    userData.put(mediaId, rating);
+                    nearestNeighborsData.put(userId, userData);
+                } else {
+                    userData.put(mediaId, rating);
+                }
+
+                System.out.println("done! " + (System.currentTimeMillis() - start));
+                predict();
+            }
         });
     }
 
@@ -206,9 +245,6 @@ public class SlopeOne {
                     ParseApplication.currentActivity.runOnUiThread(() -> {
                         MainActivity.matchFragment.getAdapter().notifyDataSetChanged();
                         MainActivity.matchFragment.hideProgressBar();
-
-                        // Todo: delete this line
-                        new KNN();
                     });
                 }
 

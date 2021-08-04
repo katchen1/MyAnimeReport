@@ -135,24 +135,17 @@ public class KNN {
             }
         }
         printUserFeatures();
+        System.out.println("done setting up knn! " + (System.currentTimeMillis() - start));
     }
 
     /* Prints the user features matrix. */
     public void printUserFeatures() {
-        System.out.println("printing user features... " + (System.currentTimeMillis() - start));
-
         for (double[] userFeature : userFeatures) {
             for (double item: userFeature) {
                 System.out.printf("%.2f ", item);
             }
             System.out.println();
         }
-
-        System.out.println("getting neighbors... " + (System.currentTimeMillis() - start));
-        List<String> neighbors = kNearestNeighbors(ParseUser.getCurrentUser().getObjectId(), 3);
-        for (int i = 0; i < neighbors.size(); i++) System.out.println(neighbors.get(i));
-
-        System.out.println("done! " + (System.currentTimeMillis() - start));
     }
 
     /* Returns the average of a list. */
