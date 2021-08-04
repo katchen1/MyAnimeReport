@@ -84,7 +84,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) return;
-        if (slopeOne == null) slopeOne = new SlopeOne(animes, knn, 5);
+        if (slopeOne == null) slopeOne = new SlopeOne(animes, knn, 10);
     }
 
     /* Shows the progress bar. */
