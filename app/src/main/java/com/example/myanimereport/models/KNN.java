@@ -3,8 +3,6 @@ package com.example.myanimereport.models;
 import android.util.Log;
 import androidx.core.util.Pair;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +10,11 @@ import java.util.Map;
 
 public class KNN {
 
-    List<String> allGenres;
-    List<String> userIds;
-    Map<String, Map<String, List<Double>>> rawData; // From Parse
-    double[][] userFeatures; // Built from raw data
+    private final int K; // Number of neighbors
+    private final List<String> allGenres;
+    private final List<String> userIds;
+    private final Map<String, Map<String, List<Double>>> rawData; // From Parse
+    private double[][] userFeatures; // Built from raw data
 
     /** User Features
      *       | genre1 avg rating | genre1 count rank | genre2 avg rating | genre2 count rank | ...
@@ -25,20 +24,16 @@ public class KNN {
      * ...   | ...               | ...               | ...               | ...               | ...
      */
 
-    long start;
-
-    public KNN() {
+    public KNN(int K) {
+        this.K = K;
         allGenres = new ArrayList<>();
         userIds = new ArrayList<>();
         rawData = new HashMap<>();
-        start = System.currentTimeMillis();
         queryRawData();
     }
 
     /* Gets the raw data for user genre info from Parse. */
     public void queryRawData() {
-        System.out.println("querying raw data... " + (System.currentTimeMillis() - start));
-
         ParseQuery<UserGenre> query = ParseQuery.getQuery(UserGenre.class); // Specify type of data
         query.findInBackground((rows, e) -> { // Start async query
             // Check for errors
@@ -83,8 +78,6 @@ public class KNN {
 
     /* Builds the user features based on the raw data. */
     public void buildUserFeatures() {
-        System.out.println("building user features... " + (System.currentTimeMillis() - start));
-
         // Each row represents a user. Each genre has 2 columns, one for avgRating, one for count.
         userFeatures = new double[userIds.size()][allGenres.size() * 2];
 
@@ -115,8 +108,6 @@ public class KNN {
     /* Feature engineering:
      * Instead of comparing genre counts, convert them to ranks and compare the ranks. */
     public void convertCountsToRank() {
-        System.out.println("converting counts to rank... " + (System.currentTimeMillis() - start));
-
         for (int userIndex = 0; userIndex < userIds.size(); userIndex++) {
             // Store the count of each genre
             List<Double> counts = new ArrayList<>();
@@ -134,18 +125,6 @@ public class KNN {
                 userFeatures[userIndex][genreIndex * 2 + 1] = rank;
             }
         }
-        printUserFeatures();
-        System.out.println("done setting up knn! " + (System.currentTimeMillis() - start));
-    }
-
-    /* Prints the user features matrix. */
-    public void printUserFeatures() {
-        for (double[] userFeature : userFeatures) {
-            for (double item: userFeature) {
-                System.out.printf("%.2f ", item);
-            }
-            System.out.println();
-        }
     }
 
     /* Returns the average of a list. */
@@ -156,7 +135,7 @@ public class KNN {
     }
 
     /* Returns the K nearest neighbors of the passed in userId. */
-    public List<String> kNearestNeighbors(String userId, int K) {
+    public List<String> kNearestNeighbors(String userId) {
         List<String> output = new ArrayList<>();
         List<Pair<Integer, Double>> userDistancePairs = new ArrayList<>();
         int userIndex = userIds.indexOf(userId);

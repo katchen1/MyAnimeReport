@@ -56,7 +56,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         animes = new ArrayList<>();
-        knn = new KNN();
+        knn = new KNN(5);
 
         // Set the button listeners
         binding.btnAccept.setOnClickListener(this::accept);
@@ -84,7 +84,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) return;
-        if (slopeOne == null) slopeOne = new SlopeOne(animes, knn);
+        if (slopeOne == null) slopeOne = new SlopeOne(animes, knn, 5);
     }
 
     /* Shows the progress bar. */

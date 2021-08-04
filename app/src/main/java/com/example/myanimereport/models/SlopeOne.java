@@ -26,15 +26,18 @@ public class SlopeOne {
     private final List<Pair<Integer, Double>> predictedRatings = new ArrayList<>();
     private final List<Anime> shownAnimes;
     private final List<AnimePair> animePairs;
-    private final KNN knn;
-    private final Integer knnWeight = 5;
-    private final Map<String, Map<Integer, Double>> neighborsData;
+    private final KNN knn; // The KNN model
+    private final Integer knnWeight; // Determines how much neighbor ratings will impact slope one
+    private final Map<String, Map<Integer, Double>> neighborsData; // {userId: {mediaId: rating}}
 
-    public SlopeOne(List<Anime> shownAnimes, KNN knn) {
+    public SlopeOne(List<Anime> shownAnimes, KNN knn, int knnWeight) {
         this.knn = knn;
+        this.knnWeight = knnWeight;
         this.shownAnimes = shownAnimes;
         animePairs = new ArrayList<>();
         neighborsData = new HashMap<>();
+
+        // Start slope one calculations
         MainActivity.matchFragment.showProgressBar();
         getInputData();
     }
@@ -53,15 +56,14 @@ public class SlopeOne {
         });
     }
 
+    /* Gets the K nearest neighbors and the neighbors' ratings. */
     public void getNearestNeighborsData() {
-        long start = System.currentTimeMillis();
-        System.out.println("getting neighbors... " + (System.currentTimeMillis() - start));
-        List<String> neighborIds = knn.kNearestNeighbors(ParseUser.getCurrentUser().getObjectId(), 3);
-        for (int i = 0; i < neighborIds.size(); i++) System.out.println(neighborIds.get(i));
-        System.out.println("querying neighbors data... " + (System.currentTimeMillis() - start));
+        // Get neighbors
+        List<String> neighborIds = knn.kNearestNeighbors(ParseUser.getCurrentUser().getObjectId());
 
+        // Get neighbor ratings
         ParseQuery<Entry> query = ParseQuery.getQuery(Entry.class); // Specify type of data
-        query.whereContainedIn("userId", neighborIds);
+        query.whereContainedIn("userId", neighborIds); // Limit user to neighbors
         query.findInBackground((entries, e) -> { // Start async query for entries
             // Check for errors
             if (e != null) {
@@ -74,6 +76,7 @@ public class SlopeOne {
                 Integer mediaId = entry.getMediaId();
                 Double rating = entry.getRating();
 
+                // Store the neighbor anime ratings
                 Map<Integer, Double> userData = neighborsData.get(userId);
                 if (userData == null) {
                     userData = new HashMap<>();
@@ -83,8 +86,6 @@ public class SlopeOne {
                     userData.put(mediaId, rating);
                 }
             }
-
-            System.out.println("done! " + (System.currentTimeMillis() - start));
             predict();
         });
     }
@@ -141,16 +142,19 @@ public class SlopeOne {
     /* Increases weight of predicted ratings based on K nearest neighbors. */
     private void incorporateKNN(Integer toPredict, Integer basedOn, Entry entry,
                                 List<Pair<Double, Integer>> ratingWeightPairs) {
+        // For each neighbor
         for (String neighborId: neighborsData.keySet()) {
-            System.out.println("neighborId: " + neighborId);
             Map<Integer, Double> neighborData = neighborsData.get(neighborId);
             if (neighborData != null) {
                 Double toPredictRating = neighborData.get(toPredict);
                 Double basedOnRating = neighborData.get(basedOn);
+
+                // Predict the current user's rating based on neighbor's rating difference
                 if (toPredictRating != null && basedOnRating != null) {
                     Double diff = toPredictRating - basedOnRating;
                     Double predictedRating = entry.getRating() + diff;
-                    System.out.println(toPredict + " based on " + basedOn + ": " + predictedRating);
+
+                    // Give it a higher weight
                     ratingWeightPairs.add(new Pair<>(predictedRating, knnWeight));
                 }
             }
