@@ -12,6 +12,16 @@ public class KNN {
 
     List<String> allGenres;
     Map<String, Map<String, List<Double>>> rawData;
+    List<String> userIds;
+    double[][] userFeatures;
+
+    /** User Features
+     *       | genre1 avg rating | genre1 count rank | genre2 avg rating | genre2 count rank | ...
+     * ----- | ----------------- | ----------------- | ----------------- | ----------------- | ...
+     * user1 | 8.0               | 1                 | 5.5               | 2                 | ...
+     * user2 | 5.5               | 2                 | 3.0               | 4                 | ...
+     * ...   | ...               | ...               | ...               | ...               | ...
+     */
 
     public KNN() {
         allGenres = new ArrayList<>();
@@ -34,6 +44,7 @@ public class KNN {
                 Double rating = row.getRating();
 
                 if (!allGenres.contains(genre)) allGenres.add(genre);
+                if (!userIds.contains(userId)) userIds.add(userId);
 
                 Map<String, List<Double>> userData = rawData.get(userId);
                 if (userData == null) {
@@ -59,7 +70,40 @@ public class KNN {
     }
 
     public void buildUserFeatures() {
+        userFeatures = new double[userIds.size()][allGenres.size() * 2];
+        for (int userIndex = 0; userIndex < userIds.size(); userIndex++) {
+            for (int genreIndex = 0; genreIndex < allGenres.size(); genreIndex++) {
+                String userId = userIds.get(userIndex);
+                String genre = allGenres.get(genreIndex);
 
+                double avgRating = -1.0;
+                double count = 0.0;
+
+                Map<String, List<Double>> userData = rawData.get(userId);
+                if (userData != null) {
+                    List<Double> ratings = userData.get(genre);
+                    if (ratings != null) {
+                        avgRating = getAverage(ratings);
+                        count = ratings.size();
+                    }
+                }
+
+                userFeatures[userIndex][genreIndex * 2] = avgRating;
+                userFeatures[userIndex][genreIndex * 2 + 1] = count;
+            }
+        }
+
+        convertCountsToRank();
+    }
+
+    public void convertCountsToRank() {
+
+    }
+
+    public double getAverage(List<Double> list) {
+        double sum = 0.0;
+        for (Double d: list) sum += d;
+        return sum / list.size();
     }
 
     public List<ParseUser> kNearestNeighbors(ParseUser user) {
