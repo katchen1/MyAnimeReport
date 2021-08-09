@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            app:elevation="0dp"
             android:background="?android:attr/windowBackground"
             app:itemBackground="@color/dark_gray"
             app:itemIconTint="@color/nav_color_selector"
