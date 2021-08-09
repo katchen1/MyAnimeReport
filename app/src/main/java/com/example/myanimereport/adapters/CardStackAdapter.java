@@ -82,6 +82,8 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
             Double rating = anime.getAverageScore();
             if (rating == null || rating == -1.0) binding.llRating.setVisibility(View.GONE);
             else binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
+            if (anime.getSiteUrl() == null) binding.llLink.setVisibility(View.GONE);
+            else binding.tvLink.setText(anime.getSiteUrl());
 
             // Fill in genres chip group
             if (anime.getGenres() != null) {
