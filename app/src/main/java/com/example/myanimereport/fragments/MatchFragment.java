@@ -2,6 +2,7 @@ package com.example.myanimereport.fragments;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,11 @@ public class MatchFragment extends Fragment implements CardStackListener {
         layoutManager.setCanScrollVertical(false);
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
+
+        // Message when no more recs
+        String message = getString(R.string.no_recs) + "<br/>" + getString(R.string.come_back_later);
+        binding.tvMessage.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_COMPACT));
+        binding.tvMessage.setVisibility(View.INVISIBLE);
 
         // Colors used by card dragging animation
         colorTheme = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme));
@@ -199,6 +205,13 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.btnAccept.setBackgroundTintList(colorTheme);
     }
 
+    /* Displays message if reached the end of card stack. */
+    public void checkAtEnd() {
+        boolean atEnd = layoutManager.getTopPosition() == adapter.getItemCount();
+        if (atEnd) binding.tvMessage.setVisibility(View.VISIBLE);
+        else binding.tvMessage.setVisibility(View.INVISIBLE);
+    }
+
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
@@ -234,10 +247,13 @@ public class MatchFragment extends Fragment implements CardStackListener {
             rejection.setUser(ParseUser.getCurrentUser());
             rejection.saveInBackground();
         }
+        checkAtEnd();
     }
 
     @Override
-    public void onCardRewound() { }
+    public void onCardRewound() {
+        checkAtEnd();
+    }
 
     /* Resets button colors. */
     @Override

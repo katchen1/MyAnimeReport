@@ -85,6 +85,16 @@
         android:layout_below="@id/appBar"
         android:layout_above="@id/rlButtons"/>
 
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:layout_below="@id/appBar"
+        android:layout_above="@id/rlButtons"/>
+
     <RelativeLayout
         android:id="@+id/rlButtons"
         android:layout_width="match_parent"

@@ -80,4 +80,6 @@
     <string name="date_added">Date Added</string>
     <string name="newest">Newest</string>
     <string name="oldest">Oldest</string>
+    <string name="no_recs">No more recommendations.</string>
+    <string name="come_back_later">Come back later!</string>
 </resources>
