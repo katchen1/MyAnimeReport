@@ -142,6 +142,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
             entry = data.getParcelableExtra("entry");
             anime = Parcels.unwrap(data.getParcelableExtra("anime"));
             populateEntryView();
+            ParseApplication.entries.set(allPosition, entry);
         }
     }
 

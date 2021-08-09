@@ -325,7 +325,6 @@ public class HomeFragment extends Fragment {
                 // Entry updated
                 Entry entry = data.getParcelableExtra("entry");
                 entries.set(position, entry);
-                allEntries.set(allPosition, entry);
                 adapter.notifyItemChanged(position);
             } else {
                 // Entry deleted
