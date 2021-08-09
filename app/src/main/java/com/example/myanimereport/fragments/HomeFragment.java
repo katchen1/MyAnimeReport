@@ -3,6 +3,7 @@ package com.example.myanimereport.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -236,6 +237,7 @@ public class HomeFragment extends Fragment {
             CheckBox cb = new CheckBox(getContext());
             cb.setText(genre);
             cb.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            cb.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme)));
             if ((selectedGenres.isEmpty() && !entries.isEmpty()) || selectedGenres.contains(genre)) cb.setChecked(true);
             dialogBinding.linearLayoutGenres.addView(cb);
             cbs.add(cb);
