@@ -336,24 +336,29 @@ public class EntryActivity extends AppCompatActivity {
     /* Updates an existing entry with the newly filled information. */
     private void updateExistingEntry(Integer month, Integer year, Double rating, String note) {
         entry.setMediaId(mediaId);
-        entry.setAnime();
-        entry.setMonthWatched(month);
-        entry.setYearWatched(year);
-        entry.setRating(rating);
-        entry.setNote(note);
-        entry.saveInBackground(e -> {
-            if (e == null) {
-                // Pass back the entry so it can be redrawn in the entry details activity
-                Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.putExtra("entry", entry);
-                intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
-                setResult(RESULT_OK, intent);
-                finish();
-            } else {
-                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        Runnable callback = () -> {
+            entry.setMonthWatched(month);
+            entry.setYearWatched(year);
+            entry.setRating(rating);
+            entry.setNote(note);
+            entry.saveInBackground(e -> {
+                if (e == null) {
+                    // Pass back the entry so it can be redrawn in the entry details activity
+                    Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("entry", entry);
+                    intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
+                    setResult(RESULT_OK, intent);
+                    finish();
+                } else {
+                    Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        };
+
+
+        entry.setAnime(callback);
     }
 
     /* Returns to the home list and passes back the updated entry so it can be redrawn. */

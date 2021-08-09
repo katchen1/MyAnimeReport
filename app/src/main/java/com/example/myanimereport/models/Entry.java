@@ -64,6 +64,24 @@ public class Entry extends ParseObject {
         );
     }
 
+    public void setAnime(Runnable callback) {
+        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
+            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
+                @Override
+                public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
+                    anime = new Anime(response);
+                    callback.run();
+                    ParseApplication.genres.addAll(anime.getGenres());
+                }
+
+                @Override
+                public void onFailure(@NonNull ApolloException e) {
+                    Log.e("Apollo", e.getMessage());
+                }
+            }
+        );
+    }
+
     public static void setAnimes(List<Entry> entries) {
         List<Integer> ids = new ArrayList<>();
         for (Entry entry: entries) ids.add(entry.getMediaId());
