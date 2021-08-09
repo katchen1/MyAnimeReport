@@ -106,6 +106,12 @@ public class ReportFragment extends Fragment {
 
     /* Allows user to share their report. */
     private void shareOnClick(View view) {
+        // Hide all marker views
+        binding.chartActivity.highlightValues(null);
+        binding.chartGenre.highlightValues(null);
+        binding.chartGenrePref.highlightValues(null);
+        binding.chartGenreBreakdown.highlightValues(null);
+
         // Edge case: user has no entries
         if (entries.size() == 0) {
             Toast.makeText(getContext(), "No data to share.", Toast.LENGTH_SHORT).show();
