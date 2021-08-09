@@ -255,22 +255,24 @@ public class EntryActivity extends AppCompatActivity {
 
         // Save the entry
         entry = new Entry(mediaId, month, year, rating, note);
-        entry.setAnime();
-        entry.saveInBackground(e -> {
-            if (e == null) {
-                // Pass back the entry so it can be inserted in the recycler view
-                Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.putExtra("entry", entry);
-                intent.putExtra("position", position);
-                intent.putExtra("allPosition", allPosition);
-                updateKNNData(rating);
-                setResult(RESULT_OK, intent);
-                finish();
-            } else {
-                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        Runnable callback = () -> {
+            entry.saveInBackground(e -> {
+                if (e == null) {
+                    // Pass back the entry so it can be inserted in the recycler view
+                    Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("entry", entry);
+                    intent.putExtra("position", position);
+                    intent.putExtra("allPosition", allPosition);
+                    updateKNNData(rating);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                } else {
+                    Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        };
+        entry.setAnime(callback);
     }
 
     /* Updates Slope One intermediate data. */
