@@ -10,12 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myanimereport.activities.AnimeDetailsActivity;
 import com.example.myanimereport.activities.EntryActivity;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
@@ -68,7 +71,6 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
     /* When user swipes to delete, remove the item and show a message. */
     public void deleteItem(int position) {
         BacklogItem item = items.get(position);
-        item.deleteInBackground();
         items.remove(position);
         notifyItemRemoved(position);
 
@@ -76,7 +78,30 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         int allPosition = ParseApplication.backlogItems.indexOf(item);
         ParseApplication.backlogItems.remove(allPosition);
         fragment.checkItemsExist();
-        Toast.makeText(context, "Item deleted.", Toast.LENGTH_SHORT).show();
+
+        // Display undo snackbar
+        View view = MainActivity.backlogFragment.getView();
+        if (view != null) {
+            Snackbar snack = Snackbar.make(view, "Item deleted.", Snackbar.LENGTH_LONG);
+            snack.setAction("Undo", v -> undoDelete(item, position, allPosition));
+            snack.setCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                        item.deleteInBackground();
+                    }
+                }
+            });
+            snack.show();
+        }
+    }
+
+    /* Undoes a delete by adding the item back to the list and recycler view. */
+    private void undoDelete(BacklogItem item, int position, int allPosition) {
+        items.add(position, item);
+        notifyItemInserted(position);
+        ParseApplication.backlogItems.add(allPosition, item);
+        fragment.checkItemsExist();
     }
 
     /* When user checks a backlog item off the list, add an entry for it. */

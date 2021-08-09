@@ -11,6 +11,7 @@ import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /* BacklogItem (Parse model). */
@@ -18,6 +19,7 @@ import java.util.List;
 public class BacklogItem extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_MEDIA_ID = "mediaId";
+    public static final String KEY_CREATED_AT = "createdAt";
 
     private Anime anime;
 
@@ -102,6 +104,10 @@ public class BacklogItem extends ParseObject {
 
     public void setMediaId(Integer mediaId) {
         put(KEY_MEDIA_ID, mediaId);
+    }
+
+    public void setCreatedAt(Date date) {
+        put(KEY_CREATED_AT, date);
     }
 
     public boolean equals(Object object) {
