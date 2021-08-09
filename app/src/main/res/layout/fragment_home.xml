@@ -86,6 +86,7 @@
             android:id="@+id/rvEntries"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:overScrollMode="never"
             android:background="@color/dark_gray" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

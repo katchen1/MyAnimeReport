@@ -68,6 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appBar"
+        android:overScrollMode="never"
         android:background="@color/dark_gray"
         android:paddingHorizontal="20dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
