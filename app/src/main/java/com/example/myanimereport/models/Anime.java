@@ -114,4 +114,9 @@ public class Anime {
     public void setPredictedRating(Double predictedRating) {
         this.predictedRating = predictedRating;
     }
+
+    public boolean equals(Object object) {
+        if (getClass() != object.getClass()) return false;
+        return ((Anime) object).getMediaId().equals(getMediaId());
+    }
 }

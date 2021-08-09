@@ -258,6 +258,7 @@ public class SlopeOne {
                         randomAnimes.add(new Anime(m.fragments().mediaFragment()));
                     }
                     randomAnimes.removeIf((a) -> ParseApplication.seenMediaIds.contains(a.getMediaId()));
+                    randomAnimes.removeIf(shownAnimes::contains);
                     Collections.shuffle(randomAnimes);
 
                     // Insert the random animes in the shown animes
