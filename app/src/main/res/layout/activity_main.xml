@@ -106,6 +106,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="editNameOnClick"
                     android:src="@drawable/ic_baseline_edit_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -133,6 +134,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="editPasswordOnClick"
                     android:src="@drawable/ic_baseline_edit_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -160,6 +162,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="logOutOnClick"
                     android:src="@drawable/ic_baseline_login_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -194,6 +197,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="btnLayoutOnClick"
                     android:src="@drawable/ic_baseline_list_alt_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -223,6 +227,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="btnSortOnClick"
                     android:src="@drawable/ic_baseline_arrow_downward_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -253,6 +258,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="btnSortCreationDateOnClick"
                     android:src="@drawable/ic_baseline_arrow_upward_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/light_gray" />
@@ -283,6 +289,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="btnSortWatchDateOnClick"
                     android:src="@drawable/ic_baseline_arrow_downward_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/light_gray" />
@@ -313,6 +320,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="btnSortTitleOnClick"
                     android:src="@drawable/ic_baseline_arrow_upward_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/light_gray" />
@@ -343,6 +351,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="btnSortRatingOnClick"
                     android:src="@drawable/ic_baseline_arrow_downward_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/light_gray" />
@@ -372,6 +381,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="filterOnClick"
                     android:src="@drawable/ic_baseline_filter_list_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -401,6 +411,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="deleteAllEntriesOnClick"
                     android:src="@drawable/ic_baseline_delete_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -430,6 +441,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="btnSortDateAddedOnClick"
                     android:src="@drawable/ic_baseline_arrow_downward_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
@@ -459,6 +471,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="5dp"
+                    android:onClick="deleteBacklogOnClick"
                     android:src="@drawable/ic_baseline_delete_24"
                     android:background="@color/dark_gray"
                     app:tint="@color/white" />
