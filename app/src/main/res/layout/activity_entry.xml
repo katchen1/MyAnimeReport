@@ -197,6 +197,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/etNote"
                 android:layout_marginVertical="10dp"
+                android:stateListAnimator="@null"
                 android:background="@drawable/theme_rounded_bg"
                 android:text="@string/save"
                 android:textSize="18sp"
