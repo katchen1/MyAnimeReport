@@ -111,13 +111,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@id/npYearWatched"
-                    android:layout_marginEnd="10dp" />
+                    android:layout_marginEnd="10dp"
+                    android:descendantFocusability="blocksDescendants" />
 
                 <NumberPicker
                     android:id="@+id/npYearWatched"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_alignParentEnd="true"
+                    android:descendantFocusability="blocksDescendants" />
             </RelativeLayout>
 
 
