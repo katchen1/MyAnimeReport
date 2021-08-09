@@ -92,14 +92,6 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         if (view != null) {
             Snackbar snack = Snackbar.make(view, "Item deleted.", Snackbar.LENGTH_SHORT);
             snack.setAction("Undo", v -> undoDelete(deletedItem, position, allPosition));
-//            snack.setCallback(new Snackbar.Callback() {
-//                @Override
-//                public void onDismissed(Snackbar snackbar, int event) {
-//                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-//
-//                    }
-//                }
-//            });
             snack.show();
         }
     }

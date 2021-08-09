@@ -119,6 +119,7 @@ public class BacklogFragment extends Fragment {
         binding.swipeContainer.setOnRefreshListener(() -> {
             items.clear();
             allItems.clear();
+            adapter.notifyDataSetChanged();
             queryBacklogItems();
         });
         binding.swipeContainer.setColorSchemeResources(R.color.theme);
@@ -188,7 +189,7 @@ public class BacklogFragment extends Fragment {
             BacklogItem.setAnimes(itemsFound);
             allItems.addAll(itemsFound);
             items.addAll(itemsFound);
-            adapter.notifyDataSetChanged();
+            adapter.notifyItemRangeInserted(0, itemsFound.size());
             binding.swipeContainer.setRefreshing(false);
             checkItemsExist();
         });
