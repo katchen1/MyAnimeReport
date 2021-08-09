@@ -34,6 +34,7 @@ import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MatchFragment extends Fragment implements CardStackListener {
@@ -229,6 +230,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
             BacklogItem item = new BacklogItem();
             item.setMediaId(anime.getMediaId());
             item.setUser(ParseUser.getCurrentUser());
+            item.setCreationDate(new Date());
             item.setAnime(anime);
             item.saveInBackground(e -> {
                 if (e == null) {

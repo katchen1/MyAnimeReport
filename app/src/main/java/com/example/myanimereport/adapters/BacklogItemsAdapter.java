@@ -18,6 +18,7 @@ import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.snackbar.Snackbar;
+import com.parse.ParseUser;
 
 import org.parceler.Parcels;
 import java.util.List;
@@ -71,6 +72,13 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
     /* When user swipes to delete, remove the item and show a message. */
     public void deleteItem(int position) {
         BacklogItem item = items.get(position);
+
+        BacklogItem deletedItem = new BacklogItem();
+        deletedItem.setUser(ParseUser.getCurrentUser());
+        deletedItem.setMediaId(item.getMediaId());
+        deletedItem.setCreationDate(item.getCreatedAt());
+
+        item.deleteInBackground();
         items.remove(position);
         notifyItemRemoved(position);
 
@@ -82,22 +90,23 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         // Display undo snackbar
         View view = MainActivity.backlogFragment.getView();
         if (view != null) {
-            Snackbar snack = Snackbar.make(view, "Item deleted.", Snackbar.LENGTH_LONG);
-            snack.setAction("Undo", v -> undoDelete(item, position, allPosition));
-            snack.setCallback(new Snackbar.Callback() {
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                        item.deleteInBackground();
-                    }
-                }
-            });
+            Snackbar snack = Snackbar.make(view, "Item deleted.", Snackbar.LENGTH_SHORT);
+            snack.setAction("Undo", v -> undoDelete(deletedItem, position, allPosition));
+//            snack.setCallback(new Snackbar.Callback() {
+//                @Override
+//                public void onDismissed(Snackbar snackbar, int event) {
+//                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+//
+//                    }
+//                }
+//            });
             snack.show();
         }
     }
 
     /* Undoes a delete by adding the item back to the list and recycler view. */
     private void undoDelete(BacklogItem item, int position, int allPosition) {
+        item.saveInBackground();
         items.add(position, item);
         notifyItemInserted(position);
         ParseApplication.backlogItems.add(allPosition, item);

@@ -114,6 +114,14 @@ public class BacklogFragment extends Fragment {
         DividerItemDecoration divider = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
         binding.rvBacklogItems.addItemDecoration(divider);
+
+        // Pull to refresh
+        binding.swipeContainer.setOnRefreshListener(() -> {
+            items.clear();
+            allItems.clear();
+            queryBacklogItems();
+        });
+        binding.swipeContainer.setColorSchemeResources(R.color.theme);
         queryBacklogItems();
     }
 
@@ -168,7 +176,7 @@ public class BacklogFragment extends Fragment {
     public void queryBacklogItems() {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
-        query.addDescendingOrder("createdAt"); // Order by creation date
+        query.addDescendingOrder("creationDate"); // Order by creation date
         query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
             // Check for errors
             if (e != null) {
@@ -181,6 +189,7 @@ public class BacklogFragment extends Fragment {
             allItems.addAll(itemsFound);
             items.addAll(itemsFound);
             adapter.notifyDataSetChanged();
+            binding.swipeContainer.setRefreshing(false);
             checkItemsExist();
         });
     }

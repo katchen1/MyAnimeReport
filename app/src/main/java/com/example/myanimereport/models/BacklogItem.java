@@ -19,7 +19,7 @@ import java.util.List;
 public class BacklogItem extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_MEDIA_ID = "mediaId";
-    public static final String KEY_CREATED_AT = "createdAt";
+    public static final String KEY_CREATION_DATE = "creationDate";
 
     private Anime anime;
 
@@ -106,8 +106,12 @@ public class BacklogItem extends ParseObject {
         put(KEY_MEDIA_ID, mediaId);
     }
 
-    public void setCreatedAt(Date date) {
-        put(KEY_CREATED_AT, date);
+    public Date getCreationDate() {
+        return getDate(KEY_CREATION_DATE);
+    }
+
+    public void setCreationDate(Date date) {
+        put(KEY_CREATION_DATE, date);
     }
 
     public boolean equals(Object object) {
