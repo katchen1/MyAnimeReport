@@ -160,7 +160,7 @@ public class SlopeOne {
             }
         }
     }
-
+  
     /* Removes animes that user has rejected over 3 times within the past week. */
     public void removeRejections() {
         // Get the date from a week ago
