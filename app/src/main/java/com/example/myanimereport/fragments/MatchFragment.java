@@ -175,9 +175,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
             if (rejectionsFound.size() > 0) {
                 Rejection r = rejectionsFound.get(0);
                 r.deleteInBackground();
-
-                // Todo: remove this line
-                Toast.makeText(getContext(), "Un-rejected anime.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -226,9 +223,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
                     boolean descending = MainActivity.backlogFragment.getDescending();
                     if (descending) ParseApplication.backlogItems.add(0, item);
                     else ParseApplication.backlogItems.add(item);
-
-                    // Todo: remove this line
-                    Toast.makeText(getContext(), "Added to backlog.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -239,9 +233,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
             rejection.setMediaId(anime.getMediaId());
             rejection.setUser(ParseUser.getCurrentUser());
             rejection.saveInBackground();
-
-            // Todo: remove this line
-            Toast.makeText(getContext(), "Predicted rating: " + anime.getPredictedRating(), Toast.LENGTH_SHORT).show();
         }
     }
 

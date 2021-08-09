@@ -12,7 +12,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
 import com.example.myanimereport.databinding.ForgotPasswordBinding;
@@ -73,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         ForgotPasswordBinding dialogBinding = ForgotPasswordBinding.inflate(getLayoutInflater());
         new MaterialAlertDialogBuilder(this)
             .setView(dialogBinding.getRoot())
-            .setTitle("Forgot Password?")
+            .setTitle("Forgot password?")
             .setPositiveButton("Send", (dialog, which) -> {
                 String email = dialogBinding.etEmail.getText().toString();
                 sendPasswordResetEmail(email);

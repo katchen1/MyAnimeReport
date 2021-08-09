@@ -7,7 +7,6 @@ import android.text.Html;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityAnimeDetailsBinding;

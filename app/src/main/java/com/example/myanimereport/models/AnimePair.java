@@ -2,7 +2,6 @@ package com.example.myanimereport.models;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
 
 /* PairCount (Parse model). For storing intermediate data for Slope One. */
 @ParseClassName("AnimePair")

@@ -2,7 +2,6 @@ package com.example.myanimereport.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

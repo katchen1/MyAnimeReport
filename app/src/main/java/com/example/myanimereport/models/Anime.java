@@ -1,12 +1,10 @@
 package com.example.myanimereport.models;
 
 import android.graphics.Color;
-
 import com.apollographql.apollo.api.Response;
 import com.example.MediaDetailsByIdQuery;
 import com.example.fragment.MediaFragment;
 import org.parceler.Parcel;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,9 +106,5 @@ public class Anime {
 
     public void setPredictedRating(Double predictedRating) {
         this.predictedRating = predictedRating;
-    }
-
-    public Double getPredictedRating() {
-        return predictedRating;
     }
 }
