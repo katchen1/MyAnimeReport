@@ -3,6 +3,10 @@ plugins {
     id("com.apollographql.apollo").version("2.5.9")
 }
 
+def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -13,6 +17,11 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+
+        // API keys
+        buildConfigField("String", "PARSE_APPLICATION_ID", localProperties['PARSE_APPLICATION_ID'])
+        buildConfigField("String", "PARSE_CLIENT_KEY", localProperties['PARSE_CLIENT_KEY'])
+        buildConfigField("String", "PARSE_SERVER", localProperties['PARSE_SERVER'])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

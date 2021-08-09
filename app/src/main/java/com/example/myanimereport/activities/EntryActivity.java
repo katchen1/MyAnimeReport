@@ -27,7 +27,9 @@ import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.AnimePair;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.models.UserGenre;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import org.parceler.Parcels;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -262,6 +264,7 @@ public class EntryActivity extends AppCompatActivity {
                 intent.putExtra("entry", entry);
                 intent.putExtra("position", position);
                 intent.putExtra("allPosition", allPosition);
+                updateKNNData(rating);
                 setResult(RESULT_OK, intent);
                 finish();
             } else {
@@ -314,6 +317,19 @@ public class EntryActivity extends AppCompatActivity {
                     pair.saveInBackground();
                 }
             });
+        }
+    }
+
+    /* Stores data used for calculating nearest neighbors in Parse. */
+    public void updateKNNData(Double rating) {
+        if (entry.getAnime() == null) return;
+        for (String genre: entry.getAnime().getGenres()) {
+            UserGenre userGenre = new UserGenre();
+            userGenre.setUser(ParseUser.getCurrentUser());
+            userGenre.setGenre(genre);
+            userGenre.setMediaId(mediaId);
+            userGenre.setRating(rating);
+            userGenre.saveInBackground();
         }
     }
 

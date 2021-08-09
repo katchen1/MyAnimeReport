@@ -20,6 +20,7 @@ import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentMatchBinding;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
+import com.example.myanimereport.models.KNN;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.models.Rejection;
 import com.example.myanimereport.models.SlopeOne;
@@ -41,6 +42,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     private CardStackLayoutManager layoutManager;
     private CardStackAdapter adapter;
     private SlopeOne slopeOne;
+    private KNN knn;
     private ColorStateList colorTheme, colorRipple;
 
     @Override
@@ -54,6 +56,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         animes = new ArrayList<>();
+        knn = new KNN(5);
 
         // Set the button listeners
         binding.btnAccept.setOnClickListener(this::accept);
@@ -81,7 +84,7 @@ public class MatchFragment extends Fragment implements CardStackListener {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) return;
-        if (slopeOne == null) slopeOne = new SlopeOne(animes);
+        if (slopeOne == null) slopeOne = new SlopeOne(animes, knn, 10);
     }
 
     /* Shows the progress bar. */

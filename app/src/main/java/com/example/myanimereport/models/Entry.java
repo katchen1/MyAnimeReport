@@ -25,6 +25,7 @@ public class Entry extends ParseObject {
     public static final String KEY_YEAR_WATCHED = "yearWatched";
     public static final String KEY_RATING = "rating";
     public static final String KEY_NOTE = "note";
+    public static final String KEY_USER_ID = "userId";
 
     private Anime anime;
 
@@ -34,6 +35,7 @@ public class Entry extends ParseObject {
     /* Alternative constructor. */
     public Entry(Integer mediaId, Integer monthWatched, Integer yearWatched, Double rating, String note) {
         setUser(ParseUser.getCurrentUser());
+        setUserId(ParseUser.getCurrentUser().getObjectId());
         setMediaId(mediaId);
         setMonthWatched(monthWatched);
         setYearWatched(yearWatched);
@@ -113,6 +115,14 @@ public class Entry extends ParseObject {
 
     public void setUser(ParseUser user) {
         put(KEY_USER, user);
+    }
+
+    public String getUserId() {
+        return getString(KEY_USER_ID);
+    }
+
+    public void setUserId(String userId) {
+        put(KEY_USER_ID, userId);
     }
 
     public Integer getMediaId() {
