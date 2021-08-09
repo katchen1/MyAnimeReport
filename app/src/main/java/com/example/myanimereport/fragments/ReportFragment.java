@@ -126,7 +126,7 @@ public class ReportFragment extends Fragment {
     /* Returns a screenshot bitmap of a view. */
     private Bitmap getScreenshot() {
         int width = binding.scrollView.getChildAt(0).getWidth() * 2;
-        int height = binding.llLeft.getHeight() + 230;
+        int height = binding.llLeft.getHeight() + 250;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.dark_gray));
