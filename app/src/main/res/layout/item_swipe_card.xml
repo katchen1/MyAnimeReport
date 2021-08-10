@@ -188,7 +188,7 @@
                     android:layout_below="@id/tvDescription"
                     android:layout_gravity="center_vertical"
                     android:layout_marginHorizontal="10dp"
-                    android:layout_marginVertical="5dp"
+                    android:layout_marginVertical="10dp"
                     android:orientation="horizontal">
 
                     <ImageView
