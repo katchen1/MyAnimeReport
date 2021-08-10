@@ -324,9 +324,7 @@ public class HomeFragment extends Fragment {
     /* Inserts an entry at the very front of the list and resets all filters. */
     public void insertEntryAtFront(Entry entry) {
         ParseApplication.entries.add(0, entry);
-        entries.clear();
-        entries.addAll(ParseApplication.entries);
-        selectedGenres.clear();
+        entries.add(0, entry);
         adapter.notifyItemInserted(0);
         binding.rvEntries.smoothScrollToPosition(0);
         checkEntriesExist();
@@ -349,6 +347,7 @@ public class HomeFragment extends Fragment {
                 // Entry updated
                 Entry entry = data.getParcelableExtra("entry");
                 entries.set(position, entry);
+                allEntries.set(allPosition, entry);
                 adapter.notifyItemChanged(position);
             } else {
                 // Entry deleted

@@ -77,20 +77,6 @@ public class EntryActivity extends AppCompatActivity {
         // Set up number pickers for month and year
         setUpNumberPickers();
 
-        // Add text changed listener to the title search bar
-        binding.etTitle.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                handleTextChange();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) { }
-        });
-
         // Change status bar color
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -106,9 +92,10 @@ public class EntryActivity extends AppCompatActivity {
             // Creating a new entry from a backlog anime
             if (getIntent().hasExtra("anime")) {
                 Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
-                if (anime == null) return;
-                if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
-                if (anime.getMediaId() != null) mediaId = anime.getMediaId();
+                if (anime != null) {
+                    if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
+                    if (anime.getMediaId() != null) mediaId = anime.getMediaId();
+                }
                 position = getIntent().getIntExtra("position", -1);
                 allPosition = getIntent().getIntExtra("allPosition", -1);
             }
@@ -122,13 +109,28 @@ public class EntryActivity extends AppCompatActivity {
 
             // Populate the views
             Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
-            if (anime == null) return;
-            if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
-            if (entry.getMonthWatched() != null) binding.npMonthWatched.setValue(entry.getMonthWatched());
-            if (entry.getYearWatched() != null) binding.npYearWatched.setValue(entry.getYearWatched());
-            if (entry.getRating() != null) binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
-            if (entry.getNote() != null) binding.etNote.setText(entry.getNote());
+            if (anime != null) {
+                if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
+                if (entry.getMonthWatched() != null) binding.npMonthWatched.setValue(entry.getMonthWatched());
+                if (entry.getYearWatched() != null) binding.npYearWatched.setValue(entry.getYearWatched());
+                if (entry.getRating() != null) binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+                if (entry.getNote() != null) binding.etNote.setText(entry.getNote());
+            }
         }
+
+        // Add text changed listener to the title search bar
+        binding.etTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                handleTextChange();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
     }
 
     /* When user clicks outside of the edit texts, hide the soft keyboard. */
@@ -151,6 +153,7 @@ public class EntryActivity extends AppCompatActivity {
             if (anime.getTitleEnglish().equals(search)) {
                 binding.etTitle.setTextColor(ContextCompat.getColor(this, R.color.white));
                 mediaId = anime.getMediaId();
+                hideTitleSuggestion();
                 return;
             }
         }

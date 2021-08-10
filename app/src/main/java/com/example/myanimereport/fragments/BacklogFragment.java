@@ -119,24 +119,6 @@ public class BacklogFragment extends Fragment {
         queryBacklogItems(true);
     }
 
-    /* Resets the RV whenever the tab is clicked. */
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) return;
-        items.clear();
-        items.addAll(allItems);
-        adapter.notifyDataSetChanged();
-        checkItemsExist();
-        clearSearch();
-    }
-
-    /* Clears the search view. */
-    public void clearSearch() {
-        binding.searchView.setQuery("", false);
-        binding.searchView.clearFocus();
-    }
-
     /* Hides the soft keyboard. */
     public void hideSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) binding.rvBacklogItems.getContext()
@@ -250,10 +232,15 @@ public class BacklogFragment extends Fragment {
     /* Flips the sort order. */
     public void flipOrder() {
         oldest = !oldest;
-        int sign = oldest? -1: 1;
+        int sign = oldest? 1: -1;
         items.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
         allItems.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
         adapter.notifyDataSetChanged();
+    }
+
+    /* Gets the items in the RV. */
+    public List<BacklogItem> getItems() {
+        return items;
     }
 
     /* Gets the sort order. */
