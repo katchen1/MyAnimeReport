@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myanimereport.activities.AnimeDetailsActivity;
@@ -19,7 +18,6 @@ import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseUser;
-
 import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
@@ -73,11 +71,13 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
     public void deleteItem(int position) {
         BacklogItem item = items.get(position);
 
+        // Remember deleted item to allow undo
         BacklogItem deletedItem = new BacklogItem();
         deletedItem.setUser(ParseUser.getCurrentUser());
         deletedItem.setMediaId(item.getMediaId());
         deletedItem.setCreationDate(item.getCreatedAt());
 
+        // Delete the item
         item.deleteInBackground();
         items.remove(position);
         notifyItemRemoved(position);
@@ -109,7 +109,6 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
     public void addItemAsEntry(int position) {
         BacklogItem item = items.get(position);
         int allPosition = ParseApplication.backlogItems.indexOf(item);
-        System.out.println("allPosition: " + allPosition);
         Intent intent = new Intent(context, EntryActivity.class);
         intent.putExtra("anime", Parcels.wrap(item.getAnime()));
         intent.putExtra("position", position);

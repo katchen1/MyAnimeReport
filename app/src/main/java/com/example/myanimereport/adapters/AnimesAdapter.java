@@ -70,7 +70,7 @@ public class AnimesAdapter extends RecyclerView.Adapter<AnimesAdapter.ViewHolder
         @Override
         public void onClick(View v) {
             Anime anime = animes.get(getAdapterPosition());
-            etTitle.setText(anime.getTitleEnglish());
+            if (anime != null && anime.getTitleEnglish() != null) etTitle.setText(anime.getTitleEnglish());
             etTitle.setSelection(etTitle.getText().length());
             activity.hideTitleSuggestion();
             activity.hideFocus(etTitle);

@@ -1,26 +1,25 @@
 package com.example.myanimereport.activities;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivityLoginBinding;
 import com.example.myanimereport.databinding.ForgotPasswordBinding;
+import com.example.myanimereport.utils.CustomAlertDialog;
+import com.example.myanimereport.utils.Utils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseUser;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -53,22 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /* Shows or hides the password. */
     public void togglePasswordVisibility(View view) {
-        // Get current visibility
-        PasswordTransformationMethod ptm = PasswordTransformationMethod.getInstance();
-        HideReturnsTransformationMethod hrtm = HideReturnsTransformationMethod.getInstance();
-        boolean invisible = binding.etPassword.getTransformationMethod() == ptm;
-
-        // Show or hide based on current visibility
-        if (invisible) {
-            binding.btnVisibility.setImageResource(R.drawable.ic_baseline_visibility_24);
-            binding.etPassword.setTransformationMethod(hrtm);
-        } else {
-            binding.btnVisibility.setImageResource(R.drawable.ic_baseline_visibility_off_24);
-            binding.etPassword.setTransformationMethod(ptm);
-        }
-
-        // Move cursor to end of text
-        binding.etPassword.setSelection(binding.etPassword.getText().length());
+        Utils.togglePasswordVisibility(binding.etPassword, binding.btnVisibility);
     }
 
     /* Allows the user to send themselves a password reset email. */
@@ -83,24 +67,29 @@ public class LoginActivity extends AppCompatActivity {
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
-
         alert.show();
-        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
-        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(getColor(R.color.white));
-        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(getColor(R.color.theme));
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* Sends a password reset email to the specified email address. */
     private void sendPasswordResetEmail(String email) {
         ParseUser.requestPasswordResetInBackground(email, e -> {
-            if (e == null) {
+            if (!isEmailValid(email)) {
+                Toast.makeText(this, "Invalid email format.", Toast.LENGTH_SHORT).show();
+            } else if (e == null) {
                 Toast.makeText(this, "Password reset email sent.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /* Checks is an email address is valid. */
+    public static boolean isEmailValid(String email) {
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     /* Logs in with the provided username and password. */
@@ -121,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /* Navigates the the sign up activity. */
     public void signUpOnClick(View view) {
         Intent i = new Intent(LoginActivity.this, SignupActivity.class);
         startActivity(i);

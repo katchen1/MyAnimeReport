@@ -2,7 +2,6 @@ package com.example.myanimereport.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -11,10 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.annotation.NonNull;
@@ -34,6 +31,7 @@ import com.example.myanimereport.databinding.FragmentHomeBinding;
 import com.example.myanimereport.databinding.GenreFilterBinding;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.utils.CustomAlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -276,13 +274,8 @@ public class HomeFragment extends Fragment {
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
-
         alert.show();
-        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
-        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.theme));
+        CustomAlertDialog.style(alert, requireContext());
     }
 
     /* Creates an entry and adds it to the beginning of the list. */

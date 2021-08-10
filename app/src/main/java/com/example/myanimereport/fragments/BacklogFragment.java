@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -22,24 +20,17 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.MediaPageByTitleQuery;
 import com.example.myanimereport.R;
-import com.example.myanimereport.activities.EntryActivity;
 import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.adapters.BacklogItemsAdapter;
 import com.example.myanimereport.databinding.ActivityMainBinding;
 import com.example.myanimereport.databinding.FragmentBacklogBinding;
-import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.SwipeToDeleteCallback;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.parceler.Parcels;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -67,18 +58,19 @@ public class BacklogFragment extends Fragment {
         // Button listeners
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
-        // Set up adapter and layout of recycler view
+        // Initialize class variables
         allItems = ParseApplication.backlogItems;
         items = new ArrayList<>();
         descending = true;
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         adapter = new BacklogItemsAdapter(this, items);
+
+        // Set up adapter and layout of recycler view
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         binding.rvBacklogItems.setLayoutManager(layoutManager);
         binding.rvBacklogItems.setAdapter(adapter);
 
         // Swipe to delete
-        ItemTouchHelper itemTouchHelper = new
-                ItemTouchHelper(new SwipeToDeleteCallback(adapter));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter));
         itemTouchHelper.attachToRecyclerView(binding.rvBacklogItems);
 
         // Search view
@@ -126,10 +118,12 @@ public class BacklogFragment extends Fragment {
 
         // Pull to refresh
         binding.swipeContainer.setOnRefreshListener(() -> {
-            queryBacklogItems(false);
+            allItems.clear();
+            items.clear();
+            queryBacklogItems();
         });
         binding.swipeContainer.setColorSchemeResources(R.color.theme);
-        queryBacklogItems(true);
+        queryBacklogItems();
     }
 
     /* Resets the RV whenever the tab is clicked. */
@@ -180,13 +174,7 @@ public class BacklogFragment extends Fragment {
     }
 
     /* Queries all backlog items. */
-    public void queryBacklogItems(boolean firstQuery) {
-        if (!firstQuery) {
-            allItems.clear();
-            items.clear();
-            adapter.notifyDataSetChanged();
-        }
-
+    public void queryBacklogItems() {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
         query.addDescendingOrder("creationDate"); // Order by creation date
@@ -196,9 +184,6 @@ public class BacklogFragment extends Fragment {
                 Log.e(TAG, "Error when getting backlog items.", e);
                 return;
             }
-
-            System.out.println(itemsFound.size() + " items found.");
-            for (BacklogItem i: itemsFound) System.out.println(i.getMediaId());
 
             // Add items to the recycler view and notify its adapter of new data
             Runnable callback = () -> {
@@ -210,7 +195,6 @@ public class BacklogFragment extends Fragment {
                     checkItemsExist();
                 });
             };
-
             BacklogItem.setAnimes(itemsFound, callback);
         });
     }
@@ -259,8 +243,8 @@ public class BacklogFragment extends Fragment {
     public void flipOrder() {
         descending = !descending;
         int sign = descending? -1: 1;
-        items.sort((i1, i2) -> sign * i1.getCreatedAt().compareTo(i2.getCreatedAt()));
-        allItems.sort((i1, i2) -> sign * i1.getCreatedAt().compareTo(i2.getCreatedAt()));
+        items.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
+        allItems.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
         adapter.notifyDataSetChanged();
     }
 

@@ -5,13 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.R;
@@ -21,6 +19,7 @@ import com.example.myanimereport.models.Entry;
 import java.text.DateFormatSymbols;
 import java.util.Locale;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.utils.CustomAlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.parceler.Parcels;
 
@@ -80,9 +79,9 @@ public class EntryDetailsActivity extends AppCompatActivity {
         }
 
         // Data related to the anime
-        Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
-        binding.tvTitle.setText(anime.getTitleEnglish());
-        binding.cvEntry.setStrokeColor(anime.getColor());
+        if (anime.getCoverImage() != null) Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
+        if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
+        if (anime.getColor() != null) binding.cvEntry.setStrokeColor(anime.getColor());
 
         // View-only mode
         if (!editable) {
@@ -132,13 +131,8 @@ public class EntryDetailsActivity extends AppCompatActivity {
             }))
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
-
         alert.show();
-        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
-        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(getColor(R.color.white));
-        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(getColor(R.color.theme));
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* After returning from a entry edit activity, update the entry. */

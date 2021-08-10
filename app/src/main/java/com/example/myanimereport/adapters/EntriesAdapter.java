@@ -32,7 +32,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     private final String TAG = "EntriesAdapter";
     private final Fragment fragment;
     private final Context context;
-    private List<Entry> entries;
+    private final List<Entry> entries;
     private final boolean editable;
     private boolean gridView;
 
@@ -125,15 +125,19 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         /* Binds the entry's anime-relevant data to the view's components. */
         public void loadAnimeData(Anime anime) {
             if (gridView) {
-                binding.ivImageTop.setVisibility(View.VISIBLE);
-                binding.ivImageStart.setVisibility(View.GONE);
-                Glide.with(context).load(anime.getBannerImage()).placeholder(R.drawable.placeholder).into(binding.ivImageTop);
+                if (anime.getBannerImage() != null) {
+                    binding.ivImageTop.setVisibility(View.VISIBLE);
+                    binding.ivImageStart.setVisibility(View.GONE);
+                    Glide.with(context).load(anime.getBannerImage()).placeholder(R.drawable.placeholder).into(binding.ivImageTop);
+                }
             } else {
-                binding.ivImageTop.setVisibility(View.GONE);
-                binding.ivImageStart.setVisibility(View.VISIBLE);
-                Glide.with(context).load(anime.getCoverImage()).placeholder(R.drawable.placeholder).into(binding.ivImageStart);
+                if (anime.getCoverImage() != null) {
+                    binding.ivImageTop.setVisibility(View.GONE);
+                    binding.ivImageStart.setVisibility(View.VISIBLE);
+                    Glide.with(context).load(anime.getCoverImage()).placeholder(R.drawable.placeholder).into(binding.ivImageStart);
+                }
             }
-            binding.tvTitle.setText(anime.getTitleEnglish());
+            if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
         }
 
         /* When the entry card is clicked, expand it to show its full information. */

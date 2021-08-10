@@ -1,17 +1,13 @@
 package com.example.myanimereport.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.example.myanimereport.R;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -28,6 +24,7 @@ import com.example.myanimereport.fragments.ReportFragment;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.utils.CustomAlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseUser;
 
@@ -120,10 +117,9 @@ public class MainActivity extends AppCompatActivity {
 
     /* Shows or hides buttons related to the user's account. */
     public void accountOnClick(View view) {
+        // Make account options visible unless already visible
         int targetVisibility = View.VISIBLE;
         int targetBtnResource = R.drawable.ic_baseline_keyboard_arrow_up_24;
-
-        /* If it's already showing, hide it. */
         if (binding.btnEditName.getVisibility() == View.VISIBLE) {
             targetVisibility = View.GONE;
             targetBtnResource = R.drawable.ic_baseline_keyboard_arrow_down_24;
@@ -266,13 +262,8 @@ public class MainActivity extends AppCompatActivity {
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
-
         alert.show();
-        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
-        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(getColor(R.color.white));
-        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(getColor(R.color.theme));
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* Allows the user to edit their password. */
@@ -306,11 +297,7 @@ public class MainActivity extends AppCompatActivity {
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
         alert.show();
-        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
-        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(getColor(R.color.white));
-        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(getColor(R.color.theme));
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* Deletes all entries of the current user. */
@@ -332,13 +319,8 @@ public class MainActivity extends AppCompatActivity {
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
-
         alert.show();
-        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
-        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(getColor(R.color.white));
-        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(getColor(R.color.theme));
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* Deletes all backlog items of the current user. */
@@ -363,12 +345,7 @@ public class MainActivity extends AppCompatActivity {
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
-
         alert.show();
-        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
-        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(getColor(R.color.white));
-        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(getColor(R.color.theme));
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 }

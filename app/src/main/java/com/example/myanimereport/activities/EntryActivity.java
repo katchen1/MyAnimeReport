@@ -77,6 +77,25 @@ public class EntryActivity extends AppCompatActivity {
         // Set up number pickers for month and year
         setUpNumberPickers();
 
+        // Add text changed listener to the title search bar
+        binding.etTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                handleTextChange();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        // Change status bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
+
         // Determine if creating or editing
         if (!getIntent().hasExtra("entry")) {
             // Creating a new entry, mediaId has not been found
@@ -87,8 +106,9 @@ public class EntryActivity extends AppCompatActivity {
             // Creating a new entry from a backlog anime
             if (getIntent().hasExtra("anime")) {
                 Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
-                binding.etTitle.setText(anime.getTitleEnglish());
-                mediaId = anime.getMediaId();
+                if (anime == null) return;
+                if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
+                if (anime.getMediaId() != null) mediaId = anime.getMediaId();
                 position = getIntent().getIntExtra("position", -1);
                 allPosition = getIntent().getIntExtra("allPosition", -1);
             }
@@ -109,26 +129,6 @@ public class EntryActivity extends AppCompatActivity {
             if (entry.getRating() != null) binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
             if (entry.getNote() != null) binding.etNote.setText(entry.getNote());
         }
-
-
-        // Add text changed listener to the title search bar
-        binding.etTitle.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                handleTextChange();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) { }
-        });
-
-        // Change status bar color
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
     }
 
     /* When user clicks outside of the edit texts, hide the soft keyboard. */
@@ -253,7 +253,7 @@ public class EntryActivity extends AppCompatActivity {
     public void createNewEntry(Integer month, Integer year, Double rating, String note) {
         updateSlopeOneIntermediateData(rating);
 
-        // Save the entry
+        // Save the entry after setting its anime
         entry = new Entry(mediaId, month, year, rating, note);
         Runnable callback = () -> {
             entry.saveInBackground(e -> {
@@ -338,12 +338,13 @@ public class EntryActivity extends AppCompatActivity {
     /* Updates an existing entry with the newly filled information. */
     private void updateExistingEntry(Integer month, Integer year, Double rating, String note) {
         entry.setMediaId(mediaId);
+        entry.setMonthWatched(month);
+        entry.setYearWatched(year);
+        entry.setRating(rating);
+        entry.setNote(note);
 
+        // Save entry after setting anime
         Runnable callback = () -> {
-            entry.setMonthWatched(month);
-            entry.setYearWatched(year);
-            entry.setRating(rating);
-            entry.setNote(note);
             entry.saveInBackground(e -> {
                 if (e == null) {
                     // Pass back the entry so it can be redrawn in the entry details activity
@@ -358,8 +359,6 @@ public class EntryActivity extends AppCompatActivity {
                 }
             });
         };
-
-
         entry.setAnime(callback);
     }
 
