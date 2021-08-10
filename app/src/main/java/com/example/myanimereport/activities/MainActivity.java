@@ -1,13 +1,18 @@
 package com.example.myanimereport.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.example.myanimereport.R;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -250,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
     public void editNameOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
         EditNameBinding dialogBinding = EditNameBinding.inflate(getLayoutInflater());
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setView(dialogBinding.getRoot())
             .setPositiveButton("Save", (dialog, which) -> {
                 // Update the user's name
@@ -260,14 +265,21 @@ public class MainActivity extends AppCompatActivity {
                 binding.tvName.setText(dialogBinding.etName.getText().toString());
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .show();
+            .create();
+
+        alert.show();
+        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
+        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nButton.setTextColor(getColor(R.color.white));
+        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+        pButton.setTextColor(getColor(R.color.theme));
     }
 
     /* Allows the user to edit their password. */
     public void editPasswordOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
         EditPasswordBinding dialogBinding = EditPasswordBinding.inflate(getLayoutInflater());
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setView(dialogBinding.getRoot())
             .setPositiveButton("Save", (dialog, which) -> {
                 String oldPassword = dialogBinding.etOldPassword.getText().toString();
@@ -292,14 +304,19 @@ public class MainActivity extends AppCompatActivity {
                 });
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .create()
-            .show();
+            .create();
+        alert.show();
+        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
+        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nButton.setTextColor(getColor(R.color.white));
+        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+        pButton.setTextColor(getColor(R.color.theme));
     }
 
     /* Deletes all entries of the current user. */
     public void deleteAllEntriesOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setTitle("Delete All Entries")
             .setMessage("Are you sure?")
             .setPositiveButton("Delete All", (dialog, which) -> {
@@ -314,14 +331,20 @@ public class MainActivity extends AppCompatActivity {
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .create()
-            .show();
+            .create();
+
+        alert.show();
+        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
+        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nButton.setTextColor(getColor(R.color.white));
+        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+        pButton.setTextColor(getColor(R.color.theme));
     }
 
     /* Deletes all backlog items of the current user. */
     public void deleteBacklogOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setTitle("Clear To-Watch List")
             .setMessage("Are you sure?")
             .setPositiveButton("Clear", (dialog, which) -> {
@@ -339,6 +362,13 @@ public class MainActivity extends AppCompatActivity {
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .create().show();
+            .create();
+
+        alert.show();
+        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
+        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nButton.setTextColor(getColor(R.color.white));
+        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+        pButton.setTextColor(getColor(R.color.theme));
     }
 }

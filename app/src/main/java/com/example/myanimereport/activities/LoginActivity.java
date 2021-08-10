@@ -1,6 +1,7 @@
 package com.example.myanimereport.activities;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
@@ -9,7 +10,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.example.myanimereport.R;
@@ -70,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     /* Allows the user to send themselves a password reset email. */
     private void forgotPasswordOnClick(View view) {
         ForgotPasswordBinding dialogBinding = ForgotPasswordBinding.inflate(getLayoutInflater());
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setView(dialogBinding.getRoot())
             .setTitle("Forgot password?")
             .setPositiveButton("Send", (dialog, which) -> {
@@ -78,7 +82,14 @@ public class LoginActivity extends AppCompatActivity {
                 sendPasswordResetEmail(email);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .show();
+            .create();
+
+        alert.show();
+        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
+        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nButton.setTextColor(getColor(R.color.white));
+        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+        pButton.setTextColor(getColor(R.color.theme));
     }
 
     /* Sends a password reset email to the specified email address. */

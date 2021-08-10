@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.myanimereport.R;
@@ -112,7 +114,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
     /* Prompts a confirm dialog and deletes the entry. */
     public void btnDeleteOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
-        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setTitle("Delete Entry")
             .setMessage("Are you sure?")
             .setPositiveButton("Delete", (dialog, which) -> entry.deleteInBackground(e -> {
@@ -131,7 +133,12 @@ public class EntryDetailsActivity extends AppCompatActivity {
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
 
-        alertDialog.show();
+        alert.show();
+        alert.getWindow().setBackgroundDrawableResource(R.drawable.gray_rounded_bg_dark);
+        Button nButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+        nButton.setTextColor(getColor(R.color.white));
+        Button pButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+        pButton.setTextColor(getColor(R.color.theme));
     }
 
     /* After returning from a entry edit activity, update the entry. */
