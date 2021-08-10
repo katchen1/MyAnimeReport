@@ -1,6 +1,5 @@
 package com.example.myanimereport.models;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import com.apollographql.apollo.ApolloCall;
@@ -48,7 +47,6 @@ public class SlopeOne {
         query.findInBackground((pairs, e) -> {
             // Check for errors
             if (e != null) {
-                Log.e("SlopeOne", "Error when getting anime pairs.", e);
                 return;
             }
             animePairs.addAll(pairs);
@@ -67,7 +65,6 @@ public class SlopeOne {
         query.findInBackground((entries, e) -> { // Start async query for entries
             // Check for errors
             if (e != null) {
-                Log.e("SlopeOne", "Error when getting entries.", e);
                 return;
             }
 
@@ -175,7 +172,6 @@ public class SlopeOne {
         query.findInBackground((rejectionsFound, e) -> { // Start async query for rejections
             // Check for errors
             if (e != null) {
-                Log.e("SlopeOne", "Error when getting rejections. " + e.getMessage(), e);
                 return;
             }
 
@@ -232,9 +228,7 @@ public class SlopeOne {
                 }
 
                 @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e("Apollo", e.getMessage() + e.getCause());
-                }
+                public void onFailure(@NonNull ApolloException e) { }
             }
         );
     }
@@ -282,9 +276,7 @@ public class SlopeOne {
                 }
 
                 @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e("Apollo", e.getMessage() + e.getCause());
-                }
+                public void onFailure(@NonNull ApolloException e) { }
             }
         );
     }

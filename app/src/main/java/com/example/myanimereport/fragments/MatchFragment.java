@@ -3,7 +3,6 @@ package com.example.myanimereport.fragments;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -174,7 +173,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
         query.findInBackground((rejectionsFound, e) -> { // Start async query for rejections
             // Check for errors
             if (e != null) {
-                Log.e("MatchFragment", "Error when getting rejections.", e);
                 return;
             }
 

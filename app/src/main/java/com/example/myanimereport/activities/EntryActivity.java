@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -298,7 +297,6 @@ public class EntryActivity extends AppCompatActivity {
             query.findInBackground((pairs, e) -> {
                 // Check for errors
                 if (e != null) {
-                    Log.e("EntryActivity", "Error when getting anime pairs.", e);
                     return;
                 }
 

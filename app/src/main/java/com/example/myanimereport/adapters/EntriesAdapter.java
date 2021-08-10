@@ -3,7 +3,6 @@ package com.example.myanimereport.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,9 +109,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
                     }
 
                     @Override
-                    public void onFailure(@NonNull ApolloException e) {
-                        Log.e(TAG, e.getMessage());
-                    }
+                    public void onFailure(@NonNull ApolloException e) { }
                 }
             );
         }

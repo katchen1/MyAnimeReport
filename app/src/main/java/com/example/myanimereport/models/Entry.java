@@ -1,6 +1,5 @@
 package com.example.myanimereport.models;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
@@ -52,9 +51,7 @@ public class Entry extends ParseObject {
                 }
 
                 @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e("Apollo", e.getMessage());
-                }
+                public void onFailure(@NonNull ApolloException e) { }
             }
         );
     }
@@ -95,9 +92,7 @@ public class Entry extends ParseObject {
                 }
 
                 @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e("Apollo", e.getMessage() + e.getCause());
-                }
+                public void onFailure(@NonNull ApolloException e) { }
             }
         );
     }

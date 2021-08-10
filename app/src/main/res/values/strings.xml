@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyAnimeReport</string>
+    <string name="app_name">AnimeReport</string>
     <string name="title_home">Watched</string>
     <string name="title_report">Report</string>
     <string name="title_match">Match</string>

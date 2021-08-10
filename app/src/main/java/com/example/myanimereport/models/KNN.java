@@ -1,6 +1,5 @@
 package com.example.myanimereport.models;
 
-import android.util.Log;
 import androidx.core.util.Pair;
 import com.parse.ParseQuery;
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ public class KNN {
         query.findInBackground((rows, e) -> { // Start async query
             // Check for errors
             if (e != null) {
-                Log.e("KNN", "Error when getting entries.", e);
                 return;
             }
 
