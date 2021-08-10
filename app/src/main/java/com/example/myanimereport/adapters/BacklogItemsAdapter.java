@@ -2,6 +2,7 @@ package com.example.myanimereport.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseUser;
 import org.parceler.Parcels;
@@ -91,6 +93,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         View view = MainActivity.backlogFragment.getView();
         if (view != null) {
             Snackbar snack = Snackbar.make(view, "Item deleted.", Snackbar.LENGTH_SHORT);
+            snack.setActionTextColor(context.getColor(R.color.theme));
             snack.setAction("Undo", v -> undoDelete(deletedItem, position, allPosition));
             snack.show();
         }
