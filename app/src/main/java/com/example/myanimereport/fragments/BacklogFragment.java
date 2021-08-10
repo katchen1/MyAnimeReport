@@ -42,7 +42,7 @@ public class BacklogFragment extends Fragment {
     private List<BacklogItem> allItems;
     private List<BacklogItem> items;
     private BacklogItemsAdapter adapter;
-    private boolean descending;
+    private boolean oldest;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -61,7 +61,7 @@ public class BacklogFragment extends Fragment {
         // Initialize class variables
         allItems = ParseApplication.backlogItems;
         items = new ArrayList<>();
-        descending = true;
+        oldest = false;
         adapter = new BacklogItemsAdapter(this, items);
 
         // Set up adapter and layout of recycler view
@@ -89,16 +89,9 @@ public class BacklogFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Update the backlog to show only matching titles
-                List<BacklogItem> updatedItems = new ArrayList<>();
-                for (BacklogItem item: allItems) {
-                    if (newText.isEmpty()) updatedItems.add(item);
-                    else if (item.getAnime() != null) {
-                        String title = item.getAnime().getTitleEnglish().toLowerCase();
-                        if (title.contains(newText.toLowerCase())) updatedItems.add(item);
-                    }
-                }
-                adapter.updateItems(updatedItems);
+                items.clear();
+                items.addAll(ParseApplication.backlogItems);
+                applySearchFilter();
                 return false;
             }
         });
@@ -120,10 +113,10 @@ public class BacklogFragment extends Fragment {
         binding.swipeContainer.setOnRefreshListener(() -> {
             allItems.clear();
             items.clear();
-            queryBacklogItems();
+            queryBacklogItems(false);
         });
         binding.swipeContainer.setColorSchemeResources(R.color.theme);
-        queryBacklogItems();
+        queryBacklogItems(true);
     }
 
     /* Resets the RV whenever the tab is clicked. */
@@ -174,7 +167,7 @@ public class BacklogFragment extends Fragment {
     }
 
     /* Queries all backlog items. */
-    public void queryBacklogItems() {
+    public void queryBacklogItems(boolean firstQuery) {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
         query.addDescendingOrder("creationDate"); // Order by creation date
@@ -190,13 +183,28 @@ public class BacklogFragment extends Fragment {
                 ParseApplication.currentActivity.runOnUiThread(() -> {
                     allItems.addAll(itemsFound);
                     items.addAll(itemsFound);
-                    adapter.notifyDataSetChanged();
-                    binding.swipeContainer.setRefreshing(false);
+                    oldest = !oldest;
+                    flipOrder();
                     checkItemsExist();
+                    if (!firstQuery) {
+                        applySearchFilter();
+                    }
+                    binding.swipeContainer.setRefreshing(false);
+                    adapter.notifyDataSetChanged();
                 });
             };
             BacklogItem.setAnimes(itemsFound, callback);
         });
+    }
+
+    private void applySearchFilter() {
+        items.removeIf(item -> {
+            if (item.getAnime() == null) return true;
+            String title = item.getAnime().getTitleEnglish();
+            String newText = binding.searchView.getQuery().toString();
+            return !title.toLowerCase().contains(newText.toLowerCase());
+        });
+        adapter.notifyDataSetChanged();
     }
 
     /* Shows a message if user has no backlog items. */
@@ -241,16 +249,16 @@ public class BacklogFragment extends Fragment {
 
     /* Flips the sort order. */
     public void flipOrder() {
-        descending = !descending;
-        int sign = descending? -1: 1;
+        oldest = !oldest;
+        int sign = oldest? -1: 1;
         items.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
         allItems.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
         adapter.notifyDataSetChanged();
     }
 
     /* Gets the sort order. */
-    public boolean getDescending() {
-        return descending;
+    public boolean sortedOldest() {
+        return oldest;
     }
 
     @Override

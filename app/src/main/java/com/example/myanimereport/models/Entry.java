@@ -82,13 +82,13 @@ public class Entry extends ParseObject {
         );
     }
 
-    public static void setAnimes(List<Entry> entries) {
+    public static void setAnimes(List<Entry> entries, Runnable callback) {
         List<Integer> ids = new ArrayList<>();
         for (Entry entry: entries) ids.add(entry.getMediaId());
-        queryAnimes(1, ids, entries);
+        queryAnimes(1, ids, entries, callback);
     }
 
-    public static void queryAnimes(int page, List<Integer> ids, List<Entry> entries) {
+    public static void queryAnimes(int page, List<Integer> ids, List<Entry> entries, Runnable callback) {
         ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(page, ids)).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
                 @Override
@@ -110,7 +110,9 @@ public class Entry extends ParseObject {
 
                     // Next page
                     if (response.getData().Page().pageInfo().hasNextPage()) {
-                        queryAnimes(page + 1, ids, entries);
+                        queryAnimes(page + 1, ids, entries, callback);
+                    } else {
+                        callback.run();
                     }
                 }
 

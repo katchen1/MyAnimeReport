@@ -33,6 +33,7 @@ import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
 import com.example.myanimereport.utils.CustomAlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.parse.Parse;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ public class HomeFragment extends Fragment {
         entries = new ArrayList<>();
         allGenres = ParseApplication.genres;
         selectedGenres = new HashSet<>();
+        selectedGenres.add("All");
         layoutManager = new GridLayoutManager(getContext(), 2);
         adapter = new EntriesAdapter(this, entries, true);
         binding.rvEntries.setLayoutManager(layoutManager);
@@ -101,17 +103,10 @@ public class HomeFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Update the entries list to show only matching titles
-                List<Entry> updatedEntries = new ArrayList<>();
-                for (Entry entry: allEntries) {
-                    if (newText.isEmpty()) updatedEntries.add(entry);
-                    else if (entry.getAnime() != null) {
-                        String title = entry.getAnime().getTitleEnglish().toLowerCase();
-                        if (title.contains(newText.toLowerCase())) updatedEntries.add(entry);
-                    }
-                }
-                adapter.updateEntries(updatedEntries);
-                selectedGenres.clear();
+                entries.clear();
+                entries.addAll(ParseApplication.entries);
+                applySearchFilter();
+                applyGenreFilter();
                 return false;
             }
         });
@@ -183,20 +178,24 @@ public class HomeFragment extends Fragment {
             }
 
             // Add entries to the recycler view and notify its adapter of new data
-            Entry.setAnimes(userEntries);
-            allEntries.addAll(userEntries);
-            entries.addAll(userEntries);
-            adapter.notifyDataSetChanged();
-            checkEntriesExist();
-            binding.swipeContainer.setRefreshing(false);
-            if (firstQuery) MainActivity.homeFragment.hideProgressBar();
+            Runnable callback = () -> {
+                ParseApplication.currentActivity.runOnUiThread(() -> {
+                    allEntries.addAll(userEntries);
+                    entries.addAll(userEntries);
+                    MainActivity.sortOrder = MainActivity.sortOrder.equals("Ascending") ? "Descending" : "Ascending";
+                    MainActivity.sort(MainActivity.sortedBy);
+                    checkEntriesExist();
+                    if (!firstQuery) {
+                        applySearchFilter();
+                        applyGenreFilter();
+                    }
+                    binding.swipeContainer.setRefreshing(false);
+                    adapter.notifyDataSetChanged();
+                    if (firstQuery) MainActivity.homeFragment.hideProgressBar();
+                });
+            };
+            Entry.setAnimes(userEntries, callback);
         });
-    }
-
-    /* Clears the search view. */
-    public void clearSearch() {
-        binding.searchView.setQuery("", false);
-        binding.searchView.clearFocus();
     }
 
     /* Shows the progress bar. */
@@ -228,19 +227,27 @@ public class HomeFragment extends Fragment {
 
     /* Filters by genre. */
     public void filterGenres () {
-        GenreFilterBinding dialogBinding = GenreFilterBinding.inflate(getLayoutInflater());
-        List<String> genres = new ArrayList<>(allGenres);
+        // Get all available genres
+        List<String> genres = new ArrayList<>();
+        for (Entry entry: allEntries) {
+            if (entry.getAnime() != null && entry.getAnime().getGenres() != null) {
+                for (String genre: entry.getAnime().getGenres()) {
+                    if (!genres.contains(genre)) genres.add(genre);
+                }
+            }
+        }
         genres.sort(String::compareTo);
         genres.add(0, "All");
 
         // Add a checkbox for each genre to the linear layout
+        GenreFilterBinding dialogBinding = GenreFilterBinding.inflate(getLayoutInflater());
         List<CheckBox> cbs = new ArrayList<>();
         for (String genre: genres) {
             CheckBox cb = new CheckBox(getContext());
             cb.setText(genre);
             cb.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-            cb.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme)));
-            if ((selectedGenres.isEmpty() && !entries.isEmpty()) || selectedGenres.contains(genre)) cb.setChecked(true);
+            cb.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white)));
+            if (selectedGenres.contains("All") || selectedGenres.contains(genre)) cb.setChecked(true);
             dialogBinding.linearLayoutGenres.addView(cb);
             cbs.add(cb);
         }
@@ -258,24 +265,35 @@ public class HomeFragment extends Fragment {
                 // Update selected genres
                 selectedGenres.clear();
                 for (CheckBox cb: cbs) if (cb.isChecked()) selectedGenres.add(cb.getText().toString());
-
-                // Show only entries containing at least one selected genre
                 entries.clear();
                 entries.addAll(ParseApplication.entries);
-                entries.removeIf(entry -> {
-                   if (entry.getAnime() == null) return true;
-                   return Collections.disjoint(entry.getAnime().getGenres(), selectedGenres);
-                });
-
-                // Update recycler view and close drawer
-                adapter.notifyDataSetChanged();
+                applySearchFilter();
+                applyGenreFilter();
                 MainActivity.binding.drawerLayout.closeDrawer(GravityCompat.START);
-                clearSearch();
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
         alert.show();
         CustomAlertDialog.style(alert, requireContext());
+    }
+
+    private void applySearchFilter() {
+        entries.removeIf(entry -> {
+            if (entry.getAnime() == null) return true;
+            String title = entry.getAnime().getTitleEnglish();
+            String newText = binding.searchView.getQuery().toString();
+            return !title.toLowerCase().contains(newText.toLowerCase());
+        });
+        adapter.notifyDataSetChanged();
+    }
+
+    private void applyGenreFilter() {
+        if (selectedGenres.contains("All")) return;
+        entries.removeIf(entry -> {
+            if (entry.getAnime() == null) return true;
+            return Collections.disjoint(entry.getAnime().getGenres(), selectedGenres);
+        });
+        adapter.notifyDataSetChanged();
     }
 
     /* Creates an entry and adds it to the beginning of the list. */

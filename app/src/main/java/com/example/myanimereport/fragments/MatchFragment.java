@@ -235,9 +235,9 @@ public class MatchFragment extends Fragment implements CardStackListener {
             item.saveInBackground(e -> {
                 if (e == null) {
                     // Add the item to the backlog and notify its adapter
-                    boolean descending = MainActivity.backlogFragment.getDescending();
-                    if (descending) ParseApplication.backlogItems.add(0, item);
-                    else ParseApplication.backlogItems.add(item);
+                    boolean sortedOldest = MainActivity.backlogFragment.sortedOldest();
+                    if (sortedOldest) ParseApplication.backlogItems.add(item);
+                    else ParseApplication.backlogItems.add(0, item);
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }

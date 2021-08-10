@@ -37,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
     public static BacklogFragment backlogFragment;
     public static  FragmentManager manager;
 
-    private String sortedBy = "Entry Creation Date Descending";
+    public static String sortedBy = "Entry Creation Date";
+    public static String sortOrder = "Descending";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Sets the visibility of the sort options. */
-    public void setSortVisibility(int visibility) {
+    public static void setSortVisibility(int visibility) {
         binding.btnSortCreationDate.setVisibility(visibility);
         binding.btnSortTitle.setVisibility(visibility);
         binding.btnSortRating.setVisibility(visibility);
@@ -163,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Restore default order for all sort options in the UI. */
-    public void restoreDefaultOrder() {
+    public static void restoreDefaultOrder() {
         binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
         binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
         binding.ivSortTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
@@ -172,10 +173,27 @@ public class MainActivity extends AppCompatActivity {
 
     /* Sorts the entries. sortBy is one of "Entry Creation Date", "Rating", Title", or "Watch Date",
      * and iv is the corresponding image button in the UI. */
-    public void sort(String sortBy, ImageButton ib) {
+    public static void sort(String sortBy) {
+        // Determine corresponding image button
+        ImageButton ib;
+        switch (sortBy) {
+            case "Watch Date":
+                ib = binding.ivSortWatchDate;
+                break;
+            case "Title":
+                ib = binding.ivSortTitle;
+                break;
+            case "Rating":
+                ib = binding.ivSortRating;
+                break;
+            default:
+                ib = binding.ivSortCreationDate;
+                break;
+        }
+
         // Determine the default/non-default orders and corresponding icons
         String defaultOrder = sortBy.equals("Title")? "Ascending": "Descending";
-        boolean inDefaultOrder = sortedBy.equals(sortBy + " " + defaultOrder);
+        boolean inDefaultOrder = sortedBy.equals(sortBy) && sortOrder.equals(defaultOrder);
         String nonDefaultOrder = defaultOrder.equals("Descending")? "Ascending": "Descending";
         int defaultIcon = defaultOrder.equals("Descending")?
                 R.drawable.ic_baseline_arrow_downward_24:
@@ -190,20 +208,25 @@ public class MainActivity extends AppCompatActivity {
         switch (sortBy) {
             case "Entry Creation Date":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
                 break;
             case "Rating":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e2.getRating().compareTo(e1.getRating()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
                 break;
             case "Title":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
                 break;
             case "Watch Date":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
                 break;
         }
 
         // Update UI
-        sortedBy = sortBy + " " + (inDefaultOrder? nonDefaultOrder: defaultOrder);
+        sortedBy = sortBy;
+        sortOrder = inDefaultOrder? nonDefaultOrder: defaultOrder;
         binding.ivSort.setImageResource(inDefaultOrder? nonDefaultIcon: defaultIcon);
         ib.setImageResource(inDefaultOrder? defaultIcon: nonDefaultIcon);
         binding.tvSort.setText(sortBy);
@@ -215,30 +238,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Sorts by creation date. */
-    public void btnSortCreationDateOnClick(View view) {
-        sort("Entry Creation Date", binding.ivSortCreationDate);
+    public static void btnSortCreationDateOnClick(View view) {
+        sort("Entry Creation Date");
     }
 
     /* Sorts by anime title. */
-    public void btnSortTitleOnClick(View view) {
-        sort("Title", binding.ivSortTitle);
+    public static void btnSortTitleOnClick(View view) {
+        sort("Title");
     }
 
     /* Sorts by rating. */
-    public void btnSortRatingOnClick(View view) {
-        sort("Rating", binding.ivSortRating);
+    public static void btnSortRatingOnClick(View view) {
+        sort("Rating");
     }
 
     /* Sorts by watch date. */
-    public void btnSortWatchDateOnClick(View view) {
-        sort("Watch Date", binding.ivSortWatchDate);
+    public static void btnSortWatchDateOnClick(View view) {
+        sort("Watch Date");
     }
 
     /* Sorts backlog items by date added. */
     public void btnSortDateAddedOnClick(View view) {
         backlogFragment.flipOrder();
-        if (backlogFragment.getDescending()) binding.tvSortDateAdded.setText(R.string.newest);
-        else binding.tvSortDateAdded.setText(R.string.oldest);
+        if (backlogFragment.sortedOldest()) binding.tvSortDateAdded.setText(R.string.oldest);
+        else binding.tvSortDateAdded.setText(R.string.newest);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
