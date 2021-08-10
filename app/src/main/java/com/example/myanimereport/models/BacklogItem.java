@@ -6,7 +6,6 @@ import com.apollographql.apollo.ApolloCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaDetailsByIdListQuery;
-import com.example.MediaDetailsByIdQuery;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -26,33 +25,14 @@ public class BacklogItem extends ParseObject {
     /* Default constructor required by Parse. */
     public BacklogItem() { }
 
-    /* Getters and setters. */
-    public Anime getAnime() {
-        return anime;
-    }
-
-    public void setAnime() {
-        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
-            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
-                @Override
-                public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
-                    anime = new Anime(response);
-                }
-
-                @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e("Apollo", e.getMessage());
-                }
-            }
-        );
-    }
-
+    /* Queries the animes of a list of backlog items. */
     public static void setAnimes(List<BacklogItem> items, Runnable callback) {
         List<Integer> ids = new ArrayList<>();
         for (BacklogItem item: items) ids.add(item.getMediaId());
         queryAnimes(1, ids, items, callback);
     }
 
+    /* Queries animes by a list of ids. */
     public static void queryAnimes(int page, List<Integer> ids, List<BacklogItem> items, Runnable callback) {
         ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(page, ids)).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
@@ -88,6 +68,11 @@ public class BacklogItem extends ParseObject {
         );
     }
 
+    /* Getters and setters. */
+    public Anime getAnime() {
+        return anime;
+    }
+
     public void setAnime(Anime anime) {
         this.anime = anime;
     }
@@ -116,6 +101,7 @@ public class BacklogItem extends ParseObject {
         put(KEY_CREATION_DATE, date);
     }
 
+    /* Two backlog items are the same if they refer to the same anime. */
     public boolean equals(Object object) {
         if (getClass() != object.getClass()) return false;
         return ((BacklogItem) object).getMediaId().equals(getMediaId());

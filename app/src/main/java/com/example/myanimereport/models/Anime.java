@@ -24,7 +24,6 @@ public class Anime {
     protected String color; // Primary color of the cover image
     protected Integer episodes; // Number of episodes
     protected String siteUrl; // Url to AniList site
-    protected  Double predictedRating = -1.0;
 
     /* Default constructor. */
     public Anime() {}
@@ -111,10 +110,7 @@ public class Anime {
         return siteUrl;
     }
 
-    public void setPredictedRating(Double predictedRating) {
-        this.predictedRating = predictedRating;
-    }
-
+    /* Two animes are the same if they have the same id. */
     public boolean equals(Object object) {
         if (getClass() != object.getClass()) return false;
         return ((Anime) object).getMediaId().equals(getMediaId());

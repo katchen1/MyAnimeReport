@@ -168,9 +168,7 @@ public class BacklogFragment extends Fragment {
                     oldest = !oldest;
                     flipOrder();
                     checkItemsExist();
-                    if (!firstQuery) {
-                        applySearchFilter();
-                    }
+                    if (!firstQuery) applySearchFilter();
                     binding.swipeContainer.setRefreshing(false);
                     adapter.notifyDataSetChanged();
                 });

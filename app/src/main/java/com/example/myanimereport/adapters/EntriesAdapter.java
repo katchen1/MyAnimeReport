@@ -65,14 +65,9 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         return entries.size();
     }
 
+    /* Sets grid view or list view. */
     public void setGridView(boolean gridView) {
         this.gridView = gridView;
-    }
-
-    public void updateEntries(List<Entry> updatedEntries){
-        entries.clear();
-        entries.addAll(updatedEntries);
-        notifyDataSetChanged();
     }
 
     /* Defines the view holder for a entry. */
@@ -145,10 +140,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         public void onClick(View v) {
             // Check if anime data has been set
             Entry entry = entries.get(getAdapterPosition());
-            if (entry.getAnime() == null) {
-                entry.setAnime();
-                return;
-            }
+            if (entry.getAnime() == null) return;
 
             // Navigate to the entry details activity
             Intent intent = new Intent(context, EntryDetailsActivity.class);

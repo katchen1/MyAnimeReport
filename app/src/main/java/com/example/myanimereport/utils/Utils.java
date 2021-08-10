@@ -4,10 +4,10 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
 import android.widget.ImageButton;
-
 import com.example.myanimereport.R;
 
 public class Utils {
+
     /* Shows or hides a password. */
     public static void togglePasswordVisibility(EditText et, ImageButton imgBtn) {
         // Get current visibility

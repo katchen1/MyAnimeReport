@@ -76,6 +76,7 @@ public class SignupActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
+        user.put("name", username);
 
         // Invoke signUpInBackground
         user.signUpInBackground(e -> {

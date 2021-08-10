@@ -50,7 +50,6 @@ public class ParseApplication extends Application {
         entries = new ArrayList<>();
         backlogItems = new ArrayList<>();
         seenMediaIds = new ArrayList<>();
-        genres = new HashSet<>();
         entryMediaIdAllUsers = new HashSet<>();
 
         // Register callback to keep the current activity updated

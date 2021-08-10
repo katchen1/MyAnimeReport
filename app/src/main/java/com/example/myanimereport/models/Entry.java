@@ -8,7 +8,6 @@ import com.apollographql.apollo.exception.ApolloException;
 import com.example.MediaDetailsByIdListQuery;
 import com.example.MediaDetailsByIdQuery;
 import com.parse.ParseClassName;
-import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import java.time.YearMonth;
@@ -42,28 +41,7 @@ public class Entry extends ParseObject {
         setNote(note);
     }
 
-    /* Getters and setters. */
-    public Anime getAnime() {
-        return anime;
-    }
-
-    public void setAnime() {
-        ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
-            new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
-                @Override
-                public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
-                    anime = new Anime(response);
-                    ParseApplication.genres.addAll(anime.getGenres());
-                }
-
-                @Override
-                public void onFailure(@NonNull ApolloException e) {
-                    Log.e("Apollo", e.getMessage());
-                }
-            }
-        );
-    }
-
+    /* Queries anime of an entry. */
     public void setAnime(Runnable callback) {
         ParseApplication.apolloClient.query(new MediaDetailsByIdQuery(getMediaId())).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdQuery.Data>() {
@@ -71,7 +49,6 @@ public class Entry extends ParseObject {
                 public void onResponse(@NonNull Response<MediaDetailsByIdQuery.Data> response) {
                     anime = new Anime(response);
                     callback.run();
-                    ParseApplication.genres.addAll(anime.getGenres());
                 }
 
                 @Override
@@ -82,12 +59,14 @@ public class Entry extends ParseObject {
         );
     }
 
+    /* Queries animes of a list of entries. */
     public static void setAnimes(List<Entry> entries, Runnable callback) {
         List<Integer> ids = new ArrayList<>();
         for (Entry entry: entries) ids.add(entry.getMediaId());
         queryAnimes(1, ids, entries, callback);
     }
 
+    /* Queries animes by a list of ids. */
     public static void queryAnimes(int page, List<Integer> ids, List<Entry> entries, Runnable callback) {
         ParseApplication.apolloClient.query(new MediaDetailsByIdListQuery(page, ids)).enqueue(
             new ApolloCall.Callback<MediaDetailsByIdListQuery.Data>() {
@@ -102,7 +81,6 @@ public class Entry extends ParseObject {
                     // Set animes for the page
                     for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
                         Anime anime = new Anime(m.fragments().mediaFragment());
-                        ParseApplication.genres.addAll(anime.getGenres());
                         ParseApplication.seenMediaIds.add(anime.getMediaId());
                         int index = ids.indexOf(anime.getMediaId());
                         entries.get(index).setAnime(anime);
@@ -122,6 +100,11 @@ public class Entry extends ParseObject {
                 }
             }
         );
+    }
+
+    /* Getters and setters. */
+    public Anime getAnime() {
+        return anime;
     }
 
     public void setAnime(Anime anime) {
@@ -188,6 +171,7 @@ public class Entry extends ParseObject {
         return YearMonth.of(getYearWatched(), getMonthWatched());
     }
 
+    /* Two entries are the same if they refer to the same anime. */
     public boolean equals(Object object) {
         if (getClass() != object.getClass()) return false;
         return ((Entry) object).getMediaId().equals(getMediaId());

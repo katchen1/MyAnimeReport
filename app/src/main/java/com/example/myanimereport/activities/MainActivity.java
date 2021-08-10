@@ -36,15 +36,18 @@ public class MainActivity extends AppCompatActivity {
     public static MatchFragment matchFragment;
     public static BacklogFragment backlogFragment;
     public static  FragmentManager manager;
-
-    public static String sortedBy = "Entry Creation Date";
-    public static String sortOrder = "Descending";
+    public static String sortedBy;
+    public static String sortOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Default sort order
+        sortedBy = "Entry Creation Date";
+        sortOrder = "Descending";
 
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
@@ -112,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
         ParseApplication.entries.clear();
         ParseApplication.backlogItems.clear();
         ParseApplication.seenMediaIds.clear();
-        ParseApplication.genres.clear();
         finish();
     }
 
@@ -332,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
             .setPositiveButton("Delete All", (dialog, which) -> {
                 // Delete all entries in Parse
                 for (Entry entry: ParseApplication.entries) entry.deleteInBackground();
+                homeFragment.getEntries().clear();
                 ParseApplication.entries.clear();
                 Toast.makeText(MainActivity.this, "Entries deleted.", Toast.LENGTH_SHORT).show();
 
@@ -361,6 +364,7 @@ public class MainActivity extends AppCompatActivity {
                 // Update UI
                 BacklogFragment backlogFragment = (BacklogFragment) manager.findFragmentByTag("backlog");
                 if (backlogFragment != null) {
+                    backlogFragment.getItems().clear();
                     backlogFragment.getAdapter().notifyDataSetChanged();
                     backlogFragment.checkItemsExist();
                 }

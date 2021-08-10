@@ -2,7 +2,6 @@ package com.example.myanimereport.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,10 +151,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         public void onClick(View v) {
             // Check if anime data has been set
             BacklogItem item = items.get(getAdapterPosition());
-            if (item.getAnime() == null) {
-                item.setAnime();
-                return;
-            }
+            if (item.getAnime() == null) return;
 
             // Navigate to the anime details activity
             Intent intent = new Intent(context, AnimeDetailsActivity.class);

@@ -219,7 +219,6 @@ public class SlopeOne {
                     // Current page
                     for (MediaDetailsByIdListQuery.Medium m: response.getData().Page().media()) {
                         Anime anime = new Anime(m.fragments().mediaFragment());
-                        anime.setPredictedRating(ratings.get(ids.indexOf(anime.getMediaId())));
                         shownAnimes.add(anime);
                     }
 
