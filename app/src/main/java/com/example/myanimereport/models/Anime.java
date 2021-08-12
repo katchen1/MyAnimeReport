@@ -23,7 +23,7 @@ public class Anime {
     protected List<String> genres; // List of genres of the media
     protected String color; // Primary color of the cover image
     protected Integer episodes; // Number of episodes
-    protected  Double predictedRating = -1.0;
+    protected String siteUrl; // Url to AniList site
 
     /* Default constructor. */
     public Anime() {}
@@ -45,6 +45,7 @@ public class Anime {
         this.genres = media.genres();
         this.color = Objects.requireNonNull(media.coverImage()).color();
         this.episodes = media.episodes();
+        this.siteUrl = media.siteUrl();
     }
 
     /* Alternative constructor (from MediaFragment). */
@@ -61,6 +62,7 @@ public class Anime {
         this.genres = media.genres();
         this.color = Objects.requireNonNull(media.coverImage()).color();
         this.episodes = media.episodes();
+        this.siteUrl = media.siteUrl();
     }
 
     /* Getters. */
@@ -104,7 +106,13 @@ public class Anime {
         return episodes;
     }
 
-    public void setPredictedRating(Double predictedRating) {
-        this.predictedRating = predictedRating;
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    /* Two animes are the same if they have the same id. */
+    public boolean equals(Object object) {
+        if (getClass() != object.getClass()) return false;
+        return ((Anime) object).getMediaId().equals(getMediaId());
     }
 }

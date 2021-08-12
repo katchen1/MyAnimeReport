@@ -5,17 +5,20 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myanimereport.activities.AnimeDetailsActivity;
 import com.example.myanimereport.activities.EntryActivity;
+import com.example.myanimereport.activities.MainActivity;
 import com.example.myanimereport.databinding.ItemBacklogBinding;
 import com.example.myanimereport.fragments.BacklogFragment;
 import com.example.myanimereport.fragments.HomeFragment;
 import com.example.myanimereport.models.Anime;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.R;
+import com.google.android.material.snackbar.Snackbar;
+import com.parse.ParseUser;
 import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
@@ -68,6 +71,14 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
     /* When user swipes to delete, remove the item and show a message. */
     public void deleteItem(int position) {
         BacklogItem item = items.get(position);
+
+        // Remember deleted item to allow undo
+        BacklogItem deletedItem = new BacklogItem();
+        deletedItem.setUser(ParseUser.getCurrentUser());
+        deletedItem.setMediaId(item.getMediaId());
+        deletedItem.setCreationDate(item.getCreatedAt());
+
+        // Delete the item
         item.deleteInBackground();
         items.remove(position);
         notifyItemRemoved(position);
@@ -76,14 +87,30 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         int allPosition = ParseApplication.backlogItems.indexOf(item);
         ParseApplication.backlogItems.remove(allPosition);
         fragment.checkItemsExist();
-        Toast.makeText(context, "Item deleted.", Toast.LENGTH_SHORT).show();
+
+        // Display undo snackbar
+        View view = MainActivity.backlogFragment.getView();
+        if (view != null) {
+            Snackbar snack = Snackbar.make(view, "Item deleted.", Snackbar.LENGTH_SHORT);
+            snack.setActionTextColor(context.getColor(R.color.theme));
+            snack.setAction("Undo", v -> undoDelete(deletedItem, position, allPosition));
+            snack.show();
+        }
+    }
+
+    /* Undoes a delete by adding the item back to the list and recycler view. */
+    private void undoDelete(BacklogItem item, int position, int allPosition) {
+        item.saveInBackground();
+        items.add(position, item);
+        notifyItemInserted(position);
+        ParseApplication.backlogItems.add(allPosition, item);
+        fragment.checkItemsExist();
     }
 
     /* When user checks a backlog item off the list, add an entry for it. */
     public void addItemAsEntry(int position) {
         BacklogItem item = items.get(position);
         int allPosition = ParseApplication.backlogItems.indexOf(item);
-        System.out.println("allPosition: " + allPosition);
         Intent intent = new Intent(context, EntryActivity.class);
         intent.putExtra("anime", Parcels.wrap(item.getAnime()));
         intent.putExtra("position", position);
@@ -124,10 +151,7 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         public void onClick(View v) {
             // Check if anime data has been set
             BacklogItem item = items.get(getAdapterPosition());
-            if (item.getAnime() == null) {
-                item.setAnime();
-                return;
-            }
+            if (item.getAnime() == null) return;
 
             // Navigate to the anime details activity
             Intent intent = new Intent(context, AnimeDetailsActivity.class);

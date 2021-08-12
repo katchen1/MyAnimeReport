@@ -51,6 +51,8 @@ public class AnimeDetailsActivity extends AppCompatActivity {
         Double rating = anime.getAverageScore();
         if (rating == null || rating == -1.0) binding.llRating.setVisibility(View.GONE);
         else binding.tvRating.setText(String.format(Locale.getDefault(), "%.1f", anime.getAverageScore()));
+        if (anime.getSiteUrl() == null) binding.llLink.setVisibility(View.GONE);
+        else binding.tvLink.setText(anime.getSiteUrl());
 
         // Scroll down a bit so that the poster doesn't take up the whole card view
         binding.nestedScrollView.post(() -> {

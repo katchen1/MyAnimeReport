@@ -5,17 +5,14 @@ import androidx.core.content.ContextCompat;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 import com.example.myanimereport.R;
 import com.example.myanimereport.databinding.ActivitySignupBinding;
+import com.example.myanimereport.utils.Utils;
 import com.parse.ParseUser;
 
 public class SignupActivity extends AppCompatActivity {
@@ -65,7 +62,7 @@ public class SignupActivity extends AppCompatActivity {
 
         // Check for empty inputs
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Field cannot be empty.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Fields cannot be empty.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -79,6 +76,7 @@ public class SignupActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
+        user.put("name", username);
 
         // Invoke signUpInBackground
         user.signUpInBackground(e -> {
@@ -112,31 +110,11 @@ public class SignupActivity extends AppCompatActivity {
 
     /* Shows or hides the password. */
     public void togglePasswordVisibility1(View view) {
-        togglePasswordVisibility(binding.etPassword, binding.btnVisibility1);
+        Utils.togglePasswordVisibility(binding.etPassword, binding.btnVisibility1);
     }
 
     /* Shows or hides the confirm password. */
     public void togglePasswordVisibility2(View view) {
-        togglePasswordVisibility(binding.etConfirmPassword, binding.btnVisibility2);
-    }
-
-    /* Shows or hides a password. */
-    public void togglePasswordVisibility(EditText et, ImageButton imgBtn) {
-        // Get current visibility
-        PasswordTransformationMethod ptm = PasswordTransformationMethod.getInstance();
-        HideReturnsTransformationMethod hrtm = HideReturnsTransformationMethod.getInstance();
-        boolean invisible = et.getTransformationMethod() == ptm;
-
-        // Show or hide based on current visibility
-        if (invisible) {
-            imgBtn.setImageResource(R.drawable.ic_baseline_visibility_24);
-            et.setTransformationMethod(hrtm);
-        } else {
-            imgBtn.setImageResource(R.drawable.ic_baseline_visibility_off_24);
-            et.setTransformationMethod(ptm);
-        }
-
-        // Move cursor to end of text
-        et.setSelection(et.getText().length());
+        Utils.togglePasswordVisibility(binding.etConfirmPassword, binding.btnVisibility2);
     }
 }

@@ -106,6 +106,12 @@ public class ReportFragment extends Fragment {
 
     /* Allows user to share their report. */
     private void shareOnClick(View view) {
+        // Hide all marker views
+        binding.chartActivity.highlightValues(null);
+        binding.chartGenre.highlightValues(null);
+        binding.chartGenrePref.highlightValues(null);
+        binding.chartGenreBreakdown.highlightValues(null);
+
         // Edge case: user has no entries
         if (entries.size() == 0) {
             Toast.makeText(getContext(), "No data to share.", Toast.LENGTH_SHORT).show();
@@ -120,7 +126,7 @@ public class ReportFragment extends Fragment {
     /* Returns a screenshot bitmap of a view. */
     private Bitmap getScreenshot() {
         int width = binding.scrollView.getChildAt(0).getWidth() * 2;
-        int height = binding.scrollView.getChildAt(0).getHeight() / 2 + 180;
+        int height = binding.llLeft.getHeight() + 250;
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(ContextCompat.getColor(requireContext(), R.color.dark_gray));

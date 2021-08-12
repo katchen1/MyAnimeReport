@@ -12,7 +12,6 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.example.myanimereport.R;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
-
 import java.util.Locale;
 import java.util.Set;
 

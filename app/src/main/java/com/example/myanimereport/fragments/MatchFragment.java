@@ -2,7 +2,7 @@ package com.example.myanimereport.fragments;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +33,7 @@ import com.yuyakaido.android.cardstackview.Duration;
 import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MatchFragment extends Fragment implements CardStackListener {
@@ -72,6 +73,11 @@ public class MatchFragment extends Fragment implements CardStackListener {
         layoutManager.setCanScrollVertical(false);
         binding.cardStack.setLayoutManager(layoutManager);
         binding.cardStack.setAdapter(adapter);
+
+        // Message when no more recs
+        String message = getString(R.string.no_recs) + "<br/>" + getString(R.string.come_back_later);
+        binding.tvMessage.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_COMPACT));
+        binding.tvMessage.setVisibility(View.INVISIBLE);
 
         // Colors used by card dragging animation
         colorTheme = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.theme));
@@ -167,7 +173,6 @@ public class MatchFragment extends Fragment implements CardStackListener {
         query.findInBackground((rejectionsFound, e) -> { // Start async query for rejections
             // Check for errors
             if (e != null) {
-                Log.e("MatchFragment", "Error when getting rejections.", e);
                 return;
             }
 
@@ -199,6 +204,13 @@ public class MatchFragment extends Fragment implements CardStackListener {
         binding.btnAccept.setBackgroundTintList(colorTheme);
     }
 
+    /* Displays message if reached the end of card stack. */
+    public void checkAtEnd() {
+        boolean atEnd = layoutManager.getTopPosition() == adapter.getItemCount();
+        if (atEnd) binding.tvMessage.setVisibility(View.VISIBLE);
+        else binding.tvMessage.setVisibility(View.INVISIBLE);
+    }
+
     /* If swipe right, adds the anime to the user's backlog and removes it from the stack. */
     @Override
     public void onCardSwiped(Direction direction) {
@@ -216,13 +228,24 @@ public class MatchFragment extends Fragment implements CardStackListener {
             BacklogItem item = new BacklogItem();
             item.setMediaId(anime.getMediaId());
             item.setUser(ParseUser.getCurrentUser());
+            item.setCreationDate(new Date());
             item.setAnime(anime);
             item.saveInBackground(e -> {
                 if (e == null) {
                     // Add the item to the backlog and notify its adapter
-                    boolean descending = MainActivity.backlogFragment.getDescending();
-                    if (descending) ParseApplication.backlogItems.add(0, item);
-                    else ParseApplication.backlogItems.add(item);
+                    boolean sortedOldest = MainActivity.backlogFragment.sortedOldest();
+                    List<BacklogItem> items = MainActivity.backlogFragment.getItems();
+                    if (sortedOldest) {
+                        ParseApplication.backlogItems.add(item);
+                        items.add(item);
+                        MainActivity.backlogFragment.getAdapter().notifyItemInserted(items.size() - 1);
+                    }
+                    else {
+                        ParseApplication.backlogItems.add(0, item);
+                        items.add(0, item);
+                        MainActivity.backlogFragment.getAdapter().notifyItemInserted(0);
+                    }
+                    MainActivity.backlogFragment.checkItemsExist();
                 } else {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -234,10 +257,13 @@ public class MatchFragment extends Fragment implements CardStackListener {
             rejection.setUser(ParseUser.getCurrentUser());
             rejection.saveInBackground();
         }
+        checkAtEnd();
     }
 
     @Override
-    public void onCardRewound() { }
+    public void onCardRewound() {
+        checkAtEnd();
+    }
 
     /* Resets button colors. */
     @Override

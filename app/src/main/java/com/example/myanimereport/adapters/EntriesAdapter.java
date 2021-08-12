@@ -3,7 +3,6 @@ package com.example.myanimereport.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
     private final String TAG = "EntriesAdapter";
     private final Fragment fragment;
     private final Context context;
-    private List<Entry> entries;
+    private final List<Entry> entries;
     private final boolean editable;
     private boolean gridView;
 
@@ -65,14 +64,9 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         return entries.size();
     }
 
+    /* Sets grid view or list view. */
     public void setGridView(boolean gridView) {
         this.gridView = gridView;
-    }
-
-    public void updateEntries(List<Entry> updatedEntries){
-        entries.clear();
-        entries.addAll(updatedEntries);
-        notifyDataSetChanged();
     }
 
     /* Defines the view holder for a entry. */
@@ -115,9 +109,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
                     }
 
                     @Override
-                    public void onFailure(@NonNull ApolloException e) {
-                        Log.e(TAG, e.getMessage());
-                    }
+                    public void onFailure(@NonNull ApolloException e) { }
                 }
             );
         }
@@ -125,15 +117,19 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         /* Binds the entry's anime-relevant data to the view's components. */
         public void loadAnimeData(Anime anime) {
             if (gridView) {
-                binding.ivImageTop.setVisibility(View.VISIBLE);
-                binding.ivImageStart.setVisibility(View.GONE);
-                Glide.with(context).load(anime.getBannerImage()).placeholder(R.drawable.placeholder).into(binding.ivImageTop);
+                if (anime.getBannerImage() != null) {
+                    binding.ivImageTop.setVisibility(View.VISIBLE);
+                    binding.ivImageStart.setVisibility(View.GONE);
+                    Glide.with(context).load(anime.getBannerImage()).placeholder(R.drawable.placeholder).into(binding.ivImageTop);
+                }
             } else {
-                binding.ivImageTop.setVisibility(View.GONE);
-                binding.ivImageStart.setVisibility(View.VISIBLE);
-                Glide.with(context).load(anime.getCoverImage()).placeholder(R.drawable.placeholder).into(binding.ivImageStart);
+                if (anime.getCoverImage() != null) {
+                    binding.ivImageTop.setVisibility(View.GONE);
+                    binding.ivImageStart.setVisibility(View.VISIBLE);
+                    Glide.with(context).load(anime.getCoverImage()).placeholder(R.drawable.placeholder).into(binding.ivImageStart);
+                }
             }
-            binding.tvTitle.setText(anime.getTitleEnglish());
+            if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
         }
 
         /* When the entry card is clicked, expand it to show its full information. */
@@ -141,10 +137,7 @@ public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHold
         public void onClick(View v) {
             // Check if anime data has been set
             Entry entry = entries.get(getAdapterPosition());
-            if (entry.getAnime() == null) {
-                entry.setAnime();
-                return;
-            }
+            if (entry.getAnime() == null) return;
 
             // Navigate to the entry details activity
             Intent intent = new Intent(context, EntryDetailsActivity.class);

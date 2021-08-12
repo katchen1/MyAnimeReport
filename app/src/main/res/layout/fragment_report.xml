@@ -242,7 +242,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="15dp"
-                        android:layout_marginVertical="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/activity"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -266,7 +267,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="15dp"
-                        android:layout_marginVertical="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/genre"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -286,10 +288,12 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvGenrePref"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="15dp"
-                        android:layout_marginVertical="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/genre_preference"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -316,10 +320,12 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvGenreBreakdown"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="15dp"
-                        android:layout_marginVertical="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/genre_breakdown_by_year"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -337,12 +343,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="15dp"
-                    android:layout_marginVertical="10dp"
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvTop5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
                         android:text="@string/top_5"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -351,7 +359,8 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvTop5"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:overScrollMode="never" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

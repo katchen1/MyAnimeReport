@@ -19,6 +19,7 @@ import com.example.myanimereport.models.Entry;
 import java.text.DateFormatSymbols;
 import java.util.Locale;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.utils.CustomAlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.parceler.Parcels;
 
@@ -78,9 +79,9 @@ public class EntryDetailsActivity extends AppCompatActivity {
         }
 
         // Data related to the anime
-        Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
-        binding.tvTitle.setText(anime.getTitleEnglish());
-        binding.cvEntry.setStrokeColor(anime.getColor());
+        if (anime.getCoverImage() != null) Glide.with(this).load(anime.getCoverImage()).into(binding.ivImage);
+        if (anime.getTitleEnglish() != null) binding.tvTitle.setText(anime.getTitleEnglish());
+        if (anime.getColor() != null) binding.cvEntry.setStrokeColor(anime.getColor());
 
         // View-only mode
         if (!editable) {
@@ -112,7 +113,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
     /* Prompts a confirm dialog and deletes the entry. */
     public void btnDeleteOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
-        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setTitle("Delete Entry")
             .setMessage("Are you sure?")
             .setPositiveButton("Delete", (dialog, which) -> entry.deleteInBackground(e -> {
@@ -130,8 +131,8 @@ public class EntryDetailsActivity extends AppCompatActivity {
             }))
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
             .create();
-
-        alertDialog.show();
+        alert.show();
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* After returning from a entry edit activity, update the entry. */
@@ -142,6 +143,7 @@ public class EntryDetailsActivity extends AppCompatActivity {
             entry = data.getParcelableExtra("entry");
             anime = Parcels.unwrap(data.getParcelableExtra("anime"));
             populateEntryView();
+            ParseApplication.entries.set(allPosition, entry);
         }
     }
 

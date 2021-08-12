@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ public class BacklogFragment extends Fragment {
     private List<BacklogItem> allItems;
     private List<BacklogItem> items;
     private BacklogItemsAdapter adapter;
-    private boolean descending;
+    private boolean oldest;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -58,18 +57,19 @@ public class BacklogFragment extends Fragment {
         // Button listeners
         binding.btnMenu.setOnClickListener(this::openNavDrawer);
 
-        // Set up adapter and layout of recycler view
+        // Initialize class variables
         allItems = ParseApplication.backlogItems;
         items = new ArrayList<>();
-        descending = true;
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
+        oldest = false;
         adapter = new BacklogItemsAdapter(this, items);
+
+        // Set up adapter and layout of recycler view
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         binding.rvBacklogItems.setLayoutManager(layoutManager);
         binding.rvBacklogItems.setAdapter(adapter);
 
         // Swipe to delete
-        ItemTouchHelper itemTouchHelper = new
-                ItemTouchHelper(new SwipeToDeleteCallback(adapter));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter));
         itemTouchHelper.attachToRecyclerView(binding.rvBacklogItems);
 
         // Search view
@@ -88,16 +88,9 @@ public class BacklogFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Update the backlog to show only matching titles
-                List<BacklogItem> updatedItems = new ArrayList<>();
-                for (BacklogItem item: allItems) {
-                    if (newText.isEmpty()) updatedItems.add(item);
-                    else if (item.getAnime() != null) {
-                        String title = item.getAnime().getTitleEnglish().toLowerCase();
-                        if (title.contains(newText.toLowerCase())) updatedItems.add(item);
-                    }
-                }
-                adapter.updateItems(updatedItems);
+                items.clear();
+                items.addAll(ParseApplication.backlogItems);
+                applySearchFilter();
                 return false;
             }
         });
@@ -114,25 +107,15 @@ public class BacklogFragment extends Fragment {
         DividerItemDecoration divider = new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL);
         divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(requireContext(), R.drawable.item_divider)));
         binding.rvBacklogItems.addItemDecoration(divider);
-        queryBacklogItems();
-    }
 
-    /* Resets the RV whenever the tab is clicked. */
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) return;
-        items.clear();
-        items.addAll(allItems);
-        adapter.notifyDataSetChanged();
-        checkItemsExist();
-        clearSearch();
-    }
-
-    /* Clears the search view. */
-    public void clearSearch() {
-        binding.searchView.setQuery("", false);
-        binding.searchView.clearFocus();
+        // Pull to refresh
+        binding.swipeContainer.setOnRefreshListener(() -> {
+            allItems.clear();
+            items.clear();
+            queryBacklogItems(false);
+        });
+        binding.swipeContainer.setColorSchemeResources(R.color.theme);
+        queryBacklogItems(true);
     }
 
     /* Hides the soft keyboard. */
@@ -165,24 +148,41 @@ public class BacklogFragment extends Fragment {
     }
 
     /* Queries all backlog items. */
-    public void queryBacklogItems() {
+    public void queryBacklogItems(boolean firstQuery) {
         ParseQuery<BacklogItem> query = ParseQuery.getQuery(BacklogItem.class); // Specify type of data
         query.whereEqualTo(BacklogItem.KEY_USER, ParseUser.getCurrentUser()); // Limit items to current user's
-        query.addDescendingOrder("createdAt"); // Order by creation date
+        query.addDescendingOrder("creationDate"); // Order by creation date
         query.findInBackground((itemsFound, e) -> { // Start async query for backlog items
             // Check for errors
             if (e != null) {
-                Log.e(TAG, "Error when getting backlog items.", e);
                 return;
             }
 
             // Add items to the recycler view and notify its adapter of new data
-            BacklogItem.setAnimes(itemsFound);
-            allItems.addAll(itemsFound);
-            items.addAll(itemsFound);
-            adapter.notifyDataSetChanged();
-            checkItemsExist();
+            Runnable callback = () -> {
+                ParseApplication.currentActivity.runOnUiThread(() -> {
+                    allItems.addAll(itemsFound);
+                    items.addAll(itemsFound);
+                    oldest = !oldest;
+                    flipOrder();
+                    checkItemsExist();
+                    if (!firstQuery) applySearchFilter();
+                    binding.swipeContainer.setRefreshing(false);
+                    adapter.notifyDataSetChanged();
+                });
+            };
+            BacklogItem.setAnimes(itemsFound, callback);
         });
+    }
+
+    private void applySearchFilter() {
+        items.removeIf(item -> {
+            if (item.getAnime() == null) return true;
+            String title = item.getAnime().getTitleEnglish();
+            String newText = binding.searchView.getQuery().toString();
+            return !title.toLowerCase().contains(newText.toLowerCase());
+        });
+        adapter.notifyDataSetChanged();
     }
 
     /* Shows a message if user has no backlog items. */
@@ -227,16 +227,21 @@ public class BacklogFragment extends Fragment {
 
     /* Flips the sort order. */
     public void flipOrder() {
-        descending = !descending;
-        int sign = descending? -1: 1;
-        items.sort((i1, i2) -> sign * i1.getCreatedAt().compareTo(i2.getCreatedAt()));
-        allItems.sort((i1, i2) -> sign * i1.getCreatedAt().compareTo(i2.getCreatedAt()));
+        oldest = !oldest;
+        int sign = oldest? 1: -1;
+        items.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
+        allItems.sort((i1, i2) -> sign * i1.getCreationDate().compareTo(i2.getCreationDate()));
         adapter.notifyDataSetChanged();
     }
 
+    /* Gets the items in the RV. */
+    public List<BacklogItem> getItems() {
+        return items;
+    }
+
     /* Gets the sort order. */
-    public boolean getDescending() {
-        return descending;
+    public boolean sortedOldest() {
+        return oldest;
     }
 
     @Override

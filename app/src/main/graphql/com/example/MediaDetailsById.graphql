@@ -16,6 +16,7 @@ fragment mediaFragment on Media {
     bannerImage
     genres
     episodes
+    siteUrl
 }
 
 query MediaDetailsById($id:Int!) {

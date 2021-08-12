@@ -118,6 +118,7 @@
         android:layout_below="@id/llConfirmPassword"
         android:layout_marginVertical="10dp"
         android:minHeight="0dp"
+        android:stateListAnimator="@null"
         android:background="@drawable/theme_rounded_bg"
         android:text="@string/sign_up"
         android:textSize="18sp"

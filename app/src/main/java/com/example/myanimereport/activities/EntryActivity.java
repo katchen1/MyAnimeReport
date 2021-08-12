@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -77,6 +76,11 @@ public class EntryActivity extends AppCompatActivity {
         // Set up number pickers for month and year
         setUpNumberPickers();
 
+        // Change status bar color
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
+
         // Determine if creating or editing
         if (!getIntent().hasExtra("entry")) {
             // Creating a new entry, mediaId has not been found
@@ -87,8 +91,10 @@ public class EntryActivity extends AppCompatActivity {
             // Creating a new entry from a backlog anime
             if (getIntent().hasExtra("anime")) {
                 Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
-                binding.etTitle.setText(anime.getTitleEnglish());
-                mediaId = anime.getMediaId();
+                if (anime != null) {
+                    if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
+                    if (anime.getMediaId() != null) mediaId = anime.getMediaId();
+                }
                 position = getIntent().getIntExtra("position", -1);
                 allPosition = getIntent().getIntExtra("allPosition", -1);
             }
@@ -102,14 +108,14 @@ public class EntryActivity extends AppCompatActivity {
 
             // Populate the views
             Anime anime = Parcels.unwrap(getIntent().getParcelableExtra("anime"));
-            if (anime == null) return;
-            if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
-            if (entry.getMonthWatched() != null) binding.npMonthWatched.setValue(entry.getMonthWatched());
-            if (entry.getYearWatched() != null) binding.npYearWatched.setValue(entry.getYearWatched());
-            if (entry.getRating() != null) binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
-            if (entry.getNote() != null) binding.etNote.setText(entry.getNote());
+            if (anime != null) {
+                if (anime.getTitleEnglish() != null) binding.etTitle.setText(anime.getTitleEnglish());
+                if (entry.getMonthWatched() != null) binding.npMonthWatched.setValue(entry.getMonthWatched());
+                if (entry.getYearWatched() != null) binding.npYearWatched.setValue(entry.getYearWatched());
+                if (entry.getRating() != null) binding.etRating.setText(String.format(Locale.getDefault(), "%.1f", entry.getRating()));
+                if (entry.getNote() != null) binding.etNote.setText(entry.getNote());
+            }
         }
-
 
         // Add text changed listener to the title search bar
         binding.etTitle.addTextChangedListener(new TextWatcher() {
@@ -124,11 +130,6 @@ public class EntryActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) { }
         });
-
-        // Change status bar color
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(this ,R.color.dark_gray));
     }
 
     /* When user clicks outside of the edit texts, hide the soft keyboard. */
@@ -151,6 +152,7 @@ public class EntryActivity extends AppCompatActivity {
             if (anime.getTitleEnglish().equals(search)) {
                 binding.etTitle.setTextColor(ContextCompat.getColor(this, R.color.white));
                 mediaId = anime.getMediaId();
+                hideTitleSuggestion();
                 return;
             }
         }
@@ -253,24 +255,26 @@ public class EntryActivity extends AppCompatActivity {
     public void createNewEntry(Integer month, Integer year, Double rating, String note) {
         updateSlopeOneIntermediateData(rating);
 
-        // Save the entry
+        // Save the entry after setting its anime
         entry = new Entry(mediaId, month, year, rating, note);
-        entry.setAnime();
-        entry.saveInBackground(e -> {
-            if (e == null) {
-                // Pass back the entry so it can be inserted in the recycler view
-                Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.putExtra("entry", entry);
-                intent.putExtra("position", position);
-                intent.putExtra("allPosition", allPosition);
-                updateKNNData(rating);
-                setResult(RESULT_OK, intent);
-                finish();
-            } else {
-                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        Runnable callback = () -> {
+            entry.saveInBackground(e -> {
+                if (e == null) {
+                    // Pass back the entry so it can be inserted in the recycler view
+                    Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("entry", entry);
+                    intent.putExtra("position", position);
+                    intent.putExtra("allPosition", allPosition);
+                    updateKNNData(rating);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                } else {
+                    Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        };
+        entry.setAnime(callback);
     }
 
     /* Updates Slope One intermediate data. */
@@ -293,7 +297,6 @@ public class EntryActivity extends AppCompatActivity {
             query.findInBackground((pairs, e) -> {
                 // Check for errors
                 if (e != null) {
-                    Log.e("EntryActivity", "Error when getting anime pairs.", e);
                     return;
                 }
 
@@ -336,24 +339,28 @@ public class EntryActivity extends AppCompatActivity {
     /* Updates an existing entry with the newly filled information. */
     private void updateExistingEntry(Integer month, Integer year, Double rating, String note) {
         entry.setMediaId(mediaId);
-        entry.setAnime();
         entry.setMonthWatched(month);
         entry.setYearWatched(year);
         entry.setRating(rating);
         entry.setNote(note);
-        entry.saveInBackground(e -> {
-            if (e == null) {
-                // Pass back the entry so it can be redrawn in the entry details activity
-                Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.putExtra("entry", entry);
-                intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
-                setResult(RESULT_OK, intent);
-                finish();
-            } else {
-                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        // Save entry after setting anime
+        Runnable callback = () -> {
+            entry.saveInBackground(e -> {
+                if (e == null) {
+                    // Pass back the entry so it can be redrawn in the entry details activity
+                    Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra("entry", entry);
+                    intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
+                    setResult(RESULT_OK, intent);
+                    finish();
+                } else {
+                    Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        };
+        entry.setAnime(callback);
     }
 
     /* Returns to the home list and passes back the updated entry so it can be redrawn. */

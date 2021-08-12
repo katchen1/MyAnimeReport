@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.example.myanimereport.R;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -23,6 +24,7 @@ import com.example.myanimereport.fragments.ReportFragment;
 import com.example.myanimereport.models.BacklogItem;
 import com.example.myanimereport.models.Entry;
 import com.example.myanimereport.models.ParseApplication;
+import com.example.myanimereport.utils.CustomAlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.parse.ParseUser;
 
@@ -34,14 +36,18 @@ public class MainActivity extends AppCompatActivity {
     public static MatchFragment matchFragment;
     public static BacklogFragment backlogFragment;
     public static  FragmentManager manager;
-
-    private String sortedBy = "Entry Creation Date Descending";
+    public static String sortedBy;
+    public static String sortOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Default sort order
+        sortedBy = "Entry Creation Date";
+        sortOrder = "Descending";
 
         // Hide action bar
         if (getSupportActionBar() != null) getSupportActionBar().hide();
@@ -109,16 +115,14 @@ public class MainActivity extends AppCompatActivity {
         ParseApplication.entries.clear();
         ParseApplication.backlogItems.clear();
         ParseApplication.seenMediaIds.clear();
-        ParseApplication.genres.clear();
         finish();
     }
 
     /* Shows or hides buttons related to the user's account. */
     public void accountOnClick(View view) {
+        // Make account options visible unless already visible
         int targetVisibility = View.VISIBLE;
         int targetBtnResource = R.drawable.ic_baseline_keyboard_arrow_up_24;
-
-        /* If it's already showing, hide it. */
         if (binding.btnEditName.getVisibility() == View.VISIBLE) {
             targetVisibility = View.GONE;
             targetBtnResource = R.drawable.ic_baseline_keyboard_arrow_down_24;
@@ -154,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Sets the visibility of the sort options. */
-    public void setSortVisibility(int visibility) {
+    public static void setSortVisibility(int visibility) {
         binding.btnSortCreationDate.setVisibility(visibility);
         binding.btnSortTitle.setVisibility(visibility);
         binding.btnSortRating.setVisibility(visibility);
@@ -162,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Restore default order for all sort options in the UI. */
-    public void restoreDefaultOrder() {
+    public static void restoreDefaultOrder() {
         binding.ivSortCreationDate.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
         binding.ivSortRating.setImageResource(R.drawable.ic_baseline_arrow_downward_24);
         binding.ivSortTitle.setImageResource(R.drawable.ic_baseline_arrow_upward_24);
@@ -171,10 +175,27 @@ public class MainActivity extends AppCompatActivity {
 
     /* Sorts the entries. sortBy is one of "Entry Creation Date", "Rating", Title", or "Watch Date",
      * and iv is the corresponding image button in the UI. */
-    public void sort(String sortBy, ImageButton ib) {
+    public static void sort(String sortBy) {
+        // Determine corresponding image button
+        ImageButton ib;
+        switch (sortBy) {
+            case "Watch Date":
+                ib = binding.ivSortWatchDate;
+                break;
+            case "Title":
+                ib = binding.ivSortTitle;
+                break;
+            case "Rating":
+                ib = binding.ivSortRating;
+                break;
+            default:
+                ib = binding.ivSortCreationDate;
+                break;
+        }
+
         // Determine the default/non-default orders and corresponding icons
         String defaultOrder = sortBy.equals("Title")? "Ascending": "Descending";
-        boolean inDefaultOrder = sortedBy.equals(sortBy + " " + defaultOrder);
+        boolean inDefaultOrder = sortedBy.equals(sortBy) && sortOrder.equals(defaultOrder);
         String nonDefaultOrder = defaultOrder.equals("Descending")? "Ascending": "Descending";
         int defaultIcon = defaultOrder.equals("Descending")?
                 R.drawable.ic_baseline_arrow_downward_24:
@@ -189,20 +210,25 @@ public class MainActivity extends AppCompatActivity {
         switch (sortBy) {
             case "Entry Creation Date":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
                 break;
             case "Rating":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e2.getRating().compareTo(e1.getRating()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getCreatedAt().compareTo(e1.getCreatedAt()));
                 break;
             case "Title":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e1.getAnime().getTitleEnglish().compareTo(e2.getAnime().getTitleEnglish()));
                 break;
             case "Watch Date":
                 homeFragment.getEntries().sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
+                ParseApplication.entries.sort((e1, e2) -> sign * e2.getDateWatched().compareTo(e1.getDateWatched()));
                 break;
         }
 
         // Update UI
-        sortedBy = sortBy + " " + (inDefaultOrder? nonDefaultOrder: defaultOrder);
+        sortedBy = sortBy;
+        sortOrder = inDefaultOrder? nonDefaultOrder: defaultOrder;
         binding.ivSort.setImageResource(inDefaultOrder? nonDefaultIcon: defaultIcon);
         ib.setImageResource(inDefaultOrder? defaultIcon: nonDefaultIcon);
         binding.tvSort.setText(sortBy);
@@ -214,30 +240,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Sorts by creation date. */
-    public void btnSortCreationDateOnClick(View view) {
-        sort("Entry Creation Date", binding.ivSortCreationDate);
+    public static void btnSortCreationDateOnClick(View view) {
+        sort("Entry Creation Date");
     }
 
     /* Sorts by anime title. */
-    public void btnSortTitleOnClick(View view) {
-        sort("Title", binding.ivSortTitle);
+    public static void btnSortTitleOnClick(View view) {
+        sort("Title");
     }
 
     /* Sorts by rating. */
-    public void btnSortRatingOnClick(View view) {
-        sort("Rating", binding.ivSortRating);
+    public static void btnSortRatingOnClick(View view) {
+        sort("Rating");
     }
 
     /* Sorts by watch date. */
-    public void btnSortWatchDateOnClick(View view) {
-        sort("Watch Date", binding.ivSortWatchDate);
+    public static void btnSortWatchDateOnClick(View view) {
+        sort("Watch Date");
     }
 
     /* Sorts backlog items by date added. */
     public void btnSortDateAddedOnClick(View view) {
         backlogFragment.flipOrder();
-        if (backlogFragment.getDescending()) binding.tvSortDateAdded.setText(R.string.newest);
-        else binding.tvSortDateAdded.setText(R.string.oldest);
+        if (backlogFragment.sortedOldest()) binding.tvSortDateAdded.setText(R.string.oldest);
+        else binding.tvSortDateAdded.setText(R.string.newest);
         binding.drawerLayout.closeDrawer(GravityCompat.START);
     }
 
@@ -250,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
     public void editNameOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
         EditNameBinding dialogBinding = EditNameBinding.inflate(getLayoutInflater());
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setView(dialogBinding.getRoot())
             .setPositiveButton("Save", (dialog, which) -> {
                 // Update the user's name
@@ -260,14 +286,16 @@ public class MainActivity extends AppCompatActivity {
                 binding.tvName.setText(dialogBinding.etName.getText().toString());
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .show();
+            .create();
+        alert.show();
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* Allows the user to edit their password. */
     public void editPasswordOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
         EditPasswordBinding dialogBinding = EditPasswordBinding.inflate(getLayoutInflater());
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setView(dialogBinding.getRoot())
             .setPositiveButton("Save", (dialog, which) -> {
                 String oldPassword = dialogBinding.etOldPassword.getText().toString();
@@ -292,19 +320,21 @@ public class MainActivity extends AppCompatActivity {
                 });
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .create()
-            .show();
+            .create();
+        alert.show();
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* Deletes all entries of the current user. */
     public void deleteAllEntriesOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setTitle("Delete All Entries")
             .setMessage("Are you sure?")
             .setPositiveButton("Delete All", (dialog, which) -> {
                 // Delete all entries in Parse
                 for (Entry entry: ParseApplication.entries) entry.deleteInBackground();
+                homeFragment.getEntries().clear();
                 ParseApplication.entries.clear();
                 Toast.makeText(MainActivity.this, "Entries deleted.", Toast.LENGTH_SHORT).show();
 
@@ -314,14 +344,15 @@ public class MainActivity extends AppCompatActivity {
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .create()
-            .show();
+            .create();
+        alert.show();
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 
     /* Deletes all backlog items of the current user. */
     public void deleteBacklogOnClick(View view) {
         // Using a Material Dialog with layout defined in res/values/themes.xml
-        new MaterialAlertDialogBuilder(this)
+        AlertDialog alert = new MaterialAlertDialogBuilder(this)
             .setTitle("Clear To-Watch List")
             .setMessage("Are you sure?")
             .setPositiveButton("Clear", (dialog, which) -> {
@@ -333,12 +364,15 @@ public class MainActivity extends AppCompatActivity {
                 // Update UI
                 BacklogFragment backlogFragment = (BacklogFragment) manager.findFragmentByTag("backlog");
                 if (backlogFragment != null) {
+                    backlogFragment.getItems().clear();
                     backlogFragment.getAdapter().notifyDataSetChanged();
                     backlogFragment.checkItemsExist();
                 }
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
             })
             .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-            .create().show();
+            .create();
+        alert.show();
+        CustomAlertDialog.style(alert, getApplicationContext());
     }
 }
