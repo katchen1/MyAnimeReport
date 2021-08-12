@@ -1,0 +1,26 @@
+fragment mediaFragment on Media {
+    id
+    countryOfOrigin
+    title {
+        romaji
+        english
+        native
+    }
+    description
+    averageScore
+    seasonYear
+    coverImage {
+        extraLarge
+        color
+    }
+    bannerImage
+    genres
+    episodes
+    siteUrl
+}
+
+query MediaDetailsById($id:Int!) {
+    Media(type: ANIME, id: $id) {
+        ...mediaFragment
+    }
+}
