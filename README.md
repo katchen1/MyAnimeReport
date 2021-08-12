@@ -1,13 +1,14 @@
 # Anime Report
 
+📺 An Android app that allows you to track the anime you’ve watched with a simple interface, view comprehensive reports based on your watch history, and swipe to find your next favorite anime.
+
 ## Table of Contents
 1. [Demo](#demo)
-2. [Description](#description)
-3. [Motivation](#motivation)
-4. [App Evaluation](#app_evaluation)
-5. [Product Spec](#product_spec)
-6. [Wireframes](#wireframes)
-7. [Schema](#schema)
+2. [Motivation](#motivation)
+3. [App Evaluation](#app_evaluation)
+4. [Product Spec](#product_spec)
+5. [Wireframes](#wireframes)
+6. [Schema](#schema)
 
 
 <div id='demo'/>
@@ -29,12 +30,6 @@ https://user-images.githubusercontent.com/59420335/129163970-18161563-b482-4eb2-
 | Match | Backlog |
 | ----- | ------- |
 | ![match](https://user-images.githubusercontent.com/59420335/129166369-95f7d6d7-6c07-4d05-a70e-2a56bcefa4be.gif) | ![backlog](https://user-images.githubusercontent.com/59420335/129166381-35d6ad7b-f915-46dc-857e-f1df755dc735.gif) |
-
-
-<div id='description'/>
-
-## Description
-An Android app that allows you to track the anime you’ve watched with a simple interface, view comprehensive reports based on your watch history, and swipe to find your next favorite anime.
 
 
 <div id='motivation'/>
