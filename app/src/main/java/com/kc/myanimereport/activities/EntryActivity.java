@@ -257,23 +257,21 @@ public class EntryActivity extends AppCompatActivity {
 
         // Save the entry after setting its anime
         entry = new Entry(mediaId, month, year, rating, note);
-        Runnable callback = () -> {
-            entry.saveInBackground(e -> {
-                if (e == null) {
-                    // Pass back the entry so it can be inserted in the recycler view
-                    Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    intent.putExtra("entry", entry);
-                    intent.putExtra("position", position);
-                    intent.putExtra("allPosition", allPosition);
-                    updateKNNData(rating);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                } else {
-                    Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        };
+        Runnable callback = () -> entry.saveInBackground(e -> {
+            if (e == null) {
+                // Pass back the entry so it can be inserted in the recycler view
+                Toast.makeText(EntryActivity.this, "Entry created.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra("entry", entry);
+                intent.putExtra("position", position);
+                intent.putExtra("allPosition", allPosition);
+                updateKNNData(rating);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
         entry.setAnime(callback);
     }
 
@@ -345,21 +343,19 @@ public class EntryActivity extends AppCompatActivity {
         entry.setNote(note);
 
         // Save entry after setting anime
-        Runnable callback = () -> {
-            entry.saveInBackground(e -> {
-                if (e == null) {
-                    // Pass back the entry so it can be redrawn in the entry details activity
-                    Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent();
-                    intent.putExtra("entry", entry);
-                    intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
-                    setResult(RESULT_OK, intent);
-                    finish();
-                } else {
-                    Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        };
+        Runnable callback = () -> entry.saveInBackground(e -> {
+            if (e == null) {
+                // Pass back the entry so it can be redrawn in the entry details activity
+                Toast.makeText(EntryActivity.this, "Entry updated.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.putExtra("entry", entry);
+                intent.putExtra("anime", Parcels.wrap(entry.getAnime()));
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                Toast.makeText(EntryActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
         entry.setAnime(callback);
     }
 

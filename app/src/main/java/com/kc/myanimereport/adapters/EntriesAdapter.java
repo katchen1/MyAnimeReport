@@ -28,7 +28,6 @@ import java.util.Locale;
 
 public class EntriesAdapter extends RecyclerView.Adapter<EntriesAdapter.ViewHolder> {
 
-    private final String TAG = "EntriesAdapter";
     private final Fragment fragment;
     private final Context context;
     private final List<Entry> entries;

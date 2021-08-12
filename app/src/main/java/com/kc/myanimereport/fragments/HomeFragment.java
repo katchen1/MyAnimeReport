@@ -45,13 +45,11 @@ public class HomeFragment extends Fragment {
     public static final int NEW_ENTRY_REQUEST_CODE = 1;
     public static final int VIEW_ENTRY_REQUEST_CODE = 2;
 
-    private final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
     private List<Entry> entries; // Shown in the recycler view
     private List<Entry> allEntries; // All entries that the user has
     private EntriesAdapter adapter;
     private GridLayoutManager layoutManager;
-    private Set<String> allGenres;
     private Set<String> selectedGenres;
 
     @Override
@@ -68,7 +66,6 @@ public class HomeFragment extends Fragment {
         // Set up adapter and layout of recycler view
         allEntries = ParseApplication.entries;
         entries = new ArrayList<>();
-        allGenres = ParseApplication.genres;
         selectedGenres = new HashSet<>();
         selectedGenres.add("All");
         layoutManager = new GridLayoutManager(getContext(), 2);
@@ -175,22 +172,20 @@ public class HomeFragment extends Fragment {
             }
 
             // Add entries to the recycler view and notify its adapter of new data
-            Runnable callback = () -> {
-                ParseApplication.currentActivity.runOnUiThread(() -> {
-                    allEntries.addAll(userEntries);
-                    entries.addAll(userEntries);
-                    MainActivity.sortOrder = MainActivity.sortOrder.equals("Ascending") ? "Descending" : "Ascending";
-                    MainActivity.sort(MainActivity.sortedBy);
-                    checkEntriesExist();
-                    if (!firstQuery) {
-                        applySearchFilter();
-                        applyGenreFilter();
-                    }
-                    binding.swipeContainer.setRefreshing(false);
-                    adapter.notifyDataSetChanged();
-                    if (firstQuery) MainActivity.homeFragment.hideProgressBar();
-                });
-            };
+            Runnable callback = () -> ParseApplication.currentActivity.runOnUiThread(() -> {
+                allEntries.addAll(userEntries);
+                entries.addAll(userEntries);
+                MainActivity.sortOrder = MainActivity.sortOrder.equals("Ascending") ? "Descending" : "Ascending";
+                MainActivity.sort(MainActivity.sortedBy);
+                checkEntriesExist();
+                if (!firstQuery) {
+                    applySearchFilter();
+                    applyGenreFilter();
+                }
+                binding.swipeContainer.setRefreshing(false);
+                adapter.notifyDataSetChanged();
+                if (firstQuery) MainActivity.homeFragment.hideProgressBar();
+            });
             Entry.setAnimes(userEntries, callback);
         });
     }

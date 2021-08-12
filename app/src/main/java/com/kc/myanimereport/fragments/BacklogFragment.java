@@ -36,7 +36,6 @@ import java.util.Objects;
 
 public class BacklogFragment extends Fragment {
 
-    private final String TAG = "BacklogFragment";
     private FragmentBacklogBinding binding;
     private List<BacklogItem> allItems;
     private List<BacklogItem> items;
@@ -159,18 +158,16 @@ public class BacklogFragment extends Fragment {
             }
 
             // Add items to the recycler view and notify its adapter of new data
-            Runnable callback = () -> {
-                ParseApplication.currentActivity.runOnUiThread(() -> {
-                    allItems.addAll(itemsFound);
-                    items.addAll(itemsFound);
-                    oldest = !oldest;
-                    flipOrder();
-                    checkItemsExist();
-                    if (!firstQuery) applySearchFilter();
-                    binding.swipeContainer.setRefreshing(false);
-                    adapter.notifyDataSetChanged();
-                });
-            };
+            Runnable callback = () -> ParseApplication.currentActivity.runOnUiThread(() -> {
+                allItems.addAll(itemsFound);
+                items.addAll(itemsFound);
+                oldest = !oldest;
+                flipOrder();
+                checkItemsExist();
+                if (!firstQuery) applySearchFilter();
+                binding.swipeContainer.setRefreshing(false);
+                adapter.notifyDataSetChanged();
+            });
             BacklogItem.setAnimes(itemsFound, callback);
         });
     }

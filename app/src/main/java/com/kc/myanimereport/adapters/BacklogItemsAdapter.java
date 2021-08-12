@@ -56,13 +56,6 @@ public class BacklogItemsAdapter extends RecyclerView.Adapter<BacklogItemsAdapte
         return items.size();
     }
 
-    /* Updates the RV with a new list. */
-    public void updateItems(List<BacklogItem> updatedItems){
-        items.clear();
-        items.addAll(updatedItems);
-        notifyDataSetChanged();
-    }
-
     /* Returns the context of the adapter. */
     public Context getContext() {
         return context;
