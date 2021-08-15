@@ -2,6 +2,8 @@
 
 📺 An Android app that allows you to track the anime you’ve watched with a simple interface, view comprehensive reports based on your watch history, and swipe to find your next favorite anime.
 
+⬇️ Download from Google Play: https://play.google.com/store/apps/details?id=com.kc.myanimereport
+
 ## Table of Contents
 1. [Demo](#demo)
 2. [Description](#description)
